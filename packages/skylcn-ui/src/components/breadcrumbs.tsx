@@ -53,7 +53,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
           const last = index === items.length - 1;
           return (
             <li
-              key={item.href}
+              key={`${index}-${item.href}`}
               className={cn(
                 'inline-flex items-center gap-1.5',
                 last ? 'shrink-0' : 'min-w-0',
