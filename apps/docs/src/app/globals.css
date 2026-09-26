@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+@import '@skylab-kulubu/skylcn-ui/theme.css';
+
+@source '../';

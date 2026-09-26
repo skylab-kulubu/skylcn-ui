@@ -1,0 +1,190 @@
+/*
+ * skylcn-ui design tokens. Plain CSS custom properties with no Tailwind in
+ * them, so surfaces without Tailwind (the Keycloak login theme) can use the
+ * same set. Dark is the default; `data-theme="light"` on any ancestor switches.
+ */
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Brand */
+  --skylab-300: #f3e8f5;
+  --skylab-400: #ebd5ee;
+  --skylab-500: #e0c8e5;
+  --skylab-600: #c8a4ce;
+  --skylab-700: #ae7eb6;
+  --skylab-800: #8f5e98;
+  --skylab-900: #6e4576;
+
+  /* Surfaces: the chrome behind the sidebar, the page panel, raised layers */
+  --sidebar: #0a0a0a;
+  --background: #171717;
+  --sheet: #121212;
+  --popover: #1a1a1a;
+  --card: rgb(255 255 255 / 3%);
+
+  /* Text */
+  --foreground: #f5f5f5;
+  --foreground-strong: #fafafa;
+  --secondary-foreground: #e5e5e5;
+  --muted-foreground: #a3a3a3;
+  --subtle-foreground: #737373;
+  --faint-foreground: #525252;
+
+  /* Washes and lines, drawn as foreground at low opacity so they sit on any surface */
+  --muted: rgb(255 255 255 / 5%);
+  --accent: rgb(255 255 255 / 5%);
+  --accent-strong: rgb(255 255 255 / 10%);
+  --border: rgb(255 255 255 / 10%);
+  --border-subtle: rgb(255 255 255 / 5%);
+  --border-strong: rgb(255 255 255 / 20%);
+  --input: rgb(255 255 255 / 10%);
+  --input-background: rgb(38 38 38 / 50%);
+
+  /* Brand roles */
+  --primary: var(--skylab-500);
+  --primary-foreground: #0a0a0a;
+  --ring: rgb(235 213 238 / 40%);
+
+  /* Status */
+  --destructive: #f87171;
+  --destructive-foreground: #fecaca;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --info: #93c5fd;
+
+  /* Charts */
+  --chart-1: var(--skylab-500);
+  --chart-2: #fbbf24;
+  --chart-3: #34d399;
+  --chart-4: #a3a3a3;
+  --chart-5: var(--skylab-700);
+
+  /* Shape */
+  --radius: 0.5rem;
+  --elevation-overlay: 0 20px 40px -12px rgb(0 0 0 / 60%);
+
+  /* Scrollbars */
+  --scrollbar-thumb: #3f3f46;
+  --scrollbar-thumb-hover: #52525b;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --skylab-300: #75447f;
+  --skylab-400: #8f5e98;
+  --skylab-500: #ae7eb6;
+  --skylab-600: #c8a4ce;
+  --skylab-700: #8f5e98;
+  --skylab-800: #75447f;
+  --skylab-900: #5b3363;
+
+  --sidebar: #ece8e3;
+  --background: #fdfcfa;
+  --sheet: #fdfcfa;
+  --popover: #ffffff;
+  --card: rgb(0 0 0 / 2%);
+
+  --foreground: #1c1a18;
+  --foreground-strong: #121014;
+  --secondary-foreground: #2b2825;
+  --muted-foreground: #57524c;
+  --subtle-foreground: #6b665f;
+  --faint-foreground: #8a847d;
+
+  --muted: rgb(0 0 0 / 4%);
+  --accent: rgb(0 0 0 / 5%);
+  --accent-strong: rgb(0 0 0 / 8%);
+  --border: rgb(0 0 0 / 10%);
+  --border-subtle: rgb(0 0 0 / 6%);
+  --border-strong: rgb(0 0 0 / 18%);
+  --input: rgb(0 0 0 / 12%);
+  --input-background: #ffffff;
+
+  --primary: #8f5e98;
+  --primary-foreground: #ffffff;
+  --ring: rgb(143 94 152 / 40%);
+
+  --destructive: #c81e1e;
+  --destructive-foreground: #7f1d1d;
+  --success: #047857;
+  --warning: #b45309;
+  --info: #1d4ed8;
+
+  --chart-2: #b45309;
+  --chart-3: #047857;
+  --chart-4: #6b665f;
+
+  --elevation-overlay: 0 20px 40px -16px rgb(28 26 24 / 25%);
+
+  --scrollbar-thumb: #c9c3bc;
+  --scrollbar-thumb-hover: #a8a19a;
+}
+
+:root {
+  /* Type. Apps load the faces (next/font or @font-face) and may point these at their variables. */
+  --font-family-sans:
+    var(--skylcn-font-sans, 'Space Grotesk'), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-family-mono:
+    var(--skylcn-font-mono, 'Space Mono'), ui-monospace, SFMono-Regular, monospace;
+
+  /* Micro type scale below Tailwind's xs: 2xs meta lines, 3xs chips and labels, 4xs inline role badges */
+  --type-2xs: 0.6875rem;
+  --type-2xs-leading: 1rem;
+  --type-3xs: 0.625rem;
+  --type-3xs-leading: 0.875rem;
+  --type-4xs: 0.5rem;
+  --type-4xs-leading: 0.75rem;
+  --letter-spacing-label: 0.18em;
+
+  /* Motion */
+  --motion-ease-enter: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 0.2, 1);
+  /* The drawer spring (stiffness 300, damping 30, mass 0.8), sampled for CSS */
+  --motion-ease-spring: linear(
+    0,
+    0.0577,
+    0.1801,
+    0.3211,
+    0.4567,
+    0.579,
+    0.6783,
+    0.7581,
+    0.8205,
+    0.8685,
+    0.9046,
+    0.9315,
+    0.9512,
+    0.9658,
+    0.9761,
+    0.9834,
+    0.9885,
+    0.9922,
+    0.9947,
+    0.9964,
+    0.9976,
+    0.9984,
+    0.999,
+    0.9993,
+    1
+  );
+  --motion-duration-instant: 100ms;
+  --motion-duration-fast: 150ms;
+  --motion-duration-base: 200ms;
+  --motion-duration-slow: 350ms;
+  --motion-duration-spring: 450ms;
+  --motion-stagger: 60ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-instant: 0ms;
+    --motion-duration-fast: 0ms;
+    --motion-duration-base: 0ms;
+    --motion-duration-slow: 0ms;
+    --motion-duration-spring: 0ms;
+    --motion-stagger: 0ms;
+  }
+}

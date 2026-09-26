@@ -1,0 +1,273 @@
+/*
+ * skylcn-ui Tailwind 4 theme. Apps import it right after Tailwind:
+ *
+ *   @import 'tailwindcss';
+ *   @import '@skylab-kulubu/skylcn-ui/theme.css';
+ *
+ * It brings the tokens, maps them onto Tailwind's theme, and points Tailwind at
+ * the package's compiled components so their classes are generated.
+ */
+
+@import 'tw-animate-css';
+@import './tokens.css';
+
+@source '../';
+
+@custom-variant dark (&:not(:where([data-theme='light'], [data-theme='light'] *)));
+@custom-variant light (&:where([data-theme='light'], [data-theme='light'] *));
+
+/* Base UI state attributes, matched the same way shadcn's base styles do */
+@custom-variant data-open {
+  &:where([data-state='open']),
+  &:where([data-open]:not([data-open='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-closed {
+  &:where([data-state='closed']),
+  &:where([data-closed]:not([data-closed='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-checked {
+  &:where([data-state='checked']),
+  &:where([data-checked]:not([data-checked='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-unchecked {
+  &:where([data-state='unchecked']),
+  &:where([data-unchecked]:not([data-unchecked='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-selected {
+  &:where([data-selected='true']),
+  &:where([data-selected]:not([data-selected='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-highlighted {
+  &:where([data-highlighted]:not([data-highlighted='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-disabled {
+  &:where([data-disabled='true']),
+  &:where([data-disabled]:not([data-disabled='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-pressed {
+  &:where([data-pressed]:not([data-pressed='false'])) {
+    @slot;
+  }
+}
+@custom-variant data-horizontal {
+  &:where([data-orientation='horizontal']) {
+    @slot;
+  }
+}
+@custom-variant data-vertical {
+  &:where([data-orientation='vertical']) {
+    @slot;
+  }
+}
+
+@theme inline {
+  --color-skylab-300: var(--skylab-300);
+  --color-skylab-400: var(--skylab-400);
+  --color-skylab-500: var(--skylab-500);
+  --color-skylab-600: var(--skylab-600);
+  --color-skylab-700: var(--skylab-700);
+  --color-skylab-800: var(--skylab-800);
+  --color-skylab-900: var(--skylab-900);
+
+  --color-sidebar: var(--sidebar);
+  --color-background: var(--background);
+  --color-sheet: var(--sheet);
+  --color-popover: var(--popover);
+  --color-card: var(--card);
+
+  --color-foreground: var(--foreground);
+  --color-foreground-strong: var(--foreground-strong);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-faint-foreground: var(--faint-foreground);
+  --color-popover-foreground: var(--foreground);
+  --color-card-foreground: var(--foreground);
+
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-foreground: var(--foreground-strong);
+  --color-secondary: var(--muted);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-ring: var(--ring);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
+
+  --text-2xs: var(--type-2xs);
+  --text-2xs--line-height: var(--type-2xs-leading);
+  --text-3xs: var(--type-3xs);
+  --text-3xs--line-height: var(--type-3xs-leading);
+  --text-4xs: var(--type-4xs);
+  --text-4xs--line-height: var(--type-4xs-leading);
+  --tracking-label: var(--letter-spacing-label);
+
+  --ease-enter: var(--motion-ease-enter);
+  --ease-exit: var(--motion-ease-exit);
+  --ease-spring: var(--motion-ease-spring);
+
+  --shadow-overlay: var(--elevation-overlay);
+}
+
+@keyframes skylcn-shimmer-block {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skylcn-shimmer-text {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: var(--ring);
+  }
+  html {
+    font-family: var(--font-family-sans);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* Tailwind 4 leaves buttons on the default arrow; every product here points at what it can press */
+  :where(
+    button,
+    [role='button'],
+    [role='switch'],
+    [role='checkbox'],
+    [role='radio'],
+    [role='tab'],
+    [role='combobox'],
+    [role='option'],
+    [role='menuitem'],
+    [role='menuitemcheckbox'],
+    [role='menuitemradio'],
+    summary,
+    select,
+    a[href],
+    input[type='file']
+  ):not(:disabled, [aria-disabled='true'], [data-disabled]) {
+    cursor: pointer;
+  }
+  :where(button, [role='button'], [role='option'], [role='menuitem'], select, input):is(
+    :disabled,
+    [aria-disabled='true'],
+    [data-disabled]
+  ) {
+    cursor: not-allowed;
+  }
+}
+
+/* A placeholder block for content that is loading (skeleton rows, avatars) */
+@utility shimmer-block {
+  background-color: var(--muted);
+  background-image: linear-gradient(
+    110deg,
+    transparent 0%,
+    color-mix(in oklab, var(--foreground) 12%, transparent) 45%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: skylcn-shimmer-block 1.8s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background-image: none;
+  }
+}
+
+/* A light band travelling across text, for "loading…" labels */
+@utility shimmer-text {
+  background-image: linear-gradient(
+    100deg,
+    currentColor 35%,
+    color-mix(in oklab, currentColor 35%, var(--foreground-strong)) 50%,
+    currentColor 65%
+  );
+  background-size: 250% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: skylcn-shimmer-text 2s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+@utility scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-clip: padding-box;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+}
+
+@utility scrollbar-hidden {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
