@@ -410,8 +410,8 @@ export function SidebarContent({ children }: { children: ReactNode }) {
   return (
     <nav
       className={cn(
-        'scrollbar-hidden min-h-0 flex-1 overflow-y-auto',
-        collapsed ? 'space-y-3' : 'space-y-5',
+        'scrollbar-hidden flex min-h-0 flex-1 flex-col overflow-y-auto',
+        collapsed ? 'gap-3' : 'gap-5',
       )}
     >
       {children}
@@ -422,7 +422,7 @@ export function SidebarContent({ children }: { children: ReactNode }) {
 export function SidebarSection({ label, children }: { label?: ReactNode; children: ReactNode }) {
   const { collapsed } = useSidebar();
   return (
-    <div className="space-y-1">
+    <div className="flex flex-col gap-1">
       {label ? (
         collapsed ? (
           <div className="mx-auto my-2 h-px w-6 bg-border" aria-hidden />
@@ -602,7 +602,9 @@ export function SidebarGroup({
       </Collapsible.Trigger>
       <Collapsible.Panel className="h-(--collapsible-panel-height) overflow-hidden transition-[height,opacity] duration-(--motion-duration-base) ease-enter data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0">
         <NestedContext.Provider value>
-          <div className="mt-1 ml-5 space-y-1 border-l border-border pl-3">{children}</div>
+          <div className="mt-1 ml-5 flex flex-col gap-1 border-l border-border pl-3">
+            {children}
+          </div>
         </NestedContext.Provider>
       </Collapsible.Panel>
     </Collapsible.Root>
@@ -610,7 +612,7 @@ export function SidebarGroup({
 }
 
 export function SidebarFooter({ children }: { children: ReactNode }) {
-  return <div className="mt-auto space-y-2">{children}</div>;
+  return <div className="mt-auto flex flex-col gap-2">{children}</div>;
 }
 
 export type SidebarUserProps = {

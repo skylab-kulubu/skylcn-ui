@@ -33,7 +33,7 @@ export function PageHeader({
     <header
       data-slot="page-header"
       className={cn(
-        'slide-in-from-top-1.5 animate-in space-y-3 duration-(--motion-duration-base) ease-enter fade-in-0',
+        'slide-in-from-top-1.5 flex animate-in flex-col gap-3 duration-(--motion-duration-base) ease-enter fade-in-0',
         className,
       )}
     >
