@@ -13,5 +13,3 @@ mkdirSync(join(dist, 'styles'), { recursive: true });
 for (const file of readdirSync(join(root, 'src/styles'))) {
   if (file.endsWith('.css')) cpSync(join(root, 'src/styles', file), join(dist, 'styles', file));
 }
-
-cpSync(join(root, 'src/lib/benday/LICENSE'), join(dist, 'lib/benday/LICENSE'));

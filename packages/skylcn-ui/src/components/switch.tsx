@@ -11,9 +11,9 @@ export function Switch({ className, ...props }: SwitchProps) {
     <SwitchPrimitive.Root
       data-slot="switch"
       className={cn(
-        'border-border bg-muted relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border px-0.5 outline-none',
-        'ease-enter transition-[background-color,border-color] duration-(--motion-duration-base)',
-        'focus-visible:ring-ring focus-visible:ring-2',
+        'relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border border-border bg-muted px-0.5 outline-none after:absolute after:-inset-2',
+        'transition-[background-color,border-color] duration-(--motion-duration-base) ease-enter',
+        'focus-visible:ring-2 focus-visible:ring-ring',
         'data-checked:border-skylab-400/50 data-checked:bg-skylab-400/20',
         'data-disabled:cursor-not-allowed data-disabled:opacity-50',
         className,
@@ -23,7 +23,7 @@ export function Switch({ className, ...props }: SwitchProps) {
       <SwitchPrimitive.Thumb
         className={cn(
           'size-4.5 rounded-full bg-white shadow-sm shadow-black/30',
-          'ease-enter transition-transform duration-(--motion-duration-base) data-checked:translate-x-4',
+          'transition-transform duration-(--motion-duration-base) ease-enter data-checked:translate-x-4',
         )}
       />
     </SwitchPrimitive.Root>
@@ -52,15 +52,15 @@ export function ToggleRow({
     <label
       data-slot="toggle-row"
       className={cn(
-        'border-border flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2.5 transition-opacity duration-(--motion-duration-slow)',
+        'flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5 transition-opacity duration-(--motion-duration-slow)',
         dimmed && 'opacity-40',
         className,
       )}
     >
       <span className="min-w-0">
-        <span className="text-foreground block text-sm font-semibold">{title}</span>
+        <span className="block text-sm font-semibold text-foreground">{title}</span>
         {description ? (
-          <span className="text-2xs text-subtle-foreground block">{description}</span>
+          <span className="block text-2xs text-subtle-foreground">{description}</span>
         ) : null}
       </span>
       <span className="flex shrink-0 items-center gap-3">

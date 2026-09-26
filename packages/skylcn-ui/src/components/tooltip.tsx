@@ -3,6 +3,7 @@
 import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip';
 import type { ReactElement, ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { popupMotionFast } from '../lib/motion.js';
 
 /** Shares one open delay across tooltips, so moving between them feels instant. */
 export function TooltipProvider({
@@ -32,9 +33,8 @@ export function Tooltip({ label, children, side = 'bottom', className }: Tooltip
           <TooltipPrimitive.Popup
             data-slot="tooltip"
             className={cn(
-              'border-border-strong bg-popover text-3xs text-secondary-foreground origin-(--transform-origin) rounded-md border px-1.5 py-0.5 font-medium shadow-lg',
-              'ease-enter transition-[opacity,transform] duration-(--motion-duration-fast)',
-              'data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0',
+              'rounded-md border border-border-strong bg-popover px-1.5 py-0.5 text-3xs font-medium text-secondary-foreground shadow-lg',
+              popupMotionFast,
               className,
             )}
           >

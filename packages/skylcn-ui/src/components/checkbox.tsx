@@ -9,10 +9,10 @@ export function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) 
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        'border-border-strong bg-input-background grid size-4 shrink-0 cursor-pointer place-content-center rounded-sm border outline-none',
-        'ease-enter transition-[background-color,border-color] duration-(--motion-duration-fast)',
-        'focus-visible:ring-ring focus-visible:ring-2',
-        'data-checked:border-skylab-800 data-checked:bg-skylab-800 data-indeterminate:border-skylab-800 data-indeterminate:bg-skylab-800',
+        'relative grid size-4 shrink-0 cursor-pointer place-content-center rounded-sm border border-border-strong bg-input-background outline-none after:absolute after:-inset-3',
+        'transition-[background-color,border-color] duration-(--motion-duration-fast) ease-enter',
+        'focus-visible:ring-2 focus-visible:ring-ring',
+        'data-indeterminate:border-skylab-800 data-indeterminate:bg-skylab-800 data-checked:border-skylab-800 data-checked:bg-skylab-800',
         'data-disabled:cursor-not-allowed data-disabled:opacity-50',
         className,
       )}
@@ -20,7 +20,7 @@ export function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) 
     >
       <CheckboxPrimitive.Indicator
         keepMounted
-        className="ease-enter text-white transition-transform duration-(--motion-duration-fast) data-unchecked:scale-0"
+        className="text-white transition-transform duration-(--motion-duration-fast) ease-enter data-unchecked:scale-0"
         render={(indicatorProps, state) => (
           <span {...indicatorProps}>
             {state.indeterminate ? (

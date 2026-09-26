@@ -8,6 +8,8 @@ import { cn } from '../lib/cn.js';
 
 const controlClass = [
   'w-full min-w-0 rounded-md border border-input bg-input-background text-xs text-foreground outline-none',
+  // 16px on touch screens keeps iOS from zooming into the field
+  'pointer-coarse:text-base',
   'transition-[border-color,box-shadow] duration-(--motion-duration-fast) ease-enter',
   'placeholder:text-faint-foreground',
   'hover:border-border-strong focus-visible:border-skylab-400/50 focus-visible:ring-2 focus-visible:ring-skylab-400/20',
@@ -27,7 +29,7 @@ export function Input({ className, icon: Icon, inputSize = 'md', ...props }: Inp
       data-slot="input"
       className={cn(
         controlClass,
-        inputSize === 'sm' ? 'h-7 px-2' : 'h-8 px-2.5',
+        inputSize === 'sm' ? 'h-7 px-2 pointer-coarse:h-9' : 'h-8 px-2.5 pointer-coarse:h-10',
         Icon && (inputSize === 'sm' ? 'pl-7' : 'pl-8'),
         !Icon && className,
       )}
@@ -37,7 +39,7 @@ export function Input({ className, icon: Icon, inputSize = 'md', ...props }: Inp
   if (!Icon) return input;
   return (
     <div className={cn('relative', className)}>
-      <Icon className="text-subtle-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
+      <Icon className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-subtle-foreground" />
       {input}
     </div>
   );
@@ -61,7 +63,7 @@ export function Label({ className, ...props }: ComponentProps<'label'>) {
   return (
     <label
       data-slot="label"
-      className={cn('text-2xs text-muted-foreground font-medium select-none', className)}
+      className={cn('text-2xs font-medium text-muted-foreground select-none', className)}
       {...props}
     />
   );
@@ -84,13 +86,13 @@ export function Field({ label, description, error, className, children, ...props
       {...props}
     >
       {label ? (
-        <FieldPrimitive.Label className="text-2xs text-muted-foreground font-medium">
+        <FieldPrimitive.Label className="text-2xs font-medium text-muted-foreground">
           {label}
         </FieldPrimitive.Label>
       ) : null}
       {children}
       {description ? (
-        <FieldPrimitive.Description className="text-2xs text-subtle-foreground leading-relaxed">
+        <FieldPrimitive.Description className="text-2xs leading-relaxed text-subtle-foreground">
           {description}
         </FieldPrimitive.Description>
       ) : null}

@@ -38,7 +38,7 @@ import { useState, type ReactNode } from 'react';
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-3" id={title.toLowerCase().replace(/\s+/g, '-')}>
-      <h2 className="text-3xs tracking-label text-subtle-foreground font-medium uppercase">
+      <h2 className="text-3xs font-medium tracking-label text-subtle-foreground uppercase">
         {title}
       </h2>
       <div className="flex flex-wrap items-center gap-3">{children}</div>
@@ -83,7 +83,7 @@ function Gallery() {
         <SkylabLoader size={24} />
         <SkylabLoader size={48} />
         <SkylabLoader size={80} />
-        <p className="shimmer-text text-muted-foreground text-sm font-semibold">Yükleniyor…</p>
+        <p className="shimmer-text text-sm font-semibold text-muted-foreground">Yükleniyor…</p>
       </Section>
 
       <Section title="Badges">
@@ -102,10 +102,10 @@ function Gallery() {
         <Badge tone="warning" size="md">
           Onay bekliyor
         </Badge>
-        <span className="text-2xs text-muted-foreground inline-flex items-center gap-2">
+        <span className="inline-flex items-center gap-2 text-2xs text-muted-foreground">
           <StatusDot tone="success" /> Aktif
         </span>
-        <span className="text-2xs text-muted-foreground inline-flex items-center gap-2">
+        <span className="inline-flex items-center gap-2 text-2xs text-muted-foreground">
           <StatusDot tone="danger" /> Pasif
         </span>
       </Section>
@@ -115,6 +115,8 @@ function Gallery() {
         <Avatar name="İlayda Şahin" />
         <Avatar email="fatih@example.com" size="lg" />
         <Avatar size="md" />
+        <Avatar name="WebLab" shape="square" />
+        <Avatar name="Sky Sec" shape="square" size="lg" />
       </Section>
 
       <Section title="Fields">
@@ -261,14 +263,15 @@ function Gallery() {
           ]}
         />
         <Pagination current={page} totalPages={12} onPageChange={setPage} />
+        <Pagination current={page} totalPages={48} onPageChange={setPage} jumpToPage />
       </Section>
 
       <Section title="States">
         <div className="grid w-full grid-cols-2 gap-3">
-          <div className="border-border rounded-lg border">
+          <div className="rounded-lg border border-border">
             <StateCard loading />
           </div>
-          <div className="border-border rounded-lg border">
+          <div className="rounded-lg border border-border">
             <StateCard
               icon={Inbox}
               title="Henüz cevap yok"
@@ -287,7 +290,7 @@ function Gallery() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="border-border-subtle flex items-center gap-3 rounded-lg border px-3 py-2.5"
+              className="flex items-center gap-3 rounded-lg border border-border-subtle px-3 py-2.5"
             >
               <Skeleton className="size-9 rounded-lg" />
               <Skeleton className="h-3.5 w-40" />
@@ -302,11 +305,11 @@ function Gallery() {
 
 export default function Page() {
   return (
-    <main className="bg-sidebar grid min-h-dvh grid-cols-1 xl:grid-cols-2">
+    <main className="grid min-h-dvh grid-cols-1 bg-sidebar xl:grid-cols-2">
       {(['dark', 'light'] as const).map((theme) => (
         <div key={theme} data-theme={theme} className="bg-sidebar p-2" id={`theme-${theme}`}>
-          <div className="border-border-subtle bg-background text-foreground rounded-xl border p-6">
-            <p className="text-2xs text-subtle-foreground mb-6 font-mono">
+          <div className="rounded-xl border border-border-subtle bg-background p-6 text-foreground">
+            <p className="mb-6 font-mono text-2xs text-subtle-foreground">
               data-theme=&quot;{theme}&quot;
             </p>
             <Gallery />

@@ -23,18 +23,28 @@ export type AvatarProps = {
   email?: string | null;
   src?: string | null;
   size?: keyof typeof SIZES;
+  /** `circle` for people; `square` for teams, groups and other organisations. */
+  shape?: 'circle' | 'square';
   className?: string;
 };
 
-/** A person's photo, else the initials of their name or e-mail, else a person icon. */
-export function Avatar({ name, email, src, size = 'md', className }: AvatarProps) {
+/** A photo, else the initials of the name or e-mail, else a person icon. */
+export function Avatar({
+  name,
+  email,
+  src,
+  size = 'md',
+  shape = 'circle',
+  className,
+}: AvatarProps) {
   const s = SIZES[size];
   const initials = initialsOf(name, email);
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn(
-        'border-border bg-muted text-secondary-foreground inline-grid shrink-0 place-items-center overflow-hidden rounded-lg border font-semibold select-none',
+        'inline-grid shrink-0 place-items-center overflow-hidden border border-border bg-muted font-semibold text-secondary-foreground select-none',
+        shape === 'circle' ? 'rounded-full' : 'rounded-lg',
         s.box,
         className,
       )}

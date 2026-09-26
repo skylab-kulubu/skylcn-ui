@@ -25,25 +25,25 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
     <nav
       data-slot="breadcrumbs"
       aria-label={messages.breadcrumb}
-      className={cn('text-subtle-foreground min-w-0 text-sm', className)}
+      className={cn('min-w-0 text-sm text-subtle-foreground', className)}
     >
       <div className="flex min-w-0 items-center gap-1.5 md:hidden">
         {previous ? (
           <>
             <Link
               href={previous.href}
-              className="text-muted-foreground hover:text-foreground inline-flex min-w-0 items-center gap-1 rounded-md py-1 transition-colors"
+              className="inline-flex min-w-0 items-center gap-1 rounded-md py-1 text-muted-foreground transition-colors hover:text-foreground"
             >
               <ChevronRight className="size-3.5 shrink-0 rotate-180" />
               <span className="max-w-30 truncate text-xs">{previous.label}</span>
             </Link>
-            <ChevronRight className="text-faint-foreground size-3.5 shrink-0" />
+            <ChevronRight className="size-3.5 shrink-0 text-faint-foreground" />
           </>
         ) : null}
         <span
           aria-current="page"
           title={current.label}
-          className="text-secondary-foreground max-w-40 truncate text-xs font-medium"
+          className="max-w-40 truncate text-xs font-medium text-secondary-foreground"
         >
           {current.label}
         </span>
@@ -61,13 +61,13 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
               )}
             >
               {index > 0 ? (
-                <ChevronRight className="text-faint-foreground mt-0.5 size-4 shrink-0" />
+                <ChevronRight className="mt-0.5 size-4 shrink-0 text-faint-foreground" />
               ) : null}
               {last ? (
                 <span
                   aria-current="page"
                   title={item.label}
-                  className="text-secondary-foreground max-w-45 truncate font-medium"
+                  className="max-w-45 truncate font-medium text-secondary-foreground"
                 >
                   {item.label}
                 </span>
@@ -75,7 +75,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 <Link
                   href={item.href}
                   title={item.label}
-                  className="hover:text-foreground focus-visible:ring-ring min-w-0 truncate rounded-md px-1.5 py-1 transition-colors outline-none focus-visible:ring-2"
+                  className="min-w-0 truncate rounded-md px-1.5 py-1 transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {item.label}
                 </Link>

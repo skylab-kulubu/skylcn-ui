@@ -49,7 +49,7 @@ export function StateCard({
       aria-live={loading ? 'polite' : undefined}
       className={cn('flex w-full flex-1 items-center justify-center px-6 py-10', className)}
     >
-      <div className="animate-in fade-in-0 slide-in-from-bottom-6 zoom-in-98 ease-enter mx-auto flex w-full max-w-md flex-col items-center text-center duration-(--motion-duration-slow)">
+      <div className="mx-auto flex w-full max-w-md animate-in flex-col items-center text-center duration-(--motion-duration-slow) ease-enter fade-in-0 slide-in-from-bottom-6 zoom-in-98">
         {top ? <div className="mb-8 w-full max-w-85">{top}</div> : null}
         {loading ? (
           <SkylabLoader size={72} />
@@ -69,7 +69,7 @@ export function StateCard({
             {title ?? (loading ? messages.loading : null)}
           </p>
           {description ? (
-            <p className="text-muted-foreground text-xs leading-relaxed">{description}</p>
+            <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
           ) : null}
         </div>
         {meta ? <div className="mt-4">{meta}</div> : null}

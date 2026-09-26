@@ -6,11 +6,7 @@ export {
   type SkylcnLocale,
   type SkylcnMessages,
 } from './lib/provider.js';
-export {
-  SKYLAB_MARK_DATA_URI,
-  SKYLAB_MARK_PATHS,
-  SKYLAB_MARK_VIEWBOX,
-} from './assets/skylab-mark.js';
+export { SKYLAB_MARK_RADII, SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from './assets/skylab-mark.js';
 
 export { Avatar, initialsOf, type AvatarProps } from './components/avatar.js';
 export {

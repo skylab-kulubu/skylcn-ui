@@ -4,14 +4,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.next/**',
-      '**/out/**',
-      '**/next-env.d.ts',
-      'packages/skylcn-ui/src/lib/benday/**',
-    ],
+    ignores: ['**/node_modules/**', '**/dist/**', '**/.next/**', '**/out/**', '**/next-env.d.ts'],
   },
   {
     files: ['**/*.{ts,tsx}'],

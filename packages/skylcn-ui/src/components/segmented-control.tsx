@@ -38,14 +38,14 @@ export function SegmentedControl({
       }}
       aria-label={ariaLabel}
       className={cn(
-        'border-border bg-input-background text-2xs relative grid w-full rounded-lg border p-1',
+        'relative grid w-full rounded-lg border border-border bg-input-background p-1 text-2xs',
         className,
       )}
       style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}
     >
       <span
         aria-hidden
-        className="border-skylab-400/40 bg-skylab-500/15 ease-enter absolute inset-y-1 left-1 rounded-md border shadow-sm transition-transform duration-(--motion-duration-base)"
+        className="absolute inset-y-1 left-1 rounded-md border border-skylab-400/40 bg-skylab-500/15 shadow-sm transition-transform duration-(--motion-duration-base) ease-enter"
         style={{
           width: `calc((100% - 0.5rem) / ${count})`,
           transform: `translateX(${activeIndex * 100}%)`,
@@ -60,8 +60,8 @@ export function SegmentedControl({
             aria-label={option.label}
             title={option.label}
             className={cn(
-              'text-secondary-foreground relative z-10 flex h-7 w-full items-center justify-center rounded-md px-2 font-medium outline-none',
-              'hover:text-skylab-300 focus-visible:ring-ring transition-colors duration-(--motion-duration-fast) focus-visible:ring-2',
+              'relative z-10 flex h-7 w-full items-center justify-center rounded-md px-2 font-medium text-secondary-foreground outline-none pointer-coarse:h-9',
+              'transition-colors duration-(--motion-duration-fast) hover:text-skylab-300 focus-visible:ring-2 focus-visible:ring-ring',
               'data-pressed:text-skylab-300',
             )}
           >

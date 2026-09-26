@@ -2,6 +2,7 @@
 
 import { Popover as PopoverPrimitive } from '@base-ui/react/popover';
 import { cn } from '../lib/cn.js';
+import { popupMotionBase } from '../lib/motion.js';
 
 export const Popover = PopoverPrimitive.Root;
 export const PopoverTrigger = PopoverPrimitive.Trigger;
@@ -36,9 +37,8 @@ export function PopoverContent({
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            'border-border-strong bg-popover/85 text-foreground shadow-overlay w-80 max-w-[calc(100vw-1rem)] origin-(--transform-origin) rounded-xl border p-3 backdrop-blur outline-none',
-            'ease-enter transition-[opacity,transform] duration-(--motion-duration-base)',
-            'data-ending-style:scale-98 data-ending-style:opacity-0 data-starting-style:-translate-y-2 data-starting-style:scale-98 data-starting-style:opacity-0',
+            'w-80 max-w-[calc(100vw-1rem)] rounded-xl border border-border-strong bg-popover/85 p-3 text-foreground shadow-overlay backdrop-blur outline-none',
+            popupMotionBase,
             className,
           )}
           {...props}
@@ -50,7 +50,7 @@ export function PopoverContent({
 
 export const PopoverTitle = ({ className, ...props }: PopoverPrimitive.Title.Props) => (
   <PopoverPrimitive.Title
-    className={cn('text-foreground text-sm font-semibold', className)}
+    className={cn('text-sm font-semibold text-foreground', className)}
     {...props}
   />
 );

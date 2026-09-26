@@ -24,7 +24,7 @@ export function DrawerContent({ className, container, children, ...props }: Draw
     <DialogPrimitive.Portal container={container}>
       <DialogPrimitive.Backdrop
         className={cn(
-          'ease-enter inset-0 z-50 bg-black/10 backdrop-blur-[1px] transition-opacity duration-(--motion-duration-slow) data-ending-style:opacity-0 data-starting-style:opacity-0',
+          'inset-0 z-50 bg-black/10 backdrop-blur-[1px] transition-opacity duration-(--motion-duration-slow) ease-enter data-ending-style:opacity-0 data-starting-style:opacity-0',
           scoped ? 'absolute' : 'fixed',
         )}
       />
@@ -33,15 +33,15 @@ export function DrawerContent({ className, container, children, ...props }: Draw
         className={cn(
           'inset-y-0 right-0 z-50 flex outline-none',
           scoped ? 'absolute' : 'fixed',
-          'ease-spring transition-transform duration-(--motion-duration-spring)',
-          'data-ending-style:ease-exit data-ending-style:translate-x-full data-ending-style:duration-(--motion-duration-base) data-starting-style:translate-x-full',
+          'transition-transform duration-(--motion-duration-spring) ease-spring',
+          'data-ending-style:translate-x-full data-ending-style:duration-(--motion-duration-base) data-ending-style:ease-exit data-starting-style:translate-x-full',
         )}
         {...props}
       >
         <DialogPrimitive.Close
           title={messages.closePanel}
           aria-label={messages.closePanel}
-          className="group border-border bg-sheet text-subtle-foreground hover:text-secondary-foreground focus-visible:text-foreground relative -mr-px flex h-full w-5 items-center justify-center rounded-l-full border-y border-l transition-colors outline-none"
+          className="group relative -mr-px flex h-full w-5 items-center justify-center rounded-l-full border-y border-l border-border bg-sheet text-subtle-foreground transition-colors outline-none hover:text-secondary-foreground focus-visible:text-foreground"
         >
           <ChevronsRight
             className="size-3.5 opacity-60 transition-transform duration-(--motion-duration-base) group-hover:scale-110 group-hover:opacity-100"
@@ -50,7 +50,7 @@ export function DrawerContent({ className, container, children, ...props }: Draw
         </DialogPrimitive.Close>
         <div
           className={cn(
-            'border-border bg-sheet shadow-overlay flex h-full w-[min(92vw,420px)] flex-col overflow-hidden border-y border-r',
+            'flex h-full w-[min(92vw,420px)] flex-col overflow-hidden border-y border-r border-border bg-sheet pb-[env(safe-area-inset-bottom)] shadow-overlay',
             className,
           )}
         >
@@ -64,7 +64,7 @@ export function DrawerContent({ className, container, children, ...props }: Draw
 export function DrawerHeader({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div
-      className={cn('border-border flex h-10 shrink-0 items-center gap-2 border-b px-4', className)}
+      className={cn('flex h-10 shrink-0 items-center gap-2 border-b border-border px-4', className)}
       {...props}
     />
   );
@@ -74,7 +74,7 @@ export function DrawerTitle({ className, ...props }: DialogPrimitive.Title.Props
   return (
     <DialogPrimitive.Title
       className={cn(
-        'text-foreground min-w-0 truncate text-sm font-semibold tracking-wide',
+        'min-w-0 truncate text-sm font-semibold tracking-wide text-foreground',
         className,
       )}
       {...props}

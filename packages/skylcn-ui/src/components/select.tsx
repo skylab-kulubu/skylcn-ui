@@ -4,6 +4,7 @@ import { Select as SelectPrimitive } from '@base-ui/react/select';
 import { Check, ChevronDown } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { popupMotionFast } from '../lib/motion.js';
 import { useSkylcn } from '../lib/provider.js';
 
 export type SelectOption =
@@ -60,16 +61,16 @@ export function Select({
         data-slot="select-trigger"
         aria-label={ariaLabel}
         className={cn(
-          'group/select focus-visible:ring-ring font-medium outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-60',
-          'ease-enter transition-[color,background-color,border-color,box-shadow] duration-(--motion-duration-fast)',
+          'group/select font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60',
+          'transition-[color,background-color,border-color,box-shadow] duration-(--motion-duration-fast) ease-enter',
           inline
-            ? 'text-2xs hover:bg-accent data-popup-open:bg-accent inline-flex max-w-full items-center gap-0.5 rounded px-1 py-0.5'
+            ? 'inline-flex max-w-full items-center gap-0.5 rounded px-1 py-0.5 text-2xs hover:bg-accent data-popup-open:bg-accent'
             : [
-                'border-input bg-input-background hover:border-border-strong flex w-full items-center justify-between border',
-                'data-popup-open:border-skylab-400/50 data-popup-open:ring-skylab-400/20 data-popup-open:ring-1',
+                'flex w-full items-center justify-between border border-input bg-input-background hover:border-border-strong',
+                'data-popup-open:border-skylab-400/50 data-popup-open:ring-1 data-popup-open:ring-skylab-400/20',
                 size === 'sm'
-                  ? 'text-2xs rounded-md px-2 py-1.5'
-                  : 'rounded-lg px-3 py-2.5 text-xs',
+                  ? 'rounded-md px-2 py-1.5 text-2xs pointer-coarse:min-h-9 pointer-coarse:text-xs'
+                  : 'rounded-lg px-3 py-2.5 text-xs pointer-coarse:min-h-11 pointer-coarse:text-sm',
               ],
           selected
             ? (tone ?? (inline ? 'text-foreground' : 'text-secondary-foreground'))
@@ -82,8 +83,8 @@ export function Select({
         </SelectPrimitive.Value>
         <SelectPrimitive.Icon
           className={cn(
-            'ease-enter shrink-0 transition-transform duration-(--motion-duration-base) group-data-popup-open/select:rotate-180',
-            inline ? 'text-faint-foreground ml-0.5' : 'text-subtle-foreground ml-2',
+            'shrink-0 transition-transform duration-(--motion-duration-base) ease-enter group-data-popup-open/select:rotate-180',
+            inline ? 'ml-0.5 text-faint-foreground' : 'ml-2 text-subtle-foreground',
           )}
         >
           <ChevronDown className={inline ? 'size-2.5' : size === 'sm' ? 'size-3' : 'size-3.5'} />
@@ -99,15 +100,14 @@ export function Select({
           <SelectPrimitive.Popup
             data-slot="select-content"
             className={cn(
-              'border-border bg-popover shadow-overlay origin-(--transform-origin) rounded-lg border outline-none',
-              'ease-enter transition-[opacity,transform] duration-(--motion-duration-fast)',
-              'data-ending-style:scale-98 data-ending-style:opacity-0 data-starting-style:-translate-y-1 data-starting-style:scale-98 data-starting-style:opacity-0',
+              'rounded-lg border border-border bg-popover shadow-overlay outline-none',
+              popupMotionFast,
               inline ? 'max-w-72 min-w-44' : 'w-(--anchor-width) min-w-40',
             )}
           >
             <SelectPrimitive.List className="scrollbar max-h-60 overflow-y-auto p-1">
               {options.length === 0 ? (
-                <div className="text-subtle-foreground px-2 py-3 text-center text-xs">
+                <div className="px-2 py-3 text-center text-xs text-subtle-foreground">
                   {messages.noOptions}
                 </div>
               ) : (
@@ -120,21 +120,21 @@ export function Select({
                       value={optionValue}
                       disabled={typeof option !== 'string' && option.disabled}
                       className={cn(
-                        'group/item text-secondary-foreground flex w-full cursor-default items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-xs outline-none select-none',
+                        'group/item flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-xs text-secondary-foreground outline-none select-none pointer-coarse:py-2.5 pointer-coarse:text-sm',
                         'transition-colors duration-(--motion-duration-instant)',
                         'data-highlighted:bg-accent data-highlighted:text-foreground-strong',
                         'data-selected:bg-skylab-500/20 data-selected:text-skylab-300',
-                        'data-disabled:text-faint-foreground data-disabled:cursor-not-allowed',
+                        'data-disabled:cursor-not-allowed data-disabled:text-faint-foreground',
                       )}
                     >
                       <SelectPrimitive.ItemText className="truncate">
                         {renderOption ? renderOption(option) : labelOf(option)}
                       </SelectPrimitive.ItemText>
-                      <SelectPrimitive.ItemIndicator className="text-skylab-400 shrink-0">
+                      <SelectPrimitive.ItemIndicator className="shrink-0 text-skylab-400">
                         <Check className="size-3" />
                       </SelectPrimitive.ItemIndicator>
                       {hint ? (
-                        <span className="text-3xs text-faint-foreground shrink-0 group-data-selected/item:hidden">
+                        <span className="shrink-0 text-3xs text-faint-foreground group-data-selected/item:hidden">
                           {hint}
                         </span>
                       ) : null}
