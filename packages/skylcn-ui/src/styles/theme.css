@@ -203,6 +203,31 @@
   }
 }
 
+/* The crisp SKY LAB mark lighting up from its centre; SkylabLoader sets each path's delay */
+@layer components {
+  .skylcn-mark-radiate path {
+    opacity: 0.22;
+    animation: skylcn-mark-radiate 1.6s var(--motion-ease-enter) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skylcn-mark-radiate path {
+      animation: none;
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes skylcn-mark-radiate {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
 /* A placeholder block for content that is loading (skeleton rows, avatars) */
 @utility shimmer-block {
   background-color: var(--muted);
