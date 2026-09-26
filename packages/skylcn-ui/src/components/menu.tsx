@@ -44,7 +44,11 @@ function ItemBody({
       {Icon ? (
         <Icon className="text-subtle-foreground group-data-highlighted/menu-item:text-current" />
       ) : null}
-      <span className="min-w-0 flex-1 truncate">{children}</span>
+      {typeof children === 'string' || typeof children === 'number' ? (
+        <span className="min-w-0 flex-1 truncate">{children}</span>
+      ) : (
+        children
+      )}
       {shortcut ? <MenuShortcut>{shortcut}</MenuShortcut> : null}
     </>
   );

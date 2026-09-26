@@ -281,7 +281,50 @@ export function SkylabMark({ size = 24, className }: { size?: number; className?
   );
 }
 
-export type ClubConsole = { id: string; label: string; href: string };
+export type ClubConsole = {
+  id: string;
+  label: string;
+  href: string;
+  icon?: LucideIcon;
+  /** A short line under the name, such as what the console is for. */
+  description?: string;
+};
+
+function ConsoleRow({ app, current }: { app: ClubConsole; current: boolean }) {
+  const Icon = app.icon;
+  return (
+    <>
+      <span
+        className={cn(
+          'grid size-8 shrink-0 place-items-center rounded-md border',
+          current
+            ? 'border-skylab-400/40 bg-skylab-500/10 text-skylab-300'
+            : 'border-border bg-muted text-muted-foreground',
+        )}
+      >
+        {Icon ? (
+          <Icon className="size-4!" strokeWidth={1.75} />
+        ) : (
+          <span className="text-2xs font-semibold">{app.label.slice(0, 1)}</span>
+        )}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span
+          className={cn(
+            'block truncate text-xs font-medium',
+            current ? 'text-foreground' : 'text-secondary-foreground',
+          )}
+        >
+          {app.label}
+        </span>
+        {app.description ? (
+          <span className="block truncate text-3xs text-subtle-foreground">{app.description}</span>
+        ) : null}
+      </span>
+      {current ? <Check className="size-3.5! shrink-0 text-skylab-400" /> : null}
+    </>
+  );
+}
 
 export type SidebarBrandProps = {
   name: ReactNode;
@@ -338,12 +381,12 @@ export function SidebarBrand({ name, subtitle, href, consoles, current }: Sideba
           <MenuGroup label={messages.consoles}>
             {consoles.map((app) =>
               app.id === current ? (
-                <MenuItem key={app.id} icon={Check} className="text-foreground">
-                  {app.label}
+                <MenuItem key={app.id} className="gap-2.5 py-1.5">
+                  <ConsoleRow app={app} current />
                 </MenuItem>
               ) : (
-                <MenuLinkItem key={app.id} href={app.href} inset>
-                  {app.label}
+                <MenuLinkItem key={app.id} href={app.href} className="gap-2.5 py-1.5">
+                  <ConsoleRow app={app} current={false} />
                 </MenuLinkItem>
               ),
             )}

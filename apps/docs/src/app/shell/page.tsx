@@ -59,6 +59,8 @@ import {
   Copy,
   ExternalLink,
   LogOut,
+  Mail,
+  ShieldCheck,
   MoreHorizontal,
   Palette,
   PencilLine,
@@ -190,9 +192,27 @@ function Sidebar() {
         subtitle="Form yönetimi"
         current="forms"
         consoles={[
-          { id: 'admin', label: 'Yönetim', href: '#admin' },
-          { id: 'forms', label: 'Forms', href: '/shell' },
-          { id: 'mail', label: 'Mail', href: '#mail' },
+          {
+            id: 'admin',
+            label: 'Yönetim',
+            href: '#admin',
+            icon: ShieldCheck,
+            description: 'Üyeler, etkinlikler, duyurular',
+          },
+          {
+            id: 'forms',
+            label: 'Forms',
+            href: '/shell',
+            icon: FileText,
+            description: 'Formlar ve başvurular',
+          },
+          {
+            id: 'mail',
+            label: 'Mail',
+            href: '#mail',
+            icon: Mail,
+            description: 'Toplu e-posta ve listeler',
+          },
         ]}
       />
       <SidebarContent>
