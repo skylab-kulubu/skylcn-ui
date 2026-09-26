@@ -2,11 +2,24 @@
 
 import {
   AppShell,
-  AppShellActions,
   Avatar,
   Badge,
   Breadcrumbs,
-  ClubSwitcher,
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  MenuItem,
+  MenuLabel,
+  MenuLinkItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuSub,
+  MenuSubContent,
+  MenuSubTrigger,
   DataList,
   DataListBody,
   DataListCell,
@@ -31,6 +44,8 @@ import {
   StatusDot,
   type DataListColumn,
   type DataListSort,
+  type ThemePreference,
+  useTheme,
 } from '@skylab-kulubu/skylcn-ui';
 import {
   BookOpen,
@@ -41,11 +56,17 @@ import {
   LayoutDashboard,
   LayoutTemplate,
   List,
+  Copy,
+  ExternalLink,
   LogOut,
-  Moon,
+  MoreHorizontal,
+  Palette,
+  PencilLine,
+  Share2,
+  Trash2,
+  UserRound,
   Plus,
   RefreshCw,
-  Sun,
   Workflow,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -138,12 +159,42 @@ const COLUMNS: DataListColumn[] = [
   { id: 'updatedAt', width: '7rem', from: 'sm', align: 'center' },
   { id: 'responses', width: '4rem', from: 'lg', align: 'center' },
   { id: 'role', width: '6.5rem', from: 'lg', align: 'center' },
+  { id: 'actions', width: '2rem', align: 'end' },
 ];
 
-function Sidebar() {
+function RowActions() {
   return (
     <>
-      <SidebarBrand name="SKY LAB Forms" subtitle="Yönetim" href="/shell" />
+      <MenuItem icon={ExternalLink}>Aç</MenuItem>
+      <MenuItem icon={PencilLine} shortcut="E">
+        Düzenle
+      </MenuItem>
+      <MenuItem icon={Share2}>Paylaş</MenuItem>
+      <MenuItem icon={Copy} shortcut="⌘C">
+        Bağlantıyı kopyala
+      </MenuItem>
+      <MenuSeparator />
+      <MenuItem icon={Trash2} destructive>
+        Sil
+      </MenuItem>
+    </>
+  );
+}
+
+function Sidebar() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <>
+      <SidebarBrand
+        name="SKY LAB Forms"
+        subtitle="Form yönetimi"
+        current="forms"
+        consoles={[
+          { id: 'admin', label: 'Yönetim', href: '#admin' },
+          { id: 'forms', label: 'Forms', href: '/shell' },
+          { id: 'mail', label: 'Mail', href: '#mail' },
+        ]}
+      />
       <SidebarContent>
         <SidebarSection>
           <SidebarItem href="/shell" label="Dashboard" icon={LayoutDashboard} />
@@ -164,17 +215,35 @@ function Sidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarItem href="/shell?help" label="Nasıl kullanılır" icon={BookOpen} />
-        <ClubSwitcher
-          consoles={[
-            { id: 'admin', label: 'Yönetim', href: '#admin' },
-            { id: 'mail', label: 'Mail', href: '#mail' },
-          ]}
-        />
         <SidebarUser
           name="Kaan Necip Kalp"
           email="kaan@example.com"
           subtitle="WebLab"
-          action={<IconButton icon={LogOut} label="Çıkış yap" variant="ghost" size="icon-sm" />}
+          menu={
+            <>
+              <MenuLabel>kaan@example.com</MenuLabel>
+              <MenuLinkItem href="#account" icon={UserRound}>
+                Hesap merkezi
+              </MenuLinkItem>
+              <MenuSub>
+                <MenuSubTrigger icon={Palette}>Tema</MenuSubTrigger>
+                <MenuSubContent>
+                  <MenuRadioGroup
+                    value={theme}
+                    onValueChange={(value) => setTheme(value as ThemePreference)}
+                  >
+                    <MenuRadioItem value="dark">Koyu</MenuRadioItem>
+                    <MenuRadioItem value="light">Açık</MenuRadioItem>
+                    <MenuRadioItem value="system">Sistem</MenuRadioItem>
+                  </MenuRadioGroup>
+                </MenuSubContent>
+              </MenuSub>
+              <MenuSeparator />
+              <MenuItem icon={LogOut} destructive>
+                Çıkış yap
+              </MenuItem>
+            </>
+          }
         />
       </SidebarFooter>
     </>
@@ -187,7 +256,6 @@ export default function ShellDemo() {
   const [sort, setSort] = useState<DataListSort>({ field: 'updatedAt', direction: 'desc' });
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [light, setLight] = useState(false);
 
   const rows = useMemo(() => {
     const q = query.trim().toLocaleLowerCase('tr-TR');
@@ -222,20 +290,6 @@ export default function ShellDemo() {
         />
       }
     >
-      <AppShellActions>
-        <IconButton
-          icon={light ? Moon : Sun}
-          label={light ? 'Koyu tema' : 'Açık tema'}
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => {
-            const next = !light;
-            setLight(next);
-            document.documentElement.dataset.theme = next ? 'light' : 'dark';
-          }}
-        />
-      </AppShellActions>
-
       <div className="space-y-4">
         <PageHeader
           title="Formlar"
@@ -292,6 +346,7 @@ export default function ShellDemo() {
               Yanıt
             </DataListColumnHeader>
             <DataListColumnHeader column="role">Yetki</DataListColumnHeader>
+            <DataListColumnHeader column="actions" />
           </DataListHeader>
           {loading ? (
             <DataListSkeleton rows={5} />
@@ -304,53 +359,74 @@ export default function ShellDemo() {
           ) : (
             <DataListBody key={`${query}-${state}-${sort.field}-${sort.direction}`}>
               {rows.map((row, index) => (
-                <DataListRow
-                  key={row.id}
-                  href={`/shell?form=${row.id}`}
-                  label={row.name}
-                  index={index}
-                >
-                  <DataListCell column="status">
-                    <StatusDot
-                      tone={row.open ? 'success' : 'danger'}
-                      title={row.open ? 'Açık' : 'Kapalı'}
-                    />
-                  </DataListCell>
-                  <DataListCell column="name" className="gap-3">
-                    <Avatar name={row.name} size="md" shape="square" />
-                    <span className="truncate text-sm font-medium text-secondary-foreground group-hover/row:text-foreground-strong">
-                      {row.name}
-                    </span>
-                  </DataListCell>
-                  <DataListCell column="workflow" interactive>
-                    {row.workflow ? (
-                      <a
-                        href="#workflow"
-                        className="flex max-w-60 min-w-0 items-center gap-2 rounded-md border border-border bg-card px-2 py-1 transition-colors hover:border-border-strong hover:bg-muted"
-                      >
-                        <Workflow className="size-3 shrink-0 text-subtle-foreground" />
-                        <span className="truncate text-2xs font-medium text-secondary-foreground">
-                          {row.workflow}
-                        </span>
-                      </a>
-                    ) : (
-                      <span className="text-2xs text-faint-foreground">—</span>
-                    )}
-                  </DataListCell>
-                  <DataListCell
-                    column="updatedAt"
-                    className="text-2xs text-muted-foreground tabular-nums"
+                <ContextMenu key={row.id}>
+                  <ContextMenuTrigger
+                    render={
+                      <DataListRow href={`/shell?form=${row.id}`} label={row.name} index={index} />
+                    }
                   >
-                    {new Date(row.updatedAt).toLocaleDateString('tr-TR')}
-                  </DataListCell>
-                  <DataListCell
-                    column="responses"
-                    className="text-sm text-secondary-foreground tabular-nums"
-                  >
-                    {row.responses}
-                  </DataListCell>
-                  <DataListCell column="role">{ROLE_BADGE[row.role]}</DataListCell>
-                </DataListRow>
+                    <DataListCell column="status">
+                      <StatusDot
+                        tone={row.open ? 'success' : 'danger'}
+                        title={row.open ? 'Açık' : 'Kapalı'}
+                      />
+                    </DataListCell>
+                    <DataListCell column="name" className="gap-3">
+                      <Avatar name={row.name} size="md" shape="square" />
+                      <span className="truncate text-sm font-medium text-secondary-foreground group-hover/row:text-foreground-strong">
+                        {row.name}
+                      </span>
+                    </DataListCell>
+                    <DataListCell column="workflow" interactive>
+                      {row.workflow ? (
+                        <a
+                          href="#workflow"
+                          className="flex max-w-60 min-w-0 items-center gap-2 rounded-md border border-border bg-card px-2 py-1 transition-colors hover:border-border-strong hover:bg-muted"
+                        >
+                          <Workflow className="size-3 shrink-0 text-subtle-foreground" />
+                          <span className="truncate text-2xs font-medium text-secondary-foreground">
+                            {row.workflow}
+                          </span>
+                        </a>
+                      ) : (
+                        <span className="text-2xs text-faint-foreground">—</span>
+                      )}
+                    </DataListCell>
+                    <DataListCell
+                      column="updatedAt"
+                      className="text-2xs text-muted-foreground tabular-nums"
+                    >
+                      {new Date(row.updatedAt).toLocaleDateString('tr-TR')}
+                    </DataListCell>
+                    <DataListCell
+                      column="responses"
+                      className="text-sm text-secondary-foreground tabular-nums"
+                    >
+                      {row.responses}
+                    </DataListCell>
+                    <DataListCell column="role">{ROLE_BADGE[row.role]}</DataListCell>
+                    <DataListCell column="actions" interactive>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          render={
+                            <IconButton
+                              icon={MoreHorizontal}
+                              label="İşlemler"
+                              variant="ghost"
+                              size="icon-sm"
+                            />
+                          }
+                        />
+                        <DropdownMenuContent align="end">
+                          <RowActions />
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </DataListCell>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent>
+                    <RowActions />
+                  </ContextMenuContent>
+                </ContextMenu>
               ))}
             </DataListBody>
           )}

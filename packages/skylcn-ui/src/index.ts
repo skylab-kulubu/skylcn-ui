@@ -73,7 +73,6 @@ export { Tooltip, TooltipProvider, type TooltipProps } from './components/toolti
 export {
   AppShell,
   AppShellActions,
-  ClubSwitcher,
   SidebarBrand,
   SidebarContent,
   SidebarFooter,
@@ -85,6 +84,7 @@ export {
   useSidebar,
   type AppShellProps,
   type ClubConsole,
+  type SidebarBrandProps,
   type SidebarGroupProps,
   type SidebarItemProps,
   type SidebarUserProps,
@@ -123,3 +123,26 @@ export {
   type PageHeaderProps,
   type SearchInputProps,
 } from './components/page-header.js';
+export {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  MenuCheckboxItem,
+  MenuGroup,
+  MenuItem,
+  MenuLabel,
+  MenuLinkItem,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuSeparator,
+  MenuShortcut,
+  MenuSub,
+  MenuSubContent,
+  MenuSubTrigger,
+  type MenuItemProps,
+  type MenuLinkItemProps,
+} from './components/menu.js';
+export { useTheme, type ThemePreference } from './lib/theme.js';

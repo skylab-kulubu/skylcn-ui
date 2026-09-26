@@ -3,10 +3,11 @@
 import { Collapsible } from '@base-ui/react/collapsible';
 import { Dialog } from '@base-ui/react/dialog';
 import {
+  Check,
   ChevronDown,
   ChevronRight,
   ChevronsLeft,
-  LayoutGrid,
+  ChevronsUpDown,
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
@@ -26,7 +27,14 @@ import { SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from '../assets/skylab-mark.js
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
 import { Avatar } from './avatar.js';
-import { Popover, PopoverContent, PopoverTrigger } from './popover.js';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  MenuGroup,
+  MenuItem,
+  MenuLinkItem,
+} from './menu.js';
 import { Tooltip } from './tooltip.js';
 
 type ShellContextValue = {
@@ -273,24 +281,28 @@ export function SkylabMark({ size = 24, className }: { size?: number; className?
   );
 }
 
-export function SidebarBrand({
-  name,
-  subtitle,
-  href,
-}: {
+export type ClubConsole = { id: string; label: string; href: string };
+
+export type SidebarBrandProps = {
   name: ReactNode;
   subtitle?: ReactNode;
   href?: string;
-}) {
+  /** The club consoles; the brand becomes a switcher with the current one ticked. */
+  consoles?: readonly ClubConsole[];
+  /** The id of this console among `consoles`. */
+  current?: string;
+};
+
+export function SidebarBrand({ name, subtitle, href, consoles, current }: SidebarBrandProps) {
   const { collapsed } = useSidebar();
-  const { Link } = useSkylcn();
+  const { Link, messages } = useSkylcn();
   const body = (
     <>
       <span className="grid size-8 shrink-0 place-items-center text-foreground-strong">
         <SkylabMark size={24} />
       </span>
       {collapsed ? null : (
-        <span className="min-w-0">
+        <span className="min-w-0 flex-1 text-left">
           <span className="block truncate text-sm font-semibold text-foreground">{name}</span>
           {subtitle ? (
             <span className="block truncate text-3xs text-subtle-foreground">{subtitle}</span>
@@ -299,16 +311,54 @@ export function SidebarBrand({
       )}
     </>
   );
-  const className = cn(
-    'flex items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    collapsed ? 'justify-center' : 'px-1',
+  const base = cn(
+    'flex w-full items-center gap-2.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    collapsed ? 'justify-center p-1' : 'p-1.5',
   );
+
+  if (consoles?.length) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          aria-label={messages.consoles}
+          className={cn(
+            base,
+            'transition-colors duration-(--motion-duration-fast) hover:bg-accent data-popup-open:bg-accent',
+          )}
+        >
+          {body}
+          {collapsed ? null : <ChevronsUpDown className="size-4 shrink-0 text-subtle-foreground" />}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          side={collapsed ? 'right' : 'bottom'}
+          align="start"
+          sideOffset={6}
+          className={collapsed ? 'w-56' : 'w-(--anchor-width) min-w-56'}
+        >
+          <MenuGroup label={messages.consoles}>
+            {consoles.map((app) =>
+              app.id === current ? (
+                <MenuItem key={app.id} icon={Check} className="text-foreground">
+                  {app.label}
+                </MenuItem>
+              ) : (
+                <MenuLinkItem key={app.id} href={app.href} inset>
+                  {app.label}
+                </MenuLinkItem>
+              ),
+            )}
+          </MenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
   return href ? (
-    <Link href={href} className={className}>
+    <Link href={href} className={base}>
       {body}
     </Link>
   ) : (
-    <div className={className}>{body}</div>
+    <div className={base}>{body}</div>
   );
 }
 
@@ -526,15 +576,59 @@ export type SidebarUserProps = {
   /** A second line under the name, such as the role. */
   subtitle?: ReactNode;
   avatarSrc?: string | null;
-  /** A button at the end of the row, such as sign-out. */
+  /** A button at the end of the row, such as sign-out. Ignored when `menu` is set. */
   action?: ReactNode;
+  /** Menu items (MenuItem, MenuLinkItem, …); the row becomes the trigger of a profile menu. */
+  menu?: ReactNode;
 };
 
-export function SidebarUser({ name, email, subtitle, avatarSrc, action }: SidebarUserProps) {
+export function SidebarUser({ name, email, subtitle, avatarSrc, action, menu }: SidebarUserProps) {
   const { collapsed } = useSidebar();
   const avatar = (
     <Avatar name={name} email={email} src={avatarSrc} size={collapsed ? 'md' : 'lg'} />
   );
+  const text = (
+    <span className="min-w-0 flex-1 text-left">
+      <span className="block truncate text-sm font-medium text-foreground">{name}</span>
+      {subtitle ? (
+        <span className="block truncate text-3xs tracking-label text-subtle-foreground uppercase">
+          {subtitle}
+        </span>
+      ) : null}
+    </span>
+  );
+
+  if (menu) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          aria-label={name}
+          className={cn(
+            'flex w-full items-center rounded-lg outline-none',
+            'transition-colors duration-(--motion-duration-fast) hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-accent',
+            collapsed ? 'justify-center p-1' : 'gap-3 p-2',
+          )}
+        >
+          {avatar}
+          {collapsed ? null : (
+            <>
+              {text}
+              <ChevronsUpDown className="size-4 shrink-0 text-subtle-foreground" />
+            </>
+          )}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          side={collapsed ? 'right' : 'top'}
+          align={collapsed ? 'end' : 'start'}
+          sideOffset={8}
+          className={collapsed ? 'w-56' : 'w-(--anchor-width) min-w-56'}
+        >
+          {menu}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
+
   if (collapsed) {
     return (
       <div className="flex flex-col items-center gap-1">
@@ -548,54 +642,9 @@ export function SidebarUser({ name, email, subtitle, avatarSrc, action }: Sideba
   return (
     <div className="flex items-center gap-3 px-2">
       {avatar}
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-foreground">{name}</p>
-        {subtitle ? (
-          <p className="truncate text-3xs tracking-label text-subtle-foreground uppercase">
-            {subtitle}
-          </p>
-        ) : null}
-      </div>
+      {text}
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>
-  );
-}
-
-export type ClubConsole = { id: string; label: string; href: string };
-
-/** Links to the other club consoles; on the icon rail they open from a grid button. */
-export function ClubSwitcher({ consoles }: { consoles: readonly ClubConsole[] }) {
-  const { collapsed } = useSidebar();
-  const { messages } = useSkylcn();
-  const links = consoles.map((app) => (
-    <a
-      key={app.id}
-      href={app.href}
-      className="flex items-center gap-3 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors duration-(--motion-duration-fast) outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring pointer-coarse:py-2.5"
-    >
-      {app.label}
-    </a>
-  ));
-  if (!collapsed) {
-    return (
-      <nav aria-label={messages.consoles} className="space-y-1">
-        {links}
-      </nav>
-    );
-  }
-  return (
-    <Popover>
-      <PopoverTrigger
-        aria-label={messages.consoles}
-        title={messages.consoles}
-        className="mx-auto grid size-9 place-items-center rounded-md text-muted-foreground outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <LayoutGrid className="size-4.5" strokeWidth={1.75} />
-      </PopoverTrigger>
-      <PopoverContent side="right" align="end" className="w-48 p-1">
-        <nav aria-label={messages.consoles}>{links}</nav>
-      </PopoverContent>
-    </Popover>
   );
 }
 
