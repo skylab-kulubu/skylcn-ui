@@ -21,7 +21,6 @@ import {
   Pagination,
   SearchInput,
   SidebarBrand,
-  SidebarCollapseToggle,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
@@ -177,7 +176,6 @@ function Sidebar() {
           subtitle="WebLab"
           action={<IconButton icon={LogOut} label="Çıkış yap" variant="ghost" size="icon-sm" />}
         />
-        <SidebarCollapseToggle />
       </SidebarFooter>
     </>
   );

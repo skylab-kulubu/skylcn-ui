@@ -216,7 +216,9 @@ export function AppShell({
         </Dialog.Root>
 
         <div className="md:flex md:h-full md:min-h-0 md:flex-col md:overflow-hidden md:rounded-xl md:border md:border-border-subtle md:bg-background">
-          <div className="hidden h-10 shrink-0 items-center gap-4 border-b border-border-subtle px-6 md:flex">
+          <div className="hidden h-10 shrink-0 items-center gap-3 border-b border-border-subtle pr-6 pl-3 md:flex">
+            <CollapseToggle collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+            <span aria-hidden className="h-4 w-px bg-border" />
             <div className="min-w-0 flex-1">{header}</div>
             <div ref={setDesktopSlot} className="flex shrink-0 items-center gap-1.5" />
           </div>
@@ -597,27 +599,21 @@ export function ClubSwitcher({ consoles }: { consoles: readonly ClubConsole[] })
   );
 }
 
-/** Collapses the desktop sidebar to an icon rail and back; hidden in the mobile drawer. */
-export function SidebarCollapseToggle() {
-  const { collapsed, inDrawer, setCollapsed } = useSidebar();
+function CollapseToggle({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const { messages } = useSkylcn();
-  if (inDrawer) return null;
   const label = collapsed ? messages.expandSidebar : messages.collapseSidebar;
   const Icon = collapsed ? PanelLeftOpen : PanelLeftClose;
   return (
-    <button
-      type="button"
-      onClick={() => setCollapsed(!collapsed)}
-      aria-label={label}
-      title={`${label} (Ctrl+B)`}
-      className={cn(
-        'flex w-full items-center rounded-md py-2 text-sm text-muted-foreground outline-none',
-        'transition-colors duration-(--motion-duration-fast) hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
-        collapsed ? 'justify-center' : 'gap-3 px-2',
-      )}
-    >
-      <Icon className="size-4.5 shrink-0" strokeWidth={1.75} />
-      {collapsed ? null : <span>{label}</span>}
-    </button>
+    <Tooltip label={`${label} · Ctrl+B`}>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label={label}
+        aria-expanded={!collapsed}
+        className="grid size-7 shrink-0 place-items-center rounded-md text-subtle-foreground transition-colors duration-(--motion-duration-fast) outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Icon className="size-4" strokeWidth={1.75} />
+      </button>
+    </Tooltip>
   );
 }

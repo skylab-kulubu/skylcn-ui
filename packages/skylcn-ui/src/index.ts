@@ -75,7 +75,6 @@ export {
   AppShellActions,
   ClubSwitcher,
   SidebarBrand,
-  SidebarCollapseToggle,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
