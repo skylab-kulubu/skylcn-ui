@@ -49,6 +49,7 @@ import {
 } from '@skylab-kulubu/skylcn-ui';
 import {
   BookOpen,
+  Cloud,
   Database,
   FilePlus,
   FileText,
@@ -212,6 +213,13 @@ function Sidebar() {
             href: '#mail',
             icon: Mail,
             description: 'Toplu e-posta ve listeler',
+          },
+          {
+            id: 'cloud',
+            label: 'Cloud',
+            href: '#cloud',
+            icon: Cloud,
+            description: 'Dosyalar ve ortak belgeler',
           },
         ]}
       />
