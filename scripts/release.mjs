@@ -35,4 +35,7 @@ if (published === version) {
     stdio: 'inherit',
   });
   execFileSync('pnpm', ['changeset', 'tag'], { stdio: 'inherit' });
+  // Pushed here rather than left to changesets/action, so the next run sees the
+  // version is staged even before anyone approves it
+  execFileSync('git', ['push', 'origin', `refs/tags/${tag}`], { stdio: 'inherit' });
 }
