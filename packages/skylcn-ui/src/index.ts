@@ -10,6 +10,29 @@ export { SKYLAB_MARK_RADII, SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from './ass
 export { popupMotionBase, popupMotionFast } from './lib/motion.js';
 export { usePendingIndicator } from './lib/use-pending-indicator.js';
 
+export {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from './components/accordion.js';
+export {
+  ConfirmDialog,
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  type ConfirmDialogProps,
+  type DialogContentProps,
+} from './components/dialog.js';
+export { Radio, RadioGroup, type RadioProps } from './components/radio-group.js';
+export { Tab, Tabs, TabsList, TabsPanel } from './components/tabs.js';
+export { ToastProvider, useToast } from './components/toast.js';
 export { Avatar, initialsOf, type AvatarProps } from './components/avatar.js';
 export { BarList, type BarListItem, type BarListProps } from './components/bar-list.js';
 export {

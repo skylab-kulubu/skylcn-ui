@@ -1,6 +1,11 @@
 'use client';
 
-import { SkylcnProvider, TooltipProvider, type SkylcnLocale } from '@skylab-kulubu/skylcn-ui';
+import {
+  SkylcnProvider,
+  ToastProvider,
+  TooltipProvider,
+  type SkylcnLocale,
+} from '@skylab-kulubu/skylcn-ui';
 import Link from 'next/link';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
@@ -19,7 +24,9 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
       <SkylcnProvider locale={locale} linkComponent={Link}>
-        <TooltipProvider>{children}</TooltipProvider>
+        <ToastProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ToastProvider>
       </SkylcnProvider>
     </LocaleContext.Provider>
   );

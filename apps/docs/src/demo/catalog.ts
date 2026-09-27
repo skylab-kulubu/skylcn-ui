@@ -154,6 +154,49 @@ export const ENTRIES: Entry[] = [
     a11y: ['Tek başına kullanılan Switch aria-label alır; ToggleRow başlığını ad olarak verir.'],
   },
   {
+    slug: 'radio-group',
+    name: 'RadioGroup',
+    category: 'forms',
+    description: 'Birbirini dışlayan birkaç seçenek, açıklamalarıyla alt alta.',
+    imports: ['RadioGroup', 'Radio'],
+    a11y: ['Grup bir ad alır; ok tuşları seçenekler arasında gezer, satırın tamamı tıklanır.'],
+  },
+  {
+    slug: 'dialog',
+    name: 'Dialog ve ConfirmDialog',
+    category: 'overlays',
+    description:
+      'Kısa bir iş için pencere; geri alınamaz eylemler için eylemini adıyla söyleyen onay penceresi.',
+    imports: [
+      'Dialog',
+      'DialogTrigger',
+      'DialogContent',
+      'DialogHeader',
+      'DialogTitle',
+      'ConfirmDialog',
+    ],
+    a11y: [
+      'Odak pencerenin içinde kalır, Esc kapatır, kapanınca tetikleyiciye döner.',
+      'ConfirmDialog odağı Vazgeç’te başlatır; eylem düğmesi ne olacağını söyler ("Formu sil"), asla "Tamam" değil.',
+      'Geri alınabilen işlerde soru yerine "Geri al" düğmeli bir bildirim tercih edilir.',
+    ],
+    motion: ['Geniş ekranda ortada hafif büyüyerek, telefonda alttan kayarak açılır.'],
+  },
+  {
+    slug: 'toast',
+    name: 'Toast',
+    category: 'overlays',
+    description: 'Bir işin sonucunu söyleyen kısa bildirim; istenirse geri alma düğmesiyle.',
+    imports: ['ToastProvider', 'useToast'],
+    a11y: [
+      'Bildirimler ekran okuyucuya duyurulur; üzerine gelince ya da odaklanınca süre durur.',
+      'Hata ve eylem içeren bildirimler kendiliğinden kaybolmaz.',
+    ],
+    motion: [
+      'Alttan yığılarak gelir, üzerine gelince açılır; sağa ya da aşağı kaydırılarak kapatılır.',
+    ],
+  },
+  {
     slug: 'tooltip',
     name: 'Tooltip',
     category: 'overlays',
@@ -223,6 +266,23 @@ export const ENTRIES: Entry[] = [
     imports: ['SideNav', 'SideNavLayout'],
     a11y: ['Geniş ekranda yapışkan sütun, dar ekranda paneli açan bir buton.'],
     motion: ['Aktif vurgu seçilen öğeye süzülür.'],
+  },
+  {
+    slug: 'tabs',
+    name: 'Tabs',
+    category: 'navigation',
+    description: 'Aynı sayfanın bölümleri arasında geçiş; sığmayınca yana kayar.',
+    imports: ['Tabs', 'TabsList', 'Tab', 'TabsPanel'],
+    a11y: ['Ok tuşlarıyla sekmeler arasında gezilir; seçili sekme ekran okuyucuya söylenir.'],
+    motion: ['Alt çizgi seçilen sekmeye kayar, içerik solarak gelir.'],
+  },
+  {
+    slug: 'accordion',
+    name: 'Accordion',
+    category: 'navigation',
+    description: 'Başlıkları altında açılan bölümler: sık sorulan sorular, uzun ayarlar.',
+    imports: ['Accordion', 'AccordionItem', 'AccordionTrigger', 'AccordionPanel'],
+    motion: ['Bölüm doğal yüksekliğine açılır, ok döner.'],
   },
   {
     slug: 'breadcrumbs',
