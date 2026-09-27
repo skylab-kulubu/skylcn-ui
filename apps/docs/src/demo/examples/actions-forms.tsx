@@ -16,6 +16,7 @@ import {
 } from '@skylab-kulubu/skylcn-ui';
 import {
   ArrowDown,
+  ArrowRight,
   ArrowUp,
   AtSign,
   Bell,
@@ -54,6 +55,18 @@ function ButtonExamples() {
         </Button>
         <Button variant="link">Tümünü gör</Button>
         <Button disabled>Kapalı</Button>
+      </Example>
+      <Example
+        title="Üzerine gelince ikon"
+        description="hoverIcon: yazı aşağı kayıp kaybolur, ikon yukarıdan gelir. Klavye odağında da çalışır."
+      >
+        <Button variant="primary" hoverIcon={ArrowRight}>
+          Başvur
+        </Button>
+        <Button hoverIcon={Share2}>Paylaş</Button>
+        <Button variant="destructive" hoverIcon={Trash2}>
+          Sil
+        </Button>
       </Example>
       <Example title="Boyutlar ve ikon butonları">
         <Button size="sm">Küçük</Button>

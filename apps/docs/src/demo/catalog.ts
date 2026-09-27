@@ -86,6 +86,7 @@ export const ENTRIES: Entry[] = [
     motion: [
       'Yükleyici ancak bekleme 150ms sürerse görünür, göründüyse en az 400ms kalır; buton genişliği değişmez.',
       'Basınca bir piksel iner.',
+      'İsteğe bağlı hoverIcon ile üzerine gelince yazı aşağı kayıp kaybolur, ikon yukarıdan gelir.',
     ],
   },
   {

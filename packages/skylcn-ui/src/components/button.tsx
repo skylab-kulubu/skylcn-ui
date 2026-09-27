@@ -51,6 +51,12 @@ export type ButtonProps = ButtonPrimitive.Props &
      * the content only if the wait lasts, so quick actions never flash it.
      */
     pending?: boolean;
+    /**
+     * An icon that takes the label's place on hover and keyboard focus: the
+     * label slides down and out, the icon slides down in. The label stays the
+     * accessible name.
+     */
+    hoverIcon?: LucideIcon;
   };
 
 export function Button({
@@ -62,6 +68,7 @@ export function Button({
   children,
   render,
   nativeButton,
+  hoverIcon: HoverIcon,
   ...props
 }: ButtonProps) {
   const busy = usePendingIndicator(pending);
@@ -82,9 +89,24 @@ export function Button({
         className={cn(
           'inline-flex items-center justify-center gap-[inherit] transition-opacity duration-(--motion-duration-fast)',
           busy && 'opacity-0',
+          HoverIcon && 'relative overflow-hidden',
         )}
       >
-        {children}
+        {HoverIcon ? (
+          <>
+            <span className="inline-flex items-center gap-[inherit] transition-[translate,opacity] duration-(--motion-duration-base) ease-enter group-hover/button:translate-y-full group-hover/button:opacity-0 group-focus-visible/button:translate-y-full group-focus-visible/button:opacity-0 motion-reduce:translate-y-0!">
+              {children}
+            </span>
+            <span
+              aria-hidden
+              className="absolute inset-0 grid -translate-y-full place-items-center opacity-0 transition-[translate,opacity] duration-(--motion-duration-base) ease-enter group-hover/button:translate-y-0 group-hover/button:opacity-100 group-focus-visible/button:translate-y-0 group-focus-visible/button:opacity-100 motion-reduce:translate-y-0!"
+            >
+              <HoverIcon />
+            </span>
+          </>
+        ) : (
+          children
+        )}
       </span>
       {busy ? (
         <SkylabLoader size={16} className="absolute inset-0 m-auto enter-fade text-current" />
