@@ -75,6 +75,20 @@ pnpm lint
 pnpm test       # birim ve erişilebilirlik (axe) testleri
 ```
 
+Uçtan uca testler docs uygulamasının üretim derlemesine karşı çalışır; her sayfa iki temada axe'tan geçer ve ana etkileşimler denenir:
+
+```sh
+pnpm --filter docs build
+pnpm --filter docs exec playwright install chromium   # ya da PLAYWRIGHT_CHROMIUM_EXECUTABLE ile kurulu bir Chromium
+pnpm --filter docs e2e
+```
+
+Playground statik dosya olarak da derlenebilir; `DOCS_BASE_PATH` onu bir alt yolda sunar:
+
+```sh
+DOCS_EXPORT=1 DOCS_BASE_PATH=/playground pnpm --filter docs build   # çıktı: apps/docs/out
+```
+
 Her değişiklik bir Changesets kaydıyla gelir: `pnpm changeset`.
 
 ## Lisans
