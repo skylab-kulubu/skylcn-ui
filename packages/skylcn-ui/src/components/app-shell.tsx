@@ -113,6 +113,9 @@ export function AppShell({
   const { messages } = useSkylcn();
   const [collapsed, setCollapsedState] = useState(defaultCollapsed);
   const [mobileOpen, setMobileOpen] = useState(false);
+  // The drawer is hidden from md up; closing it there keeps a widened window usable
+  const desktop = useIsDesktop();
+  if (desktop && mobileOpen) setMobileOpen(false);
   const [desktopSlot, setDesktopSlot] = useState<HTMLElement | null>(null);
   const [mobileSlot, setMobileSlot] = useState<HTMLElement | null>(null);
 
