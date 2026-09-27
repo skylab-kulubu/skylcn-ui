@@ -1,6 +1,14 @@
 'use client';
 
-import { Card, Reveal, useSkylcn } from '@skylab-kulubu/skylcn-ui';
+import {
+  Card,
+  PreviewCard,
+  PreviewCardContent,
+  PreviewCardTrigger,
+  Reveal,
+  useSkylcn,
+} from '@skylab-kulubu/skylcn-ui';
+import { ComponentPreview } from '../../../demo/previews';
 import { CATEGORY_LABEL, ENTRIES, entryHref, ORDER } from '../../../demo/catalog';
 
 export default function ComponentsIndex() {
@@ -23,18 +31,26 @@ export default function ComponentsIndex() {
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {ENTRIES.filter((entry) => entry.category === category).map((entry) => (
-              <Link
-                key={entry.slug}
-                href={entryHref(entry.slug)}
-                className="rounded-xl outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Card className="h-full gap-1 p-4 transition-colors duration-(--motion-duration-fast) hover:border-border-strong hover:bg-accent">
-                  <span className="text-sm font-medium text-foreground">{entry.name}</span>
-                  <span className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-                    {entry.description}
-                  </span>
-                </Card>
-              </Link>
+              <PreviewCard key={entry.slug}>
+                <PreviewCardTrigger
+                  render={
+                    <Link
+                      href={entryHref(entry.slug)}
+                      className="rounded-xl outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+                    />
+                  }
+                >
+                  <Card className="h-full gap-1 p-4 transition-colors duration-(--motion-duration-fast) hover:border-border-strong hover:bg-accent">
+                    <span className="text-sm font-medium text-foreground">{entry.name}</span>
+                    <span className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
+                      {entry.description}
+                    </span>
+                  </Card>
+                </PreviewCardTrigger>
+                <PreviewCardContent side="top" align="center">
+                  <ComponentPreview slug={entry.slug} />
+                </PreviewCardContent>
+              </PreviewCard>
             ))}
           </div>
         </Reveal>

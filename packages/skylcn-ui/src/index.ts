@@ -100,6 +100,12 @@ export {
 } from './components/field.js';
 export { IconSwap, type IconSwapProps } from './components/icon-swap.js';
 export {
+  PreviewCard,
+  PreviewCardContent,
+  PreviewCardTrigger,
+  type PreviewCardContentProps,
+} from './components/preview-card.js';
+export {
   ProportionBar,
   type ProportionBarProps,
   type ProportionSegment,

@@ -8,6 +8,7 @@ import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
 import { Button } from './button.js';
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerTitle } from './drawer.js';
+import { PreviewCard, PreviewCardContent, PreviewCardTrigger } from './preview-card.js';
 import { SearchInput } from './page-header.js';
 
 export type SideNavItem = { href: string; label: string; badge?: ReactNode };
@@ -20,6 +21,8 @@ export type SideNavProps = {
   activeHref?: string;
   /** Adds a box that narrows the list by name, for long lists. */
   searchable?: boolean;
+  /** A glimpse of each item shown beside it on hover or focus, on wide screens only. */
+  preview?: (item: SideNavItem) => ReactNode;
   className?: string;
 };
 
@@ -28,7 +31,11 @@ function List({
   activeHref,
   query,
   onNavigate,
-}: Pick<SideNavProps, 'sections' | 'activeHref'> & { query: string; onNavigate?: () => void }) {
+  preview,
+}: Pick<SideNavProps, 'sections' | 'activeHref' | 'preview'> & {
+  query: string;
+  onNavigate?: () => void;
+}) {
   const { Link, messages } = useSkylcn();
   const group = useId();
   const q = query.trim().toLocaleLowerCase('tr-TR');
@@ -57,31 +64,41 @@ function List({
             <ul className="flex flex-col gap-0.5">
               {section.items.map((item) => {
                 const active = item.href === activeHref;
+                const link = (
+                  <Link
+                    href={item.href}
+                    aria-current={active ? 'page' : undefined}
+                    onClick={onNavigate}
+                    className={cn(
+                      'relative isolate flex items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden pointer-coarse:py-2.5',
+                      'transition-colors duration-(--motion-duration-fast) focus-visible:ring-2 focus-visible:ring-ring',
+                      active
+                        ? 'text-foreground-strong'
+                        : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                    )}
+                  >
+                    {active ? (
+                      <m.span
+                        layoutId="side-nav-active"
+                        aria-hidden
+                        className="absolute inset-0 -z-10 rounded-md bg-accent-strong"
+                        transition={transitions.layout}
+                      />
+                    ) : null}
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    {item.badge ? <span className="shrink-0">{item.badge}</span> : null}
+                  </Link>
+                );
                 return (
                   <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      aria-current={active ? 'page' : undefined}
-                      onClick={onNavigate}
-                      className={cn(
-                        'relative isolate flex items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-hidden pointer-coarse:py-2.5',
-                        'transition-colors duration-(--motion-duration-fast) focus-visible:ring-2 focus-visible:ring-ring',
-                        active
-                          ? 'text-foreground-strong'
-                          : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-                      )}
-                    >
-                      {active ? (
-                        <m.span
-                          layoutId="side-nav-active"
-                          aria-hidden
-                          className="absolute inset-0 -z-10 rounded-md bg-accent-strong"
-                          transition={transitions.layout}
-                        />
-                      ) : null}
-                      <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                      {item.badge ? <span className="shrink-0">{item.badge}</span> : null}
-                    </Link>
+                    {preview ? (
+                      <PreviewCard>
+                        <PreviewCardTrigger render={link} />
+                        <PreviewCardContent>{preview(item)}</PreviewCardContent>
+                      </PreviewCard>
+                    ) : (
+                      link
+                    )}
                   </li>
                 );
               })}
@@ -103,6 +120,7 @@ export function SideNav({
   sections,
   activeHref,
   searchable = false,
+  preview,
   className,
 }: SideNavProps) {
   const { messages } = useSkylcn();
@@ -130,7 +148,7 @@ export function SideNav({
             className="max-w-none min-w-0 flex-none"
           />
         ) : null}
-        <List sections={sections} activeHref={activeHref} query={query} />
+        <List sections={sections} activeHref={activeHref} query={query} preview={preview} />
       </nav>
 
       <div className="lg:hidden">
