@@ -21,7 +21,8 @@ import {
   type RowData,
 } from '@tanstack/react-table';
 import { ArrowUp, Columns3, Filter, X } from 'lucide-react';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Button } from '../components/button.js';
 import { Checkbox } from '../components/checkbox.js';
 import { BulkBar } from '../components/display-extra.js';
@@ -113,6 +114,11 @@ export type DataTableProps<T extends RowData> = {
    * so a shared link or the back button brings the same view back.
    */
   urlKey?: string;
+  /**
+   * Shows every row in a scrolling body of this height (px) instead of pages,
+   * drawing only the rows in view: for thousands of rows.
+   */
+  virtualHeight?: number;
   'aria-label': string;
   className?: string;
 };
@@ -136,6 +142,7 @@ export function DataTable<T extends RowData>({
   pageSize = 10,
   actions,
   urlKey,
+  virtualHeight,
   'aria-label': label,
   className,
 }: DataTableProps<T>) {
@@ -167,7 +174,9 @@ export function DataTable<T extends RowData>({
       data: data as T[],
       getRowId,
       globalFilterFn: 'includesString',
-      initialState: { pagination: { pageIndex: 0, pageSize } },
+      initialState: {
+        pagination: { pageIndex: 0, pageSize: virtualHeight ? Number.MAX_SAFE_INTEGER : pageSize },
+      },
       enableRowSelection: selectable,
     },
     (state) => state,
@@ -176,6 +185,18 @@ export function DataTable<T extends RowData>({
   const byId = useMemo(() => new Map(columns.map((column) => [column.id, column])), [columns]);
   const ordered = table.getPrePaginatedRowModel().rows;
   const pageRows = table.getRowModel().rows;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const virtualizer = useVirtualizer({
+    count: virtualHeight ? pageRows.length : 0,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 52,
+    overscan: 8,
+  });
+  const items = virtualizer.getVirtualItems();
+  const shownRows = virtualHeight ? items.map((item) => pageRows[item.index]!) : pageRows;
+  const padTop = virtualHeight ? (items[0]?.start ?? 0) : 0;
+  const padBottom = virtualHeight ? virtualizer.getTotalSize() - (items.at(-1)?.end ?? 0) : 0;
+  const span = columns.length + (bulkActions ? 1 : 0);
   const openIndex = ordered.findIndex((row) => row.id === openId);
   const openRow = openIndex >= 0 ? ordered[openIndex]!.original : null;
   const selected = table.getSelectedRowModel().rows.map((row) => row.original);
@@ -314,7 +335,10 @@ export function DataTable<T extends RowData>({
       )}
     >
       {facetPanel ? (
-        <aside aria-label={messages.filters} className="sticky top-6 hidden lg:block">
+        <aside
+          aria-label={`${messages.filters} · ${label}`}
+          className="sticky top-6 hidden lg:block"
+        >
           {facetPanel}
         </aside>
       ) : null}
@@ -362,8 +386,16 @@ export function DataTable<T extends RowData>({
           {actions}
         </div>
 
-        <div className="scrollbar overflow-x-auto rounded-xl border border-border">
-          <table aria-label={label} className="w-full border-collapse text-sm">
+        <div
+          ref={scrollRef}
+          className="scrollbar overflow-auto rounded-xl border border-border"
+          style={virtualHeight ? { maxHeight: virtualHeight } : undefined}
+        >
+          <table
+            aria-label={label}
+            aria-rowcount={virtualHeight ? ordered.length + 1 : undefined}
+            className="w-full border-collapse text-sm"
+          >
             <thead className="sticky top-0 z-10 bg-background">
               {table.getHeaderGroups().map((group) => (
                 <tr key={group.id} className="border-b border-border">
@@ -425,9 +457,15 @@ export function DataTable<T extends RowData>({
               ))}
             </thead>
             <tbody className="divide-y divide-border-subtle">
-              {pageRows.map((row) => (
+              {padTop ? (
+                <tr aria-hidden style={{ height: padTop }}>
+                  <td colSpan={span} />
+                </tr>
+              ) : null}
+              {shownRows.map((row) => (
                 <tr
                   key={row.id}
+                  aria-rowindex={virtualHeight ? row.index + 2 : undefined}
                   aria-selected={selectable ? row.getIsSelected() : undefined}
                   className={cn(
                     'transition-colors duration-(--motion-duration-instant)',
@@ -472,6 +510,11 @@ export function DataTable<T extends RowData>({
                   })}
                 </tr>
               ))}
+              {padBottom > 0 ? (
+                <tr aria-hidden style={{ height: padBottom }}>
+                  <td colSpan={span} />
+                </tr>
+              ) : null}
             </tbody>
           </table>
           {pageRows.length === 0 ? (
@@ -482,7 +525,9 @@ export function DataTable<T extends RowData>({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-2xs text-subtle-foreground tabular-nums">
             {total
-              ? `${pageIndex * pageSize + 1}–${Math.min(total, (pageIndex + 1) * pageSize)} / ${total}`
+              ? virtualHeight
+                ? String(total)
+                : `${pageIndex * pageSize + 1}–${Math.min(total, (pageIndex + 1) * pageSize)} / ${total}`
               : '0'}
             {renderDetail ? (
               <span className="ml-3 hidden items-center gap-1 sm:inline-flex">
@@ -491,11 +536,13 @@ export function DataTable<T extends RowData>({
               </span>
             ) : null}
           </p>
-          <Pagination
-            current={pageIndex + 1}
-            totalPages={table.getPageCount()}
-            onPageChange={(page) => table.setPageIndex(page - 1)}
-          />
+          {virtualHeight ? null : (
+            <Pagination
+              current={pageIndex + 1}
+              totalPages={table.getPageCount()}
+              onPageChange={(page) => table.setPageIndex(page - 1)}
+            />
+          )}
         </div>
       </div>
 

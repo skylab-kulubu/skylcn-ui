@@ -73,13 +73,20 @@ const COLUMNS: DataTableColumn<Member>[] = [
 ];
 
 /** The member list as an admin DataTable: facets, bulk actions and a detail panel. */
-export function MemberTable({ urlKey }: { urlKey?: string }) {
+// 5,000 rows for the virtual example: the demo members repeated with new ids
+const MANY: Member[] = Array.from({ length: 5000 }, (_, i) => ({
+  ...MEMBERS[i % MEMBERS.length]!,
+  id: `v${i}`,
+}));
+
+export function MemberTable({ urlKey, virtual = false }: { urlKey?: string; virtual?: boolean }) {
   const toast = useToast();
   return (
     <DataTable
-      aria-label="Üyeler"
+      aria-label={virtual ? 'Üyeler (5.000)' : 'Üyeler'}
       urlKey={urlKey}
-      data={MEMBERS}
+      data={virtual ? MANY : MEMBERS}
+      virtualHeight={virtual ? 520 : undefined}
       columns={COLUMNS}
       getRowId={(m) => m.id}
       searchPlaceholder="İsim ya da e-posta ara"

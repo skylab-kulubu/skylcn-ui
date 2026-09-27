@@ -288,13 +288,22 @@ function StatusPageExamples() {
 
 function DataTableExamples() {
   return (
-    <Example
-      title="Üyeler"
-      description="Bir satıra tıkla, sonra ↑ ve ↓ ile gez; birkaç satır seçince toplu işlem çubuğu gelir."
-      align="start"
-    >
-      <MemberTable />
-    </Example>
+    <>
+      <Example
+        title="Üyeler"
+        description="Bir satıra tıkla, sonra ↑ ve ↓ ile gez; birkaç satır seçince toplu işlem çubuğu gelir."
+        align="start"
+      >
+        <MemberTable />
+      </Example>
+      <Example
+        title="5.000 satır, sanal kaydırma"
+        description="virtualHeight: sayfa yerine tek kaydırmalı gövde; yalnızca görünen satırlar çizilir."
+        align="start"
+      >
+        <MemberTable virtual />
+      </Example>
+    </>
   );
 }
 
