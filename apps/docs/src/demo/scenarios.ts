@@ -1,5 +1,13 @@
 import type { LucideIcon } from 'lucide-react';
-import { ChartPie, Globe, LayoutDashboard, LoaderCircle, Settings, Users } from 'lucide-react';
+import {
+  ChartPie,
+  Globe,
+  LayoutDashboard,
+  LoaderCircle,
+  Mail,
+  Settings,
+  Users,
+} from 'lucide-react';
 
 export type Scenario = { href: string; label: string; icon: LucideIcon; description: string };
 
@@ -25,6 +33,12 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         label: 'Form analitiği',
         icon: ChartPie,
         description: 'Yanıt akışı, kaynaklar ve soru soru dağılımlar.',
+      },
+      {
+        href: '/playground/mail',
+        label: 'Posta',
+        icon: Mail,
+        description: 'Skymail’in hedef görünümü: klasörler, gönderimler ve onay.',
       },
       {
         href: '/playground/settings',
