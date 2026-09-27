@@ -44,6 +44,20 @@ export {
   type SliderProps,
 } from './components/form-extra.js';
 export {
+  AvatarGroup,
+  Banner,
+  BulkBar,
+  DescriptionList,
+  Dropzone,
+  Stepper,
+  Timeline,
+  type BannerProps,
+  type DescriptionItem,
+  type DropzoneProps,
+  type Step,
+  type TimelineItem,
+} from './components/display-extra.js';
+export {
   Kbd,
   Meter,
   Notice,

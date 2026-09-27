@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { ACTION_FORM_EXAMPLES } from './actions-forms';
 import { DATA_EXAMPLES } from './data';
+import { DISPLAY_EXTRA_EXAMPLES } from './display-extra';
 import { FEEDBACK_EXAMPLES } from './feedback';
 import { FORM_EXTRA_EXAMPLES } from './form-extra';
 import { FOUNDATION_EXAMPLES } from './foundations';
@@ -16,4 +17,5 @@ export const EXAMPLES: Record<string, ComponentType> = {
   ...INTERACTION_EXAMPLES,
   ...FEEDBACK_EXAMPLES,
   ...FORM_EXTRA_EXAMPLES,
+  ...DISPLAY_EXTRA_EXAMPLES,
 };

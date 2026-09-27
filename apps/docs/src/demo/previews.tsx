@@ -605,6 +605,51 @@ const MINIS: Record<string, () => ReactNode> = {
       ))}
     </span>
   ),
+  dropzone: () => (
+    <span className="grid h-16 w-44 place-items-center rounded-lg border border-dashed border-border-strong text-2xs text-muted-foreground">
+      Dosya seç ya da bırak
+    </span>
+  ),
+  stepper: () => (
+    <span className="flex items-center gap-1.5">
+      <span className="grid size-5 place-items-center rounded-full bg-skylab-500 text-3xs text-primary-foreground">
+        ✓
+      </span>
+      <span className="h-px w-8 bg-skylab-400" />
+      <span className="grid size-5 place-items-center rounded-full border border-skylab-400 text-3xs text-skylab-300">
+        2
+      </span>
+      <span className="h-px w-8 bg-border" />
+      <span className="grid size-5 place-items-center rounded-full border border-border text-3xs text-subtle-foreground">
+        3
+      </span>
+    </span>
+  ),
+  'description-list': () => (
+    <span className="grid w-44 grid-cols-2 gap-2 text-2xs">
+      <span>
+        <span className="block text-3xs text-subtle-foreground uppercase">Ekip</span>WebLab
+      </span>
+      <span>
+        <span className="block text-3xs text-subtle-foreground uppercase">Rol</span>Lider
+      </span>
+    </span>
+  ),
+  timeline: () => (
+    <span className="flex flex-col gap-2 text-2xs">
+      {['Onaya sunuldu', 'Onaylandı', 'Gönderildi'].map((t) => (
+        <span key={t} className="flex items-center gap-2">
+          <span className="size-2 rounded-full bg-skylab-400" /> {t}
+        </span>
+      ))}
+    </span>
+  ),
+  'bulk-bar': () => (
+    <span className="flex items-center gap-2 rounded-lg border border-border-strong bg-background px-2 py-1 text-2xs shadow-overlay">
+      3 seçili <span className="rounded border border-border px-1.5">E-posta</span>{' '}
+      <span className="rounded border border-destructive/40 px-1.5 text-destructive">Çıkar</span>
+    </span>
+  ),
   'otp-field': () => (
     <span className="flex gap-1">
       {['4', '8', '1', '', '', ''].map((c, i) => (
