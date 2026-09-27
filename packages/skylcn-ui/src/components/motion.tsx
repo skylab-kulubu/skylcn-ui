@@ -1,6 +1,13 @@
 'use client';
 
-import { AnimatePresence, animate, m, useMotionValue, useTransform } from 'motion/react';
+import {
+  AnimatePresence,
+  animate,
+  m,
+  useIsPresent,
+  useMotionValue,
+  useTransform,
+} from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { motionTokens, transitions } from '../lib/motion-tokens.js';
@@ -80,11 +87,18 @@ export function Swap({ id, direction = 0, children, className }: SwapProps) {
           animate="center"
           exit="exit"
         >
-          {children}
+          <Leaving>{children}</Leaving>
         </m.div>
       </AnimatePresence>
     </div>
   );
+}
+
+// Content on its way out can no longer be clicked or reached, so a quick
+// click never lands on a result that has already been replaced
+function Leaving({ children }: { children: ReactNode }) {
+  const present = useIsPresent();
+  return <div inert={!present || undefined}>{children}</div>;
 }
 
 export type AnimatedNumberProps = {
