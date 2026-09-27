@@ -102,19 +102,27 @@ export function ChartFrame({
           ) : null}
         </div>
         {actions}
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          aria-pressed={asTable}
-          aria-label={asTable ? messages.showChart : messages.showTable}
-          title={asTable ? messages.showChart : messages.showTable}
-          onClick={() => setAsTable((value) => !value)}
-        >
-          <IconSwap swapped={asTable} icon={Table2} swappedIcon={ChartColumn} className="size-4" />
-        </Button>
+        {/* With nothing to show there is no legend to read and no table to switch to */}
+        {empty ? null : (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-pressed={asTable}
+            aria-label={asTable ? messages.showChart : messages.showTable}
+            title={asTable ? messages.showChart : messages.showTable}
+            onClick={() => setAsTable((value) => !value)}
+          >
+            <IconSwap
+              swapped={asTable}
+              icon={Table2}
+              swappedIcon={ChartColumn}
+              className="size-4"
+            />
+          </Button>
+        )}
       </figcaption>
 
-      {legend.length > 1 && !asTable ? (
+      {legend.length > 1 && !asTable && !empty ? (
         <ul className={cn('flex flex-wrap gap-x-1 gap-y-0.5 pt-2', framed ? 'px-3' : '-mx-1.5')}>
           {legend.map((item) => {
             const off = hidden.has(item.key);
