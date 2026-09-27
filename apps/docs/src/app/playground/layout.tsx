@@ -18,6 +18,7 @@ import { PlaygroundControls } from '../../demo/controls';
 import { PlaygroundSearch } from '../../demo/palette';
 import { DemoProfile } from '../../demo/profile';
 import { ENTRIES } from '../../demo/catalog';
+import { MEMBERS } from '../../demo/members';
 import { SCENARIOS, SCENARIO_GROUPS } from '../../demo/scenarios';
 
 function Sidebar({ pathname }: { pathname: string }) {
@@ -38,7 +39,10 @@ function Sidebar({ pathname }: { pathname: string }) {
                 href={scenario.href}
                 label={scenario.label}
                 icon={scenario.icon}
-                active={pathname === scenario.href}
+                active={
+                  pathname === scenario.href ||
+                  (scenario.href !== '/playground' && pathname.startsWith(`${scenario.href}/`))
+                }
               />
             ))}
           </SidebarSection>
@@ -62,8 +66,13 @@ function Sidebar({ pathname }: { pathname: string }) {
 
 export default function PlaygroundLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const scenario = SCENARIOS.find((item) => item.href === pathname);
+  const scenario =
+    SCENARIOS.find((item) => item.href === pathname) ??
+    (pathname.startsWith('/playground/members/')
+      ? SCENARIOS.find((item) => item.href === '/playground/members')
+      : undefined);
   const inLibrary = pathname.startsWith('/playground/components');
+  const member = MEMBERS.find((item) => pathname === `/playground/members/${item.id}`);
   const entry = ENTRIES.find((item) => pathname === `/playground/components/${item.slug}`);
   const crumbs = [
     { href: '/playground', label: 'Playground' },
@@ -72,6 +81,7 @@ export default function PlaygroundLayout({ children }: { children: ReactNode }) 
     ...(scenario && scenario.href !== '/playground'
       ? [{ href: scenario.href, label: scenario.label }]
       : []),
+    ...(member ? [{ href: pathname, label: member.name }] : []),
   ];
   return (
     <AppShell sidebar={<Sidebar pathname={pathname} />} header={<Breadcrumbs items={crumbs} />}>

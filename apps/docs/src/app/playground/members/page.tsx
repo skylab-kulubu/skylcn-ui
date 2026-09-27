@@ -231,7 +231,7 @@ export default function Members() {
                 <ContextMenuTrigger
                   render={
                     <DataListRow
-                      href={`/playground/members?id=${member.id}`}
+                      href={`/playground/members/${member.id}`}
                       label={`${member.name} profilini aç`}
                       index={index}
                     />
