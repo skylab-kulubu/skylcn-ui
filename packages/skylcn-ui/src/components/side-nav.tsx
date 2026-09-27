@@ -163,7 +163,7 @@ export function SideNav({
           </span>
           <ChevronsUpDown className="text-subtle-foreground" />
         </Button>
-        <Drawer open={open} onOpenChange={setOpen}>
+        <Drawer open={open} onOpenChange={setOpen} side="bottom">
           <DrawerContent>
             <DrawerHeader>
               <DrawerTitle>{label}</DrawerTitle>

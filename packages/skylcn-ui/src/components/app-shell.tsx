@@ -1,7 +1,7 @@
 'use client';
 
 import { Collapsible } from '@base-ui/react/collapsible';
-import { Dialog } from '@base-ui/react/dialog';
+import { Drawer as DrawerPrimitive } from '@base-ui/react/drawer';
 import {
   Check,
   ChevronDown,
@@ -205,35 +205,38 @@ export function AppShell({
           </div>
         </div>
 
-        <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
-          <Dialog.Portal>
-            <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/40 transition-opacity duration-(--motion-duration-slow) ease-enter data-ending-style:opacity-0 data-starting-style:opacity-0 md:hidden" />
-            <Dialog.Popup
-              aria-label={messages.navigation}
-              className={cn(
-                'fixed inset-y-0 left-0 z-50 flex outline-hidden md:hidden',
-                'transition-transform duration-(--motion-duration-spring) ease-spring',
-                'data-ending-style:-translate-x-full data-ending-style:duration-(--motion-duration-base) data-ending-style:ease-exit data-starting-style:-translate-x-full',
-              )}
-            >
-              <div className="flex h-full w-72 border-r border-border bg-sidebar pb-[env(safe-area-inset-bottom)] shadow-overlay">
-                <SidebarScopeContext.Provider value={{ collapsed: false, inDrawer: true }}>
-                  <SidebarFrame>{sidebar}</SidebarFrame>
-                </SidebarScopeContext.Provider>
-              </div>
-              <Dialog.Close
-                aria-label={messages.close}
-                title={messages.close}
-                className="group -ml-px flex h-full w-5 items-center justify-center rounded-r-full border-y border-r border-border bg-sidebar text-subtle-foreground outline-hidden transition-colors hover:text-secondary-foreground"
+        <DrawerPrimitive.Root open={mobileOpen} onOpenChange={setMobileOpen} swipeDirection="left">
+          <DrawerPrimitive.Portal>
+            <DrawerPrimitive.Backdrop className="fixed inset-0 z-50 bg-black opacity-[calc(0.4*(1-var(--drawer-swipe-progress)))] transition-opacity duration-(--motion-duration-slow) ease-enter data-ending-style:opacity-0 data-starting-style:opacity-0 data-swiping:duration-0 md:hidden" />
+            <DrawerPrimitive.Viewport className="fixed inset-0 z-50 md:hidden">
+              <DrawerPrimitive.Popup
+                aria-label={messages.navigation}
+                className={cn(
+                  'absolute inset-y-0 left-0 flex outline-hidden',
+                  '[transform:translateX(var(--drawer-swipe-movement-x))] transition-[transform,opacity] duration-(--motion-duration-spring) ease-spring data-swiping:duration-0',
+                  'data-ending-style:[transform:translateX(-100%)] data-ending-style:duration-[calc(var(--drawer-swipe-strength,1)*var(--motion-duration-base))] data-ending-style:ease-exit data-starting-style:[transform:translateX(-100%)]',
+                  'motion-reduce:data-ending-style:[transform:none] motion-reduce:data-ending-style:opacity-0 motion-reduce:data-starting-style:[transform:none] motion-reduce:data-starting-style:opacity-0',
+                )}
               >
-                <ChevronsLeft
-                  className="size-3.5 opacity-60 transition-transform duration-(--motion-duration-base) group-hover:scale-110 group-hover:opacity-100"
-                  strokeWidth={2.5}
-                />
-              </Dialog.Close>
-            </Dialog.Popup>
-          </Dialog.Portal>
-        </Dialog.Root>
+                <div className="flex h-full w-72 border-r border-border bg-sidebar pb-[env(safe-area-inset-bottom)] shadow-overlay">
+                  <SidebarScopeContext.Provider value={{ collapsed: false, inDrawer: true }}>
+                    <SidebarFrame>{sidebar}</SidebarFrame>
+                  </SidebarScopeContext.Provider>
+                </div>
+                <DrawerPrimitive.Close
+                  aria-label={messages.close}
+                  title={messages.close}
+                  className="group -ml-px flex h-full w-5 items-center justify-center rounded-r-full border-y border-r border-border bg-sidebar text-subtle-foreground outline-hidden transition-colors hover:text-secondary-foreground"
+                >
+                  <ChevronsLeft
+                    className="size-3.5 opacity-60 transition-transform duration-(--motion-duration-base) group-hover:scale-110 group-hover:opacity-100"
+                    strokeWidth={2.5}
+                  />
+                </DrawerPrimitive.Close>
+              </DrawerPrimitive.Popup>
+            </DrawerPrimitive.Viewport>
+          </DrawerPrimitive.Portal>
+        </DrawerPrimitive.Root>
 
         <div className="md:flex md:h-full md:min-h-0 md:flex-col md:overflow-hidden md:rounded-xl md:border md:border-border-subtle md:bg-background">
           <div className="hidden h-10 shrink-0 items-center gap-3 border-b border-border-subtle pr-6 pl-3 md:flex">

@@ -106,25 +106,51 @@ function PopoverExamples() {
 
 function DrawerExamples() {
   return (
-    <Example title="Ayar paneli">
-      <Drawer>
-        <DrawerTrigger render={<Button variant="primary" />}>Paneli aç</DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Form ayarları</DrawerTitle>
-            <DrawerDescription>Değişiklikler hemen kaydedilir.</DrawerDescription>
-          </DrawerHeader>
-          <DrawerBody className="flex flex-col gap-2">
-            <ToggleRow title="Birden fazla yanıt" description="Aynı kişi yeniden yanıtlayabilir." />
-            <ToggleRow
-              title="Elle onay"
-              description="Yanıtlar onaydan sonra sayılır."
-              defaultChecked
-            />
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-    </Example>
+    <>
+      <Example
+        title="Alt panel"
+        description="Telefonda en rahat açılan hali; aşağı kaydırınca kapanır."
+      >
+        <Drawer side="bottom">
+          <DrawerTrigger render={<Button />}>Alt paneli aç</DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Paylaş</DrawerTitle>
+              <DrawerDescription>Bağlantıyı kopyala ya da bir kanala gönder.</DrawerDescription>
+            </DrawerHeader>
+            <DrawerBody className="flex flex-col gap-2">
+              <ToggleRow title="Herkese açık bağlantı" defaultChecked />
+              <ToggleRow title="Yanıtları e-postayla bildir" />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      </Example>
+      <Example
+        title="Ayar paneli"
+        description="Yandan açılır; kenardaki sekme, Esc ya da sağa kaydırmak kapatır."
+      >
+        <Drawer>
+          <DrawerTrigger render={<Button variant="primary" />}>Paneli aç</DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Form ayarları</DrawerTitle>
+              <DrawerDescription>Değişiklikler hemen kaydedilir.</DrawerDescription>
+            </DrawerHeader>
+            <DrawerBody className="flex flex-col gap-2">
+              <ToggleRow
+                title="Birden fazla yanıt"
+                description="Aynı kişi yeniden yanıtlayabilir."
+              />
+              <ToggleRow
+                title="Elle onay"
+                description="Yanıtlar onaydan sonra sayılır."
+                defaultChecked
+              />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+      </Example>
+    </>
   );
 }
 

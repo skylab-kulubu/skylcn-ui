@@ -217,7 +217,8 @@ export const ENTRIES: Entry[] = [
     slug: 'drawer',
     name: 'Drawer',
     category: 'overlays',
-    description: 'Kenardan kayan panel: detaylar, ayarlar, telefonda gezinme.',
+    description:
+      'Sağdan, soldan ya da alttan kayan panel: detaylar, ayarlar, paylaşım; kaydırarak kapanır.',
     imports: [
       'Drawer',
       'DrawerTrigger',
@@ -227,7 +228,10 @@ export const ENTRIES: Entry[] = [
       'DrawerBody',
     ],
     a11y: ['Odak panelin içinde kalır, Esc kapatır, kapanınca odak tetikleyiciye döner.'],
-    motion: ['Yay eğrisiyle açılır, çıkış eğrisiyle daha hızlı kapanır.'],
+    motion: [
+      'Yay eğrisiyle açılır; kaydırırken parmağı izler, bırakınca kaydırmanın hızıyla kapanır.',
+      'Hareketi azaltınca kaymadan solarak açılıp kapanır.',
+    ],
   },
   {
     slug: 'menu',
