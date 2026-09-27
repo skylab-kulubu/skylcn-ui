@@ -30,6 +30,16 @@ export {
   type ConfirmDialogProps,
   type DialogContentProps,
 } from './components/dialog.js';
+export {
+  Kbd,
+  Meter,
+  Notice,
+  Progress,
+  Separator,
+  type MeterProps,
+  type NoticeProps,
+  type ProgressProps,
+} from './components/feedback.js';
 export { Radio, RadioGroup, type RadioProps } from './components/radio-group.js';
 export { Tab, Tabs, TabsList, TabsPanel } from './components/tabs.js';
 export { ToastProvider, useToast } from './components/toast.js';

@@ -399,6 +399,19 @@ export const ENTRIES: Entry[] = [
     motion: ['Hareketi azaltınca iskeletin parıltısı durur.'],
   },
   {
+    slug: 'feedback',
+    name: 'Notice, Progress ve Meter',
+    category: 'data',
+    description:
+      'Sayfa içi uyarılar, bir işin ilerlemesi ve sınırları belli bir düzey; kısayollar için Kbd.',
+    imports: ['Notice', 'Progress', 'Meter', 'Kbd', 'Separator'],
+    a11y: [
+      'Notice tonunu ikonla da söyler; tehlike tonu ekran okuyucuya hemen duyurulur.',
+      'Meter değerini her zaman yazar; eşik renkleri tek başına anlam taşımaz.',
+    ],
+    motion: ['Dolgular yeni değerlerine uzar.'],
+  },
+  {
     slug: 'area-chart',
     name: 'AreaChart',
     category: 'charts',
