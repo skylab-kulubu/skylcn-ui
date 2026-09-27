@@ -36,6 +36,24 @@ export default function RootLayout({ children }) {
 - `SkylcnProvider` hazır metinlerin dilini (`tr` / `en`) ve iç bağlantılar için kullanılacak bileşeni (Next.js'te `next/link`) belirler.
 - Tailwind kullanmayan yüzeyler yalnızca token'ları alır: `@skylab-kulubu/skylcn-ui/tokens.css`.
 
+## Giriş noktaları
+
+- `@skylab-kulubu/skylcn-ui` — bileşenler, hareket yardımcıları, tema ve token'lar.
+- `@skylab-kulubu/skylcn-ui/charts` — Recharts üzerine grafikler (alan, çizgi, çubuk, halka). Grafik kullanmayan uygulama Recharts'ı hiç yüklemez.
+- `@skylab-kulubu/skylcn-ui/data-table` — TanStack Table üzerine yönetim tablosu.
+- `@skylab-kulubu/skylcn-ui/theme.css` ve `/tokens.css` — Tailwind teması ve yalın CSS token'ları.
+
+## Bileşenler
+
+Tüm bileşenler canlı örnekleriyle doküman uygulamasındaki playground'da (`/playground/components`):
+
+- **Eylemler:** Button, IconButton, IconSwap, CopyButton, SegmentedControl
+- **Form:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, Calendar, Dropzone, OTPField
+- **Katmanlar:** Dialog, ConfirmDialog, Drawer (sağ, sol, alt; kaydırarak kapanır), Popover, PreviewCard, Tooltip, Menu, ContextMenu, Toast, CommandPalette
+- **Gezinme:** AppShell, SideNav, NavigationMenu, Tabs, Accordion, Stepper, Breadcrumbs, Pagination, PageHeader
+- **Veri:** DataList, DataTable, ListPanel, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, Skeleton
+- **Hareket:** Reveal, Collapse, Swap, AnimatedNumber
+
 ## İlkeler
 
 - **Erişilebilirlik:** Okunacak her metin her yüzeyde en az 4.5:1 kontrastta kalır; `faint` tonu yalnızca süs ve devre dışı durumlar içindir. Odak halkası anında görünür ve Windows yüksek kontrast modunda da çizilir. Yüksek kontrast isteyen okura sessiz metin ve çizgiler bir kademe güçlenir.
@@ -51,7 +69,7 @@ Chrome/Edge 113, Safari 17.2 ve Firefox 112 ile sonrası. Tema geçişindeki yum
 ```sh
 pnpm install
 pnpm --filter @skylab-kulubu/skylcn-ui build
-pnpm dev        # bileşen önizlemesi
+pnpm dev        # playground: senaryolar ve bileşen kütüphanesi
 pnpm typecheck
 pnpm lint
 pnpm test       # birim ve erişilebilirlik (axe) testleri
