@@ -19,6 +19,7 @@ import {
 import { CheckCircle2, Mail, Send, Shield, Trash2, UserPlus, Users, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Example } from '../doc';
+import { MemberTable } from '../member-table';
 import { MEMBERS } from '../members';
 
 function DropzoneExamples() {
@@ -283,7 +284,20 @@ function StatusPageExamples() {
   );
 }
 
+function DataTableExamples() {
+  return (
+    <Example
+      title="Üyeler"
+      description="Bir satıra tıkla, sonra ↑ ve ↓ ile gez; birkaç satır seçince toplu işlem çubuğu gelir."
+      align="start"
+    >
+      <MemberTable />
+    </Example>
+  );
+}
+
 export const DISPLAY_EXTRA_EXAMPLES = {
+  'data-table': DataTableExamples,
   'month-calendar': MonthCalendarExamples,
   'status-page': StatusPageExamples,
   tree: TreeExamples,

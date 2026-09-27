@@ -522,6 +522,18 @@ const MINIS: Record<string, () => ReactNode> = {
     </div>
   ),
   'data-list': DataListMini,
+  'data-table': () => (
+    <span className="flex gap-2 text-2xs">
+      <span className="flex flex-col gap-1 text-muted-foreground">
+        <span>☑ Aktif 85</span>
+        <span>☐ Pasif 16</span>
+      </span>
+      <span className="flex w-32 flex-col divide-y divide-border-subtle rounded border border-border">
+        <span className="px-1.5 py-0.5">Ece Kaya</span>
+        <span className="px-1.5 py-0.5">Mert Işık</span>
+      </span>
+    </span>
+  ),
   'list-panel': () => <Skeleton className="h-10 w-44" />,
   card: () => (
     <div className="w-36 rounded-lg border border-border p-2">

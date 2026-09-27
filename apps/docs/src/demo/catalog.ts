@@ -429,6 +429,19 @@ export const ENTRIES: Entry[] = [
     ],
   },
   {
+    slug: 'data-table',
+    name: 'DataTable',
+    category: 'data',
+    description:
+      'Uzun listeler için yönetim tablosu: arama, sayaçlı filtreler, sütun seçimi, toplu işlem ve satırlar arasında gezilen detay paneli.',
+    imports: ['DataTable'],
+    a11y: [
+      'Gerçek bir tablo olarak okunur; sıralanan sütun aria-sort taşır.',
+      'Detay paneli açıkken ↑ ve ↓ (ya da j ve k) satırlar arasında gezer.',
+      'Filtreler telefonda alttan açılan panelde.',
+    ],
+  },
+  {
     slug: 'list-panel',
     name: 'ListPanel',
     category: 'data',

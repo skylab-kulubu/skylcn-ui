@@ -90,7 +90,7 @@ export function ComponentDoc({ slug }: { slug: string }) {
   const Examples = EXAMPLES[slug];
   const index = ordered.findIndex((item) => item.slug === slug);
   const importLine = entry.imports.length
-    ? `import { ${entry.imports.join(', ')} } from '@skylab-kulubu/skylcn-ui${entry.charts ? '/charts' : ''}';`
+    ? `import { ${entry.imports.join(', ')} } from '@skylab-kulubu/skylcn-ui${entry.charts ? '/charts' : entry.slug === 'data-table' ? '/data-table' : ''}';`
     : null;
 
   return (

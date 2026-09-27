@@ -8,6 +8,7 @@ import {
   Mail,
   OctagonAlert,
   Settings,
+  Table2,
   Users,
 } from 'lucide-react';
 
@@ -29,6 +30,12 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         label: 'Üyeler',
         icon: Users,
         description: 'Arama, filtre, sıralama, sayfalama ve satır menüleriyle uzun bir liste.',
+      },
+      {
+        href: '/playground/table',
+        label: 'Üye tablosu',
+        icon: Table2,
+        description: 'DataTable: sayaçlı filtreler, sütunlar, toplu işlem, detay paneli.',
       },
       {
         href: '/playground/analytics',
