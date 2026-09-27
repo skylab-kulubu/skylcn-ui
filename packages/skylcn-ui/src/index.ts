@@ -145,6 +145,13 @@ export {
 } from './components/field.js';
 export { IconSwap, type IconSwapProps } from './components/icon-swap.js';
 export {
+  MonthCalendar,
+  StatusPage,
+  type CalendarEvent,
+  type MonthCalendarProps,
+  type StatusPageProps,
+} from './components/month-calendar.js';
+export {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,

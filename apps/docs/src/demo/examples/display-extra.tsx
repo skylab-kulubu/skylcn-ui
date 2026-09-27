@@ -9,6 +9,8 @@ import {
   Checkbox,
   DescriptionList,
   Dropzone,
+  MonthCalendar,
+  StatusPage,
   Stepper,
   Swap,
   Timeline,
@@ -241,7 +243,49 @@ function TreeExamples() {
   );
 }
 
+function MonthCalendarExamples() {
+  return (
+    <Example
+      title="Etkinlikler"
+      description="Tam hali: Senaryolar → Etkinlik takvimi."
+      align="start"
+    >
+      <MonthCalendar
+        defaultMonth={new Date(2026, 9, 1)}
+        events={[
+          { id: '1', date: '2026-10-04', title: 'Gece Kodu', time: '18.00' },
+          { id: '2', date: '2026-10-11', title: 'Web atölyesi', time: '14.00', tone: 'info' },
+        ]}
+      />
+    </Example>
+  );
+}
+
+function StatusPageExamples() {
+  return (
+    <Example
+      title="Bulunamadı"
+      description="Diğerleri: Senaryolar → Hata ve yönlendirme."
+      align="start"
+    >
+      <div className="overflow-hidden rounded-xl border border-border">
+        <StatusPage
+          as="div"
+          className="min-h-80"
+          code="404"
+          title="Bu sayfa yok"
+          description="Bağlantı eskimiş olabilir."
+        >
+          <Button variant="primary">Ana sayfaya dön</Button>
+        </StatusPage>
+      </div>
+    </Example>
+  );
+}
+
 export const DISPLAY_EXTRA_EXAMPLES = {
+  'month-calendar': MonthCalendarExamples,
+  'status-page': StatusPageExamples,
   tree: TreeExamples,
   dropzone: DropzoneExamples,
   stepper: StepperExamples,

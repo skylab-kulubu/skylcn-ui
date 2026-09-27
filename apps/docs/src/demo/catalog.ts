@@ -504,6 +504,22 @@ export const ENTRIES: Entry[] = [
     motion: ['Dal doğal yüksekliğine açılır, ok döner.'],
   },
   {
+    slug: 'month-calendar',
+    name: 'MonthCalendar',
+    category: 'data',
+    description: 'Etkinlikleri ay ızgarasında gösteren takvim; telefonda gün gün liste.',
+    imports: ['MonthCalendar'],
+    motion: ['Aylar gidilen yöne kayar.'],
+  },
+  {
+    slug: 'status-page',
+    name: 'StatusPage',
+    category: 'data',
+    description: 'Tam sayfa durumlar: bulunamadı, yetki yok, sunucu hatası, yönlendirme.',
+    imports: ['StatusPage'],
+    a11y: ['Yönlendirme sürerken durum ekran okuyucuya bildirilir.'],
+  },
+  {
     slug: 'timeline',
     name: 'Timeline',
     category: 'data',

@@ -1,10 +1,12 @@
 import type { LucideIcon } from 'lucide-react';
 import {
+  CalendarDays,
   ChartPie,
   Globe,
   LayoutDashboard,
   LoaderCircle,
   Mail,
+  OctagonAlert,
   Settings,
   Users,
 } from 'lucide-react';
@@ -41,6 +43,12 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         description: 'Skymail’in hedef görünümü: klasörler, gönderimler ve onay.',
       },
       {
+        href: '/playground/calendar',
+        label: 'Etkinlik takvimi',
+        icon: CalendarDays,
+        description: 'Ay ızgarasında etkinlikler, telefonda gün gün liste.',
+      },
+      {
         href: '/playground/settings',
         label: 'Ayarlar',
         icon: Settings,
@@ -67,6 +75,12 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         label: 'Durum ekranları',
         icon: LoaderCircle,
         description: 'Yükleniyor, boş, hata ve yetki yok ekranları.',
+      },
+      {
+        href: '/playground/status',
+        label: 'Hata ve yönlendirme',
+        icon: OctagonAlert,
+        description: '404, 403, 500 ve giriş yönlendirmesi.',
       },
     ],
   },

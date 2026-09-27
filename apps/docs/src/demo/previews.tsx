@@ -660,6 +660,19 @@ const MINIS: Record<string, () => ReactNode> = {
       <span className="pl-6 text-muted-foreground">SkySec</span>
     </span>
   ),
+  'month-calendar': () => (
+    <span className="grid w-44 grid-cols-7 gap-px rounded border border-border text-3xs">
+      {Array.from({ length: 14 }, (_, i) => (
+        <span key={i} className="flex h-6 flex-col px-0.5 text-muted-foreground">
+          {i + 1}
+          {i === 3 || i === 10 ? <span className="mt-auto h-1 rounded bg-skylab-400" /> : null}
+        </span>
+      ))}
+    </span>
+  ),
+  'status-page': () => (
+    <span className="font-mono text-4xl font-bold text-muted-foreground">404</span>
+  ),
   timeline: () => (
     <span className="flex flex-col gap-2 text-2xs">
       {['Onaya sunuldu', 'Onaylandı', 'Gönderildi'].map((t) => (
