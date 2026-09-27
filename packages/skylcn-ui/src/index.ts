@@ -79,6 +79,17 @@ export {
   type IconButtonProps,
 } from './components/button.js';
 export {
+  Calendar,
+  DatePicker,
+  DateRangePicker,
+  defaultDatePresets,
+  type CalendarProps,
+  type DatePickerProps,
+  type DatePreset,
+  type DateRange,
+  type DateRangePickerProps,
+} from './components/calendar.js';
+export {
   Card,
   CardAction,
   CardContent,

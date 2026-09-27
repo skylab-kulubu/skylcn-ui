@@ -593,6 +593,18 @@ const MINIS: Record<string, () => ReactNode> = {
       − <span className="tabular-nums">4</span> +
     </span>
   ),
+  'date-picker': () => (
+    <span className="grid grid-cols-7 gap-0.5 text-3xs tabular-nums">
+      {Array.from({ length: 14 }, (_, i) => (
+        <span
+          key={i}
+          className={`grid size-5 place-items-center rounded ${i === 9 ? 'bg-skylab-500 text-primary-foreground' : 'text-muted-foreground'}`}
+        >
+          {i + 8}
+        </span>
+      ))}
+    </span>
+  ),
   'otp-field': () => (
     <span className="flex gap-1">
       {['4', '8', '1', '', '', ''].map((c, i) => (

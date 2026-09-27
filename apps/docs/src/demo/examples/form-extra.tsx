@@ -1,7 +1,11 @@
 'use client';
 
 import {
+  Calendar,
   Combobox,
+  DatePicker,
+  type DateRange,
+  DateRangePicker,
   Field,
   MultiSelect,
   NumberField,
@@ -80,7 +84,36 @@ function OtpExamples() {
   );
 }
 
+function DateExamples() {
+  const [day, setDay] = useState<Date | null>(null);
+  const [range, setRange] = useState<DateRange | undefined>();
+  const [inline, setInline] = useState<Date | undefined>(new Date());
+  return (
+    <>
+      <Example title="Tarih alanı" align="start">
+        <div className="grid max-w-xl gap-4 sm:grid-cols-2">
+          <Field label="Etkinlik günü">
+            <DatePicker
+              value={day}
+              onValueChange={setDay}
+              min={new Date()}
+              aria-label="Etkinlik günü"
+            />
+          </Field>
+          <Field label="Rapor aralığı">
+            <DateRangePicker value={range} onValueChange={setRange} aria-label="Rapor aralığı" />
+          </Field>
+        </div>
+      </Example>
+      <Example title="Takvim">
+        <Calendar mode="single" selected={inline} onSelect={setInline} />
+      </Example>
+    </>
+  );
+}
+
 export const FORM_EXTRA_EXAMPLES = {
+  'date-picker': DateExamples,
   combobox: ComboboxExamples,
   'number-field': NumberExamples,
   'otp-field': OtpExamples,
