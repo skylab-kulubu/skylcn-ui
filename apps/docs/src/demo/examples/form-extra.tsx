@@ -6,6 +6,7 @@ import {
   DatePicker,
   type DateRange,
   DateRangePicker,
+  DateTimePicker,
   Field,
   MultiSelect,
   NumberField,
@@ -88,6 +89,7 @@ function DateExamples() {
   const [day, setDay] = useState<Date | null>(null);
   const [range, setRange] = useState<DateRange | undefined>();
   const [inline, setInline] = useState<Date | undefined>(new Date());
+  const [start, setStart] = useState<Date | null>(null);
   return (
     <>
       <Example title="Tarih alanı" align="start">
@@ -104,6 +106,15 @@ function DateExamples() {
             <DateRangePicker value={range} onValueChange={setRange} aria-label="Rapor aralığı" />
           </Field>
         </div>
+      </Example>
+      <Example
+        title="Tarih ve saat"
+        description="Gün seçilince takvim açık kalır, saat ardından ayarlanır; Tamam kapatır."
+        align="start"
+      >
+        <Field label="Başlangıç" className="max-w-xs">
+          <DateTimePicker value={start} onValueChange={setStart} aria-label="Başlangıç" />
+        </Field>
       </Example>
       <Example title="Takvim">
         <Calendar mode="single" selected={inline} onSelect={setInline} />

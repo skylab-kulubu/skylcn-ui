@@ -190,8 +190,9 @@ export const ENTRIES: Entry[] = [
     slug: 'date-picker',
     name: 'DatePicker ve Calendar',
     category: 'forms',
-    description: 'Takvimle gün ya da aralık seçimi; aralıkta hazır seçenekler önce gelir.',
-    imports: ['DatePicker', 'DateRangePicker', 'Calendar'],
+    description:
+      'Takvimle gün, gün ve saat ya da aralık seçimi; aralıkta hazır seçenekler önce gelir.',
+    imports: ['DatePicker', 'DateTimePicker', 'DateRangePicker', 'Calendar'],
     a11y: [
       'Ok tuşları günler, PageUp ve PageDown aylar arasında gezer.',
       'Türkçede hafta pazartesi başlar; tarih okura kendi dilinde yazılır.',

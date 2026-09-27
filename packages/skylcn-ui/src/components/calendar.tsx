@@ -1,11 +1,12 @@
 'use client';
 
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, type ComponentProps } from 'react';
+import { CalendarClock, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useId, useState, type ComponentProps } from 'react';
 import { DayPicker, type DateRange } from 'react-day-picker';
 import { enUS, tr } from 'react-day-picker/locale';
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
+import { Button } from './button.js';
 import { Popover, PopoverContent, PopoverTrigger } from './popover.js';
 
 export type { DateRange };
@@ -130,6 +131,105 @@ export function DatePicker({
             if (day) setOpen(false);
           }}
         />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+export type DateTimePickerProps = {
+  value: Date | null;
+  onValueChange: (value: Date | null) => void;
+  placeholder?: string;
+  /** The time a newly picked day gets, as HH:MM; 18:00, when club events usually start. */
+  defaultTime?: string;
+  /** Days before and after these cannot be picked. */
+  min?: Date;
+  max?: Date;
+  'aria-label'?: string;
+  id?: string;
+  className?: string;
+};
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+function atTime(day: Date, time: string) {
+  const [hours = 0, minutes = 0] = time.split(':').map(Number);
+  const next = new Date(day);
+  next.setHours(hours, minutes, 0, 0);
+  return next;
+}
+
+/**
+ * A day and a time in one field, such as when an event starts. Picking a day
+ * keeps the calendar open so the time can follow; Done closes it.
+ */
+export function DateTimePicker({
+  value,
+  onValueChange,
+  placeholder,
+  defaultTime = '18:00',
+  min,
+  max,
+  className,
+  ...props
+}: DateTimePickerProps) {
+  const [open, setOpen] = useState(false);
+  const [draftTime, setDraftTime] = useState(defaultTime);
+  const { locale, messages } = useSkylcn();
+  const timeId = useId();
+  const tag = locale === 'tr' ? 'tr-TR' : 'en-US';
+  const time = value ? `${pad(value.getHours())}:${pad(value.getMinutes())}` : draftTime;
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        id={props.id}
+        aria-label={props['aria-label']}
+        className={cn(triggerClass, className)}
+      >
+        <CalendarClock className="size-3.5 shrink-0 text-subtle-foreground" />
+        <span className={cn('truncate', !value && 'text-subtle-foreground')}>
+          {value
+            ? value.toLocaleString(tag, {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+            : (placeholder ?? messages.pickDateTime)}
+        </span>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-auto p-2">
+        <Calendar
+          mode="single"
+          selected={value ?? undefined}
+          defaultMonth={value ?? undefined}
+          disabled={[...(min ? [{ before: min }] : []), ...(max ? [{ after: max }] : [])]}
+          onSelect={(day) => {
+            if (day) onValueChange(atTime(day, time));
+          }}
+        />
+        <div className="mt-2 flex items-center gap-2 border-t border-border-subtle px-1 pt-2">
+          <label htmlFor={timeId} className="text-2xs text-subtle-foreground">
+            {messages.time}
+          </label>
+          {/* A plain input: Base UI's would join the Field around the picker and take its label */}
+          <input
+            id={timeId}
+            type="time"
+            value={time}
+            onChange={(event) => {
+              const next = event.target.value;
+              if (!next) return;
+              if (value) onValueChange(atTime(value, next));
+              else setDraftTime(next);
+            }}
+            className="h-7 w-28 rounded-md border border-input bg-input-background px-2 text-xs text-foreground tabular-nums outline-hidden hover:border-border-strong focus-visible:border-skylab-400/50 focus-visible:ring-2 focus-visible:ring-skylab-400/20 pointer-coarse:h-9 pointer-coarse:text-base"
+          />
+          <Button size="sm" variant="primary" className="ml-auto" onClick={() => setOpen(false)}>
+            {messages.done}
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );
