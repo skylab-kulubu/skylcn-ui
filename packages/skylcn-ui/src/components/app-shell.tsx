@@ -574,6 +574,8 @@ export type SidebarGroupProps = {
   /** True while one of its items is the current page; opens the group. */
   active?: boolean;
   defaultOpen?: boolean;
+  /** Remembers whether the reader left it open or closed, under this key. */
+  storageKey?: string;
   children: ReactNode;
 };
 
@@ -583,14 +585,37 @@ export function SidebarGroup({
   icon: Icon,
   active = false,
   defaultOpen,
+  storageKey,
   children,
 }: SidebarGroupProps) {
   const { collapsed, setCollapsed } = useSidebar();
-  const [open, setOpen] = useState(defaultOpen ?? active);
+  const [open, setOpenState] = useState(defaultOpen ?? active);
+
+  useEffect(() => {
+    if (!storageKey || active) return;
+    try {
+      const saved = window.localStorage.getItem(storageKey);
+      if (saved !== null) setOpenState(saved === 'true');
+    } catch {
+      // Storage can be unavailable (private mode); the default stays.
+    }
+    // Read once per key; the active page opening its group must not be undone
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    if (!storageKey) return;
+    try {
+      window.localStorage.setItem(storageKey, String(next));
+    } catch {
+      // Not remembering is fine.
+    }
+  };
   const [wasActive, setWasActive] = useState(active);
   if (active !== wasActive) {
     setWasActive(active);
-    if (active) setOpen(true);
+    if (active) setOpenState(true);
   }
 
   const rowClass = cn(

@@ -36,6 +36,11 @@ const fold = (text: string) =>
 export function useCommandShortcut(onOpen: () => void) {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.closest('input, textarea, select, [contenteditable=""], [contenteditable="true"]')
+      )
+        return;
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         onOpen();
