@@ -15,15 +15,15 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "default": "./dist/index.js"
     },
     "./charts": {
       "types": "./dist/charts/index.d.ts",
-      "import": "./dist/charts/index.js"
+      "default": "./dist/charts/index.js"
     },
     "./data-table": {
       "types": "./dist/data-table/index.d.ts",
-      "import": "./dist/data-table/index.js"
+      "default": "./dist/data-table/index.js"
     },
     "./theme.css": "./dist/styles/theme.css",
     "./tokens.css": "./dist/styles/tokens.css",
