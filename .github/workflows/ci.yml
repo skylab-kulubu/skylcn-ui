@@ -23,9 +23,10 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Prettier's Tailwind plugin reads the docs stylesheet, which imports the built theme
+      - run: pnpm --filter @skylab-kulubu/skylcn-ui build
       - run: pnpm format:check
       - run: pnpm lint
-      - run: pnpm --filter @skylab-kulubu/skylcn-ui build
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm --filter docs build
