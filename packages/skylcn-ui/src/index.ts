@@ -11,6 +11,7 @@ export { popupMotionBase, popupMotionFast } from './lib/motion.js';
 export { usePendingIndicator } from './lib/use-pending-indicator.js';
 
 export { Avatar, initialsOf, type AvatarProps } from './components/avatar.js';
+export { BarList, type BarListItem, type BarListProps } from './components/bar-list.js';
 export {
   Badge,
   StatusDot,
@@ -64,6 +65,13 @@ export {
   type InputProps,
 } from './components/field.js';
 export { IconSwap, type IconSwapProps } from './components/icon-swap.js';
+export {
+  ProportionBar,
+  type ProportionBarProps,
+  type ProportionSegment,
+} from './components/proportion-bar.js';
+export { Reveal, type RevealProps } from './components/reveal.js';
+export { TrendBadge, type TrendBadgeProps } from './components/trend-badge.js';
 export { Pagination, pageSlots, type PaginationProps } from './components/pagination.js';
 export {
   Popover,
@@ -81,6 +89,7 @@ export {
 } from './components/segmented-control.js';
 export { Select, type SelectOption, type SelectProps } from './components/select.js';
 export { Skeleton } from './components/skeleton.js';
+export { Sparkline, type SparklineProps } from './components/sparkline.js';
 export { SkylabLoader, type SkylabLoaderProps } from './components/skylab-loader.js';
 export { StateCard, type StateCardProps } from './components/state-card.js';
 export { Switch, ToggleRow, type SwitchProps, type ToggleRowProps } from './components/switch.js';
@@ -162,6 +171,7 @@ export {
 } from './components/menu.js';
 export { useTheme } from './lib/theme.js';
 export { useMotionPreference } from './lib/motion-preference.js';
+export { useReducedMotion } from './lib/use-reduced-motion.js';
 export {
   MOTION_STORAGE_KEY,
   THEME_STORAGE_KEY,

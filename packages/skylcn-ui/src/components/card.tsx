@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { Sparkline } from './sparkline.js';
 
 /** A framed surface for one piece of content: a summary, a form section, a chart. */
 export function Card({ className, ...props }: ComponentProps<'div'>) {
@@ -96,6 +97,8 @@ export type StatCardProps = {
   deltaTone?: keyof typeof DELTA_TONE;
   /** A line under the value, such as the period it covers. */
   hint?: ReactNode;
+  /** Recent figures, oldest first, drawn as a sparkline under the value. */
+  trend?: readonly number[];
   className?: string;
 };
 
@@ -107,6 +110,7 @@ export function StatCard({
   delta,
   deltaTone = 'neutral',
   hint,
+  trend,
   className,
 }: StatCardProps) {
   return (
@@ -118,7 +122,7 @@ export function StatCard({
         </p>
       </div>
       <div className="flex items-baseline gap-2">
-        <p className="text-2xl font-semibold text-foreground tabular-nums">{value}</p>
+        <p className="text-2xl font-semibold text-foreground">{value}</p>
         {delta ? (
           <span className={cn('text-xs font-medium tabular-nums', DELTA_TONE[deltaTone])}>
             {delta}
@@ -126,6 +130,7 @@ export function StatCard({
         ) : null}
       </div>
       {hint ? <p className="text-2xs text-muted-foreground">{hint}</p> : null}
+      {trend ? <Sparkline values={trend} className="mt-1" /> : null}
     </Card>
   );
 }

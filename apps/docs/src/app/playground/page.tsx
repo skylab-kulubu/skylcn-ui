@@ -12,10 +12,14 @@ import {
   ListItem,
   ListPanel,
   PageHeader,
+  SegmentedControl,
   StatCard,
 } from '@skylab-kulubu/skylcn-ui';
-import { CalendarDays, FileText, Megaphone, Plus, Users } from 'lucide-react';
-import { MEMBERS } from '../../demo/members';
+import { AreaChart, BarChart, DonutChart, LineChart } from '@skylab-kulubu/skylcn-ui/charts';
+import { CalendarDays, FileText, Plus, Users } from 'lucide-react';
+import { useState } from 'react';
+import { MEMBERS, TEAMS } from '../../demo/members';
+import { monthly, sum, type Range } from '../../demo/metrics';
 
 const EVENTS = [
   {
@@ -42,46 +46,64 @@ const EVENTS = [
     place: 'B blok, 204',
     state: 'Taslak',
   },
-  {
-    id: 'e4',
-    day: '02',
-    month: 'Kas',
-    title: 'YıldızJam tanıtım',
-    place: 'Yıldız, Oditoryum',
-    state: 'Taslak',
-  },
 ];
 
 const newest = [...MEMBERS].sort((a, b) => (a.joined < b.joined ? 1 : -1)).slice(0, 5);
-const active = MEMBERS.filter((member) => member.status === 'active').length;
+const byStatus = (status: string) => MEMBERS.filter((member) => member.status === status).length;
+const byTeam = TEAMS.map((team) => ({
+  team,
+  members: MEMBERS.filter((member) => member.team === team && member.status === 'active').length,
+})).sort((a, b) => b.members - a.members);
 
 export default function Overview() {
+  const [range, setRange] = useState<Range>('6m');
+  const data = monthly(range);
+  const trend = monthly('12m').map((row) => row.attendance);
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Genel bakış"
-        description="Kulübün bu dönemki durumu: üyeler, etkinlikler ve bekleyen işler."
+        description="Kulübün bu dönemki durumu: üyeler, etkinlikler ve başvurular."
         actions={
           <Button variant="primary">
             <Plus /> Etkinlik oluştur
           </Button>
         }
-      />
+      >
+        <SegmentedControl
+          aria-label="Dönem"
+          value={range}
+          onValueChange={(value) => setRange(value as Range)}
+          options={[
+            { value: '3m', label: 'Son 3 ay' },
+            { value: '6m', label: 'Son 6 ay' },
+            { value: '12m', label: 'Son 12 ay' },
+          ]}
+        />
+      </PageHeader>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
           label="Aktif üye"
-          value={active}
+          value={byStatus('active')}
           icon={Users}
           delta="+18"
           deltaTone="positive"
-          hint="Bu dönem"
+          hint="Geçen döneme göre"
+        />
+        <StatCard
+          label="Katılım"
+          value={sum(range, 'attendance').toLocaleString('tr-TR')}
+          icon={CalendarDays}
+          hint="Seçili dönemde"
+          trend={trend}
         />
         <StatCard
           label="Etkinlik"
-          value={EVENTS.length}
+          value={sum(range, 'workshops') + sum(range, 'talks') + sum(range, 'contests')}
           icon={CalendarDays}
-          hint="Önümüzdeki 6 hafta"
+          hint="Atölye, konuşma, yarışma"
         />
         <StatCard
           label="Açık başvuru"
@@ -91,10 +113,68 @@ export default function Overview() {
           deltaTone="positive"
           hint="Son 7 gün"
         />
-        <StatCard label="Duyuru" value={3} icon={Megaphone} delta="-2" hint="Yayında" />
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-3">
+        <AreaChart
+          className="xl:col-span-2"
+          title="Etkinlik katılımı"
+          description="Aylara göre toplam katılımcı"
+          data={data}
+          x="month"
+          xLabel="Ay"
+          series={{ attendance: { label: 'Katılımcı' } }}
+        />
+        <DonutChart
+          title="Üye durumu"
+          description="Kayıtlı 124 üye"
+          data={[
+            { key: 'active', label: 'Aktif', value: byStatus('active') },
+            { key: 'inactive', label: 'Pasif', value: byStatus('inactive') },
+            { key: 'alumni', label: 'Mezun', value: byStatus('alumni') },
+          ]}
+        />
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-2">
+        <BarChart
+          stacked
+          title="Etkinlik türleri"
+          description="Ayda düzenlenen etkinlikler"
+          data={data}
+          x="month"
+          xLabel="Ay"
+          series={{
+            workshops: { label: 'Atölye' },
+            talks: { label: 'Konuşma' },
+            contests: { label: 'Yarışma' },
+          }}
+        />
+        <LineChart
+          title="Form başvuruları"
+          description="Etkinlik başvurularının aylık seyri"
+          data={data}
+          x="month"
+          xLabel="Ay"
+          series={{
+            geceKodu: { label: 'Gece Kodu' },
+            yildizJam: { label: 'YıldızJam' },
+            artlab: { label: 'ARTLAB' },
+          }}
+        />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-5">
+        <BarChart
+          className="lg:col-span-2"
+          orientation="horizontal"
+          title="Ekiplere göre aktif üye"
+          data={byTeam}
+          x="team"
+          xLabel="Ekip"
+          height={260}
+          series={{ members: { label: 'Aktif üye' } }}
+        />
         <Card className="lg:col-span-3">
           <CardHeader>
             <div className="min-w-0">
@@ -132,24 +212,11 @@ export default function Overview() {
                   }
                 />
               ))}
-            </ListPanel>
-          </div>
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div className="min-w-0">
-              <CardTitle>Yeni katılanlar</CardTitle>
-              <CardDescription>Son kaydolan beş üye.</CardDescription>
-            </div>
-          </CardHeader>
-          <div className="p-2">
-            <ListPanel status={{ kind: 'ready' }} framed={false}>
-              {newest.map((member) => (
+              {newest.slice(0, 2).map((member) => (
                 <ListItem
                   key={member.id}
                   href="/playground/members"
-                  title={member.name}
+                  title={`${member.name} kulübe katıldı`}
                   subtitle={member.team}
                   leading={<Avatar name={member.name} size="sm" />}
                 />

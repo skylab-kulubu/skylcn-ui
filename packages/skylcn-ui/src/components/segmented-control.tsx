@@ -15,7 +15,7 @@ export type SegmentedControlProps = {
   className?: string;
 };
 
-/** A row of mutually exclusive choices with a sliding highlight; icons render icon-only with the label as tooltip. */
+/** A row of mutually exclusive choices with a sliding highlight, as wide as its longest choice times the count (pass w-full to stretch); icons render icon-only with the label as tooltip. */
 export function SegmentedControl({
   options,
   value,
@@ -38,7 +38,7 @@ export function SegmentedControl({
       }}
       aria-label={ariaLabel}
       className={cn(
-        'relative grid w-full rounded-lg border border-border bg-input-background p-1 text-2xs',
+        'relative inline-grid w-fit max-w-full rounded-lg border border-border bg-input-background p-1 text-2xs',
         className,
       )}
       style={{ gridTemplateColumns: `repeat(${count}, minmax(0, 1fr))` }}

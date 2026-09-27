@@ -55,12 +55,26 @@
   --warning: #fbbf24;
   --info: #93c5fd;
 
-  /* Charts */
-  --chart-1: var(--skylab-500);
-  --chart-2: #fbbf24;
-  --chart-3: #34d399;
-  --chart-4: #a3a3a3;
-  --chart-5: var(--skylab-700);
+  /*
+   * Charts. Eight series colours in a fixed order, assigned in sequence and
+   * never cycled: brand lilac first, then orange, aqua, yellow, magenta, green,
+   * blue, red. Validated as a set for each theme (lightness band, chroma floor,
+   * neighbours told apart under protanopia and deuteranopia at ΔE 8.4 or more
+   * and under normal vision at 19.3 or more, 3:1 against the card). Change a
+   * value only by re-running that validation.
+   */
+  --chart-1: #a875b8;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --chart-6: #008300;
+  --chart-7: #3987e5;
+  --chart-8: #e66767;
+  --chart-grid: rgb(255 255 255 / 7%);
+  --chart-axis: rgb(255 255 255 / 16%);
+  /* The chart card, opaque: gaps between bars and rings around dots are drawn in it */
+  --chart-surface: #1e1e1e;
 
   /* Shape */
   --radius: 0.5rem;
@@ -114,9 +128,18 @@
   --warning: #a44a07;
   --info: #1d4ed8;
 
-  --chart-2: #a44a07;
-  --chart-3: #047857;
-  --chart-4: #6b665f;
+  /* Four of these sit under 3:1 on the light card, so every chart carries a legend and a table view */
+  --chart-1: #8f5e98;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-6: #008300;
+  --chart-7: #2a78d6;
+  --chart-8: #e34948;
+  --chart-grid: rgb(0 0 0 / 8%);
+  --chart-axis: rgb(0 0 0 / 20%);
+  --chart-surface: #f8f7f5;
 
   --elevation-overlay: 0 20px 40px -16px rgb(28 26 24 / 25%);
 

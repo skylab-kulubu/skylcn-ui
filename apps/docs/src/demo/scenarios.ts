@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { LayoutDashboard, LoaderCircle, Settings, Users } from 'lucide-react';
+import { ChartPie, LayoutDashboard, LoaderCircle, Settings, Users } from 'lucide-react';
 
 export type Scenario = { href: string; label: string; icon: LucideIcon; description: string };
 
@@ -19,6 +19,12 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         label: 'Üyeler',
         icon: Users,
         description: 'Arama, filtre, sıralama, sayfalama ve satır menüleriyle uzun bir liste.',
+      },
+      {
+        href: '/playground/analytics',
+        label: 'Form analitiği',
+        icon: ChartPie,
+        description: 'Yanıt akışı, kaynaklar ve soru soru dağılımlar.',
       },
       {
         href: '/playground/settings',
