@@ -87,7 +87,7 @@ export function MonthCalendar({
         TONE[event.tone ?? 'brand'],
       )}
     >
-      {event.time ? <span className="tabular-nums opacity-80">{event.time} </span> : null}
+      {event.time ? <span className="tabular-nums">{event.time} </span> : null}
       {event.title}
     </button>
   );
@@ -147,7 +147,7 @@ export function MonthCalendar({
                         ? 'bg-primary text-primary-foreground'
                         : inMonth
                           ? 'text-secondary-foreground'
-                          : 'text-faint-foreground',
+                          : 'text-subtle-foreground',
                     )}
                   >
                     {day.getDate()}

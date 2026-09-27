@@ -154,6 +154,8 @@ export type KanbanProps = {
   /** Called with the card and its new column; the parent moves it. */
   onMove: (cardId: string, column: string) => void;
   'aria-label': string;
+  /** Level of the column headings, one below the heading above the board. */
+  headingLevel?: 2 | 3 | 4;
   className?: string;
 };
 
@@ -162,8 +164,16 @@ export type KanbanProps = {
  * with the mouse, and every card also has a "Move" menu, so touch and
  * keyboard readers never need to drag.
  */
-export function Kanban({ columns, cards, onMove, 'aria-label': label, className }: KanbanProps) {
+export function Kanban({
+  columns,
+  cards,
+  onMove,
+  'aria-label': label,
+  headingLevel = 3,
+  className,
+}: KanbanProps) {
   const { messages } = useSkylcn();
+  const Heading = `h${headingLevel}` as const;
   const [dragging, setDragging] = useState<string | null>(null);
   const [over, setOver] = useState<string | null>(null);
 
@@ -201,12 +211,12 @@ export function Kanban({ columns, cards, onMove, 'aria-label': label, className 
                 over === column.id && dragging && 'border-skylab-400/50 bg-skylab-500/5',
               )}
             >
-              <h3 className="flex items-center justify-between px-1.5 pt-1 text-xs font-semibold text-foreground">
+              <Heading className="flex items-center justify-between px-1.5 pt-1 text-xs font-semibold text-foreground">
                 {column.title}
                 <span className="text-2xs font-normal text-subtle-foreground tabular-nums">
                   {list.length}
                 </span>
-              </h3>
+              </Heading>
               <ul className="flex flex-col gap-2">
                 {list.map((card) => (
                   <li

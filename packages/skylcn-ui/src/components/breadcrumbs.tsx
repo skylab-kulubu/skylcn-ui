@@ -8,6 +8,8 @@ export type BreadcrumbItem = { href: string; label: string };
 
 export type BreadcrumbsProps = {
   items: readonly BreadcrumbItem[];
+  /** Names the trail when a page has more than one; "Sayfa yolu" by default. */
+  'aria-label'?: string;
   className?: string;
 };
 
@@ -15,7 +17,7 @@ export type BreadcrumbsProps = {
  * The trail above a page. On small screens it keeps only the way back and the
  * current page; links render through the provider's link component.
  */
-export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, 'aria-label': label, className }: BreadcrumbsProps) {
   const { messages, Link } = useSkylcn();
   if (items.length === 0) return null;
   const current = items[items.length - 1]!;
@@ -24,7 +26,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   return (
     <nav
       data-slot="breadcrumbs"
-      aria-label={messages.breadcrumb}
+      aria-label={label ?? messages.breadcrumb}
       className={cn('min-w-0 text-sm text-subtle-foreground', className)}
     >
       <div className="flex min-w-0 items-center gap-1.5 md:hidden">

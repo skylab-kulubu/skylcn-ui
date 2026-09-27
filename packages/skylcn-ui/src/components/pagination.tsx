@@ -30,6 +30,8 @@ export type PaginationProps = {
    * once some pages are folded away behind "…".
    */
   jumpToPage?: boolean;
+  /** Names the navigation when a page has more than one; "Sayfalama" by default. */
+  'aria-label'?: string;
   className?: string;
 };
 
@@ -42,6 +44,7 @@ export function Pagination({
   totalPages,
   onPageChange,
   jumpToPage,
+  'aria-label': label,
   className,
 }: PaginationProps) {
   const { messages } = useSkylcn();
@@ -67,7 +70,7 @@ export function Pagination({
   return (
     <nav
       data-slot="pagination"
-      aria-label={messages.pagination}
+      aria-label={label ?? messages.pagination}
       className={cn('flex flex-wrap items-center justify-center gap-1', className)}
     >
       <button

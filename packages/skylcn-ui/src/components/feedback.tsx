@@ -48,9 +48,12 @@ export type ProgressProps = ProgressPrimitive.Root.Props & {
 
 /** How far a task has come: an upload, a send going out. Without a value it runs as busy. */
 export function Progress({ label, showValue = true, className, ...props }: ProgressProps) {
+  const { locale } = useSkylcn();
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
+      // A fixed locale keeps the server and browser writing the value the same way
+      locale={locale === 'tr' ? 'tr-TR' : 'en-US'}
       className={cn('flex flex-col gap-1.5', className)}
       {...props}
     >
@@ -97,6 +100,7 @@ export function Meter({
   className,
   ...props
 }: MeterProps) {
+  const { locale } = useSkylcn();
   const share = (value - min) / (max - min || 1);
   const tone =
     share >= dangerAt ? 'bg-destructive' : share >= warnAt ? 'bg-warning' : 'bg-skylab-500';
@@ -109,6 +113,7 @@ export function Meter({
   return (
     <MeterPrimitive.Root
       data-slot="meter"
+      locale={locale === 'tr' ? 'tr-TR' : 'en-US'}
       value={value}
       max={max}
       min={min}

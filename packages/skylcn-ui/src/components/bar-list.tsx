@@ -71,7 +71,12 @@ export function BarList({
               >
                 {item.label}
               </span>
-              <span className="shrink-0 text-2xs text-subtle-foreground tabular-nums">
+              <span
+                className={cn(
+                  'shrink-0 text-2xs tabular-nums',
+                  chosen ? 'text-muted-foreground' : 'text-subtle-foreground',
+                )}
+              >
                 {item.detail ?? (
                   <>
                     <span className="text-secondary-foreground">{number(item.value)}</span>

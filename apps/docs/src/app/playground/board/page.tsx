@@ -42,6 +42,7 @@ export default function Board() {
       />
       <Kanban
         aria-label="Görevler"
+        headingLevel={2}
         columns={[
           { id: 'todo', title: 'Yapılacak' },
           { id: 'doing', title: 'Sürüyor' },

@@ -311,6 +311,7 @@ function BreadcrumbsExamples() {
   return (
     <Example title="Sayfa yolu" align="start">
       <Breadcrumbs
+        aria-label="Örnek sayfa yolu"
         items={[
           { href: '#', label: 'Formlar' },
           { href: '#', label: 'Gece Kodu 2026 başvuru' },
@@ -327,13 +328,23 @@ function PaginationExamples() {
   return (
     <>
       <Example title="Kısa liste" description="Tüm sayfalar görünür.">
-        <Pagination current={short} totalPages={5} onPageChange={setShort} />
+        <Pagination
+          aria-label="Kısa liste sayfaları"
+          current={short}
+          totalPages={5}
+          onPageChange={setShort}
+        />
       </Example>
       <Example
         title="Uzun liste"
         description="Geçerli sayfaya tıkla ve numara yaz; 0 ilk, sınırdan büyük son sayfaya gider."
       >
-        <Pagination current={long} totalPages={48} onPageChange={setLong} />
+        <Pagination
+          aria-label="Uzun liste sayfaları"
+          current={long}
+          totalPages={48}
+          onPageChange={setLong}
+        />
       </Example>
     </>
   );
