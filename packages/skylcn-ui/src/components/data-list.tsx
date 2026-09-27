@@ -347,12 +347,17 @@ export function DataListSkeleton({ rows = 4, className }: { rows?: number; class
   const { messages } = useSkylcn();
   return (
     <div
-      role="status"
-      aria-label={messages.loading}
+      role="rowgroup"
+      aria-busy="true"
       className={cn('divide-y divide-border-subtle', className)}
     >
+      <div role="row" className="sr-only">
+        <div role="cell">
+          <span role="status">{messages.loading}</span>
+        </div>
+      </div>
       {Array.from({ length: rows }, (_, row) => (
-        <div key={row} className={cn(ROW_GRID, 'px-3 py-2.5')}>
+        <div key={row} aria-hidden className={cn(ROW_GRID, 'px-3 py-2.5')}>
           {columns.map((column, i) => {
             const narrow =
               /^\d*\.?\d+rem$/.test(column.width) && Number.parseFloat(column.width) <= 2;
@@ -376,5 +381,13 @@ export function DataListSkeleton({ rows = 4, className }: { rows?: number; class
 
 /** The empty or error state of a list, in place of its rows. */
 export function DataListEmpty(props: StateCardProps) {
-  return <StateCard className="py-12" {...props} />;
+  return (
+    <div role="rowgroup">
+      <div role="row">
+        <div role="cell">
+          <StateCard className="py-12" {...props} />
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -38,7 +38,9 @@ function apply(preference: ThemePreference, animate: boolean) {
   const settle = () => root.classList.remove('skylcn-theme-switching');
   root.classList.add('skylcn-theme-switching');
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduce =
+    root.dataset.motion === 'reduced' ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (animate && !reduce && typeof document.startViewTransition === 'function') {
     document.startViewTransition(swap).finished.finally(settle);
     return;

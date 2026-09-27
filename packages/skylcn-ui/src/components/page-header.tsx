@@ -163,7 +163,7 @@ export function FilterPills<T extends string>({
               <span
                 className={cn(
                   'text-3xs tabular-nums',
-                  active ? 'text-skylab-300/80' : 'text-subtle-foreground',
+                  active ? 'text-skylab-300' : 'text-subtle-foreground',
                 )}
               >
                 {option.count}

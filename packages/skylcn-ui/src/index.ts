@@ -31,6 +31,18 @@ export {
   type ButtonProps,
   type IconButtonProps,
 } from './components/button.js';
+export {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  StatCard,
+  type CardTitleProps,
+  type StatCardProps,
+} from './components/card.js';
 export { Checkbox } from './components/checkbox.js';
 export {
   Drawer,
@@ -149,4 +161,11 @@ export {
   type MenuLinkItemProps,
 } from './components/menu.js';
 export { useTheme } from './lib/theme.js';
-export { THEME_STORAGE_KEY, ThemeScript, type ThemePreference } from './lib/theme-script.js';
+export { useMotionPreference } from './lib/motion-preference.js';
+export {
+  MOTION_STORAGE_KEY,
+  THEME_STORAGE_KEY,
+  ThemeScript,
+  type MotionPreference,
+  type ThemePreference,
+} from './lib/theme-script.js';

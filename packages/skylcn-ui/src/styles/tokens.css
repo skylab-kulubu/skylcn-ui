@@ -181,7 +181,11 @@
   --motion-scale-from: 0.98;
 }
 
-/* Reduced motion keeps short fades, so changes stay noticeable, and drops all travel and scaling */
+/*
+ * Reduced motion keeps short fades, so changes stay noticeable, and drops all
+ * travel and scaling. It follows the system setting, or data-motion="reduced"
+ * on <html> when the reader turns it on inside a product.
+ */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-duration-slow: 200ms;
@@ -191,6 +195,14 @@
     --motion-shift-lg: 0px;
     --motion-scale-from: 1;
   }
+}
+:root[data-motion='reduced'] {
+  --motion-duration-slow: 200ms;
+  --motion-duration-spring: 200ms;
+  --motion-stagger: 0ms;
+  --motion-shift: 0px;
+  --motion-shift-lg: 0px;
+  --motion-scale-from: 1;
 }
 
 /* A stronger contrast request lifts quiet text one step and firms up the lines */

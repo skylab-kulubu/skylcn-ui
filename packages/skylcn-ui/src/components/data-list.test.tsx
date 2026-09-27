@@ -8,7 +8,9 @@ import {
   DataListBody,
   DataListCell,
   DataListColumnHeader,
+  DataListEmpty,
   DataListHeader,
+  DataListSkeleton,
   DataListRow,
   type DataListColumn,
 } from './data-list.js';
@@ -70,6 +72,33 @@ describe('DataList', () => {
 
   it('breaks no accessibility rules', async () => {
     render(<List onSortChange={() => undefined} />);
+    expect(await axeViolations()).toEqual([]);
+  });
+
+  it('keeps table structure while loading and when empty', async () => {
+    const { rerender } = render(
+      <DataList columns={columns}>
+        <DataListHeader>
+          <DataListColumnHeader column="status" label="Durum" />
+          <DataListColumnHeader column="name">Ad</DataListColumnHeader>
+          <DataListColumnHeader column="role">Yetki</DataListColumnHeader>
+        </DataListHeader>
+        <DataListSkeleton rows={3} />
+      </DataList>,
+    );
+    expect(screen.getByRole('status')).toHaveTextContent('Yükleniyor');
+    expect(await axeViolations()).toEqual([]);
+
+    rerender(
+      <DataList columns={columns}>
+        <DataListHeader>
+          <DataListColumnHeader column="status" label="Durum" />
+          <DataListColumnHeader column="name">Ad</DataListColumnHeader>
+          <DataListColumnHeader column="role">Yetki</DataListColumnHeader>
+        </DataListHeader>
+        <DataListEmpty title="Eşleşen üye yok" />
+      </DataList>,
+    );
     expect(await axeViolations()).toEqual([]);
   });
 });
