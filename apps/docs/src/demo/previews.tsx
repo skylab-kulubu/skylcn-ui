@@ -685,6 +685,24 @@ const MINIS: Record<string, () => ReactNode> = {
   'status-page': () => (
     <span className="font-mono text-4xl font-bold text-muted-foreground">404</span>
   ),
+  kanban: () => (
+    <span className="flex gap-2 text-3xs">
+      {['Yapılacak', 'Bitti'].map((t, i) => (
+        <span key={t} className="flex w-20 flex-col gap-1 rounded border border-border p-1">
+          {t}
+          <span className="rounded bg-background px-1 py-0.5 shadow-sm">
+            {i ? 'Salon' : 'Afiş'}
+          </span>
+        </span>
+      ))}
+    </span>
+  ),
+  carousel: () => (
+    <span className="flex items-center gap-1.5">
+      <span className="h-12 w-20 rounded border border-border bg-skylab-500/20" />
+      <span className="h-12 w-8 rounded border border-border opacity-60" />
+    </span>
+  ),
   timeline: () => (
     <span className="flex flex-col gap-2 text-2xs">
       {['Onaya sunuldu', 'Onaylandı', 'Gönderildi'].map((t) => (

@@ -8,7 +8,9 @@ import {
   Button,
   Checkbox,
   DescriptionList,
+  Carousel,
   Dropzone,
+  Kanban,
   MonthCalendar,
   StatusPage,
   Stepper,
@@ -296,7 +298,58 @@ function DataTableExamples() {
   );
 }
 
+function KanbanExamples() {
+  const [cards, setCards] = useState([
+    { id: 'a', column: 'todo', title: 'Afiş' },
+    { id: 'b', column: 'todo', title: 'Sponsorlar' },
+    { id: 'c', column: 'done', title: 'Salon' },
+  ]);
+  return (
+    <Example
+      title="Görev panosu"
+      description="Tam hali: Senaryolar → Etkinlik hazırlığı."
+      align="start"
+    >
+      <Kanban
+        aria-label="Görevler"
+        columns={[
+          { id: 'todo', title: 'Yapılacak' },
+          { id: 'done', title: 'Bitti' },
+        ]}
+        cards={cards}
+        onMove={(id, column) =>
+          setCards((prev) => prev.map((c) => (c.id === id ? { ...c, column } : c)))
+        }
+      />
+    </Example>
+  );
+}
+
+function CarouselExamples() {
+  return (
+    <Example title="Etkinlikler" align="start">
+      <Carousel aria-label="Geçmiş etkinlikler" slideWidth="min(80%, 16rem)">
+        {['Gece Kodu 2025', 'YıldızJam', 'ARTLAB', 'SkySec CTF', 'Stant haftası'].map(
+          (title, i) => (
+            <div
+              key={title}
+              className="grid h-36 place-items-end rounded-xl border border-border p-4"
+              style={{
+                background: `linear-gradient(135deg, var(--chart-${i + 1}) -60%, transparent 70%)`,
+              }}
+            >
+              <span className="text-sm font-medium text-foreground">{title}</span>
+            </div>
+          ),
+        )}
+      </Carousel>
+    </Example>
+  );
+}
+
 export const DISPLAY_EXTRA_EXAMPLES = {
+  kanban: KanbanExamples,
+  carousel: CarouselExamples,
   'data-table': DataTableExamples,
   'month-calendar': MonthCalendarExamples,
   'status-page': StatusPageExamples,

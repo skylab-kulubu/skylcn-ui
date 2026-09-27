@@ -111,6 +111,14 @@ export {
   type DateRangePickerProps,
 } from './components/calendar.js';
 export {
+  Carousel,
+  Kanban,
+  type CarouselProps,
+  type KanbanCard,
+  type KanbanColumn,
+  type KanbanProps,
+} from './components/carousel.js';
+export {
   Card,
   CardAction,
   CardContent,

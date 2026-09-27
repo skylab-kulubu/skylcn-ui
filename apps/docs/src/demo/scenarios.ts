@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import {
   CalendarDays,
+  Columns3,
   ChartPie,
   Globe,
   LayoutDashboard,
@@ -54,6 +55,12 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         label: 'Etkinlik takvimi',
         icon: CalendarDays,
         description: 'Ay ızgarasında etkinlikler, telefonda gün gün liste.',
+      },
+      {
+        href: '/playground/board',
+        label: 'Etkinlik hazırlığı',
+        icon: Columns3,
+        description: 'Kanban: sürükle-bırak ve her kartta taşı menüsü.',
       },
       {
         href: '/playground/settings',

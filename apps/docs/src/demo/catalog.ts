@@ -534,6 +534,26 @@ export const ENTRIES: Entry[] = [
     a11y: ['Yönlendirme sürerken durum ekran okuyucuya bildirilir.'],
   },
   {
+    slug: 'kanban',
+    name: 'Kanban',
+    category: 'data',
+    description: 'Sütunlarda kartlar: etkinlik hazırlığı, görev takibi.',
+    imports: ['Kanban'],
+    a11y: ['Sürüklemek tek yol değildir: her kartın taşı menüsü dokunmatikte ve klavyede çalışır.'],
+    motion: ['Taşınan kart yeni sütununa süzülür.'],
+  },
+  {
+    slug: 'carousel',
+    name: 'Carousel',
+    category: 'data',
+    description: 'Kaydırınca yerine oturan kaydırmalı içerik: etkinlik fotoğrafları, duyurular.',
+    imports: ['Carousel'],
+    a11y: [
+      'Kendi kendine oynamaz; parmakla, düğmelerle, noktalarla ya da ok tuşlarıyla ilerler.',
+      'Her öğe kaçıncı olduğunu söyler.',
+    ],
+  },
+  {
     slug: 'timeline',
     name: 'Timeline',
     category: 'data',
