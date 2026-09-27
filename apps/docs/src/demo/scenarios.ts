@@ -13,10 +13,11 @@ import {
   Users,
 } from 'lucide-react';
 
+import { HOSTED_IN_ADMIN } from './hosting';
 export type Scenario = { href: string; label: string; icon: LucideIcon; description: string };
 
 /** The playground's scenarios, grouped as its sidebar shows them. */
-export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
+const ALL_GROUPS: { label: string; scenarios: Scenario[] }[] = [
   {
     label: 'Senaryolar',
     scenarios: [
@@ -99,5 +100,13 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
     ],
   },
 ];
+
+// The admin panel ships only /playground, so the public site demo stays out there
+export const SCENARIO_GROUPS = ALL_GROUPS.map((group) => ({
+  ...group,
+  scenarios: HOSTED_IN_ADMIN
+    ? group.scenarios.filter((scenario) => scenario.href.startsWith('/playground'))
+    : group.scenarios,
+})).filter((group) => group.scenarios.length > 0);
 
 export const SCENARIOS = SCENARIO_GROUPS.flatMap((group) => group.scenarios);
