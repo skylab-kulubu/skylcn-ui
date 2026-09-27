@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { ChartPie, LayoutDashboard, LoaderCircle, Settings, Users } from 'lucide-react';
+import { ChartPie, Globe, LayoutDashboard, LoaderCircle, Settings, Users } from 'lucide-react';
 
 export type Scenario = { href: string; label: string; icon: LucideIcon; description: string };
 
@@ -31,6 +31,17 @@ export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         label: 'Ayarlar',
         icon: Settings,
         description: 'Profil alanları, bildirim anahtarları ve görünüm tercihleri.',
+      },
+    ],
+  },
+  {
+    label: 'Siteler',
+    scenarios: [
+      {
+        href: '/site',
+        label: 'Kulüp sitesi',
+        icon: Globe,
+        description: 'Panel dışı kullanım: bir etkinliğin tanıtım sayfası.',
       },
     ],
   },

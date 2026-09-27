@@ -145,6 +145,13 @@ export {
 } from './components/field.js';
 export { IconSwap, type IconSwapProps } from './components/icon-swap.js';
 export {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  type NavigationMenuItemProps,
+  type NavigationMenuLinkProps,
+} from './components/navigation-menu.js';
+export {
   PreviewCard,
   PreviewCardContent,
   PreviewCardTrigger,

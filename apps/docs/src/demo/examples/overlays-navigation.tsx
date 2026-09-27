@@ -27,6 +27,9 @@ import {
   MenuSub,
   MenuSubContent,
   MenuSubTrigger,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
   PageHeader,
   Pagination,
   Popover,
@@ -233,6 +236,28 @@ function AppShellExamples() {
   );
 }
 
+function NavigationMenuExamples() {
+  return (
+    <Example title="Site menüsü" description="Tam örnek için Senaryolar → Kulüp sitesi.">
+      <NavigationMenu aria-label="Örnek site menüsü">
+        <NavigationMenuItem label="Etkinlikler">
+          <NavigationMenuLink
+            href="#"
+            title="Gece Kodu 2026"
+            description="24 saatlik kodlama gecesi."
+          />
+          <NavigationMenuLink href="#" title="YıldızJam" description="Oyun geliştirme maratonu." />
+        </NavigationMenuItem>
+        <NavigationMenuItem label="Ekipler">
+          <NavigationMenuLink href="#" title="WebLab" description="Konsollar ve siteler." />
+          <NavigationMenuLink href="#" title="SkySec" description="Güvenlik ve altyapı." />
+        </NavigationMenuItem>
+        <NavigationMenuItem label="SSS" href="#" />
+      </NavigationMenu>
+    </Example>
+  );
+}
+
 function SideNavExamples() {
   const [active, setActive] = useState('#inbox');
   return (
@@ -363,6 +388,7 @@ export const OVERLAY_NAVIGATION_EXAMPLES = {
   drawer: DrawerExamples,
   menu: MenuExamples,
   'app-shell': AppShellExamples,
+  'navigation-menu': NavigationMenuExamples,
   'side-nav': SideNavExamples,
   breadcrumbs: BreadcrumbsExamples,
   pagination: PaginationExamples,

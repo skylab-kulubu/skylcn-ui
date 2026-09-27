@@ -329,6 +329,18 @@ export const ENTRIES: Entry[] = [
     motion: ['Aktif öğenin vurgusu sayfa değişince yeni öğeye süzülür.'],
   },
   {
+    slug: 'navigation-menu',
+    name: 'NavigationMenu',
+    category: 'navigation',
+    description:
+      'Tanıtım sitelerinin üst menüsü: öğeler bağlantı panelleri açar, panel öğeler arasında kayar.',
+    imports: ['NavigationMenu', 'NavigationMenuItem', 'NavigationMenuLink'],
+    a11y: ['Ok tuşları öğeler arasında gezer; Esc paneli kapatır ve odağı öğeye döndürür.'],
+    motion: [
+      'Panel boyutunu değiştirerek bir öğeden diğerine kayar; hareketi azaltınca yalnızca solar.',
+    ],
+  },
+  {
     slug: 'side-nav',
     name: 'SideNav',
     category: 'navigation',

@@ -3,6 +3,7 @@
 import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { LucideIcon } from 'lucide-react';
+import { isValidElement } from 'react';
 import { cn } from '../lib/cn.js';
 import { usePendingIndicator } from '../lib/use-pending-indicator.js';
 import { SkylabLoader } from './skylab-loader.js';
@@ -59,15 +60,21 @@ export function Button({
   pending = false,
   disabled,
   children,
+  render,
+  nativeButton,
   ...props
 }: ButtonProps) {
   const busy = usePendingIndicator(pending);
+  // A button rendered as a link (render={<a href />}) keeps link semantics.
+  const native = nativeButton ?? !(isValidElement(render) && render.type !== 'button');
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size }), className)}
       disabled={disabled || pending || busy}
       aria-busy={busy || undefined}
+      render={render}
+      nativeButton={native}
       {...props}
     >
       <span

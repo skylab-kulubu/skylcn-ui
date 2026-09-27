@@ -490,6 +490,17 @@ const MINIS: Record<string, () => ReactNode> = {
       <span className="flex-1 rounded-sm border border-border-subtle bg-background" />
     </div>
   ),
+  'navigation-menu': () => (
+    <span className="flex flex-col items-start gap-1 text-2xs">
+      <span className="flex gap-3">
+        <span className="rounded bg-accent px-1.5">Etkinlikler ▾</span>
+        <span className="text-muted-foreground">Ekipler</span>
+      </span>
+      <span className="w-40 rounded-lg border border-border bg-background p-1.5 shadow-overlay">
+        Gece Kodu 2026
+      </span>
+    </span>
+  ),
   'side-nav': () => (
     <div className="flex w-32 flex-col gap-0.5 text-2xs">
       <span className="rounded bg-accent-strong px-1.5 py-1">Gelen kutusu</span>
