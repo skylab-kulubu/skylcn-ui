@@ -10,7 +10,7 @@ export default function TableScenario() {
         title="Üye tablosu"
         description="Yönetim tablosu: filtreler, sütunlar, toplu işlem ve ↑/↓ ile gezilen detay paneli."
       />
-      <MemberTable />
+      <MemberTable urlKey="uye" />
     </div>
   );
 }

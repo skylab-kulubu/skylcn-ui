@@ -73,11 +73,12 @@ const COLUMNS: DataTableColumn<Member>[] = [
 ];
 
 /** The member list as an admin DataTable: facets, bulk actions and a detail panel. */
-export function MemberTable() {
+export function MemberTable({ urlKey }: { urlKey?: string }) {
   const toast = useToast();
   return (
     <DataTable
       aria-label="Üyeler"
+      urlKey={urlKey}
       data={MEMBERS}
       columns={COLUMNS}
       getRowId={(m) => m.id}

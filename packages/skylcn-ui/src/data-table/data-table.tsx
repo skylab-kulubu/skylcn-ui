@@ -108,6 +108,11 @@ export type DataTableProps<T extends RowData> = {
   pageSize?: number;
   /** Controls at the end of the toolbar, such as an add button. */
   actions?: ReactNode;
+  /**
+   * Keeps search, filters, sort and page in the address under this prefix,
+   * so a shared link or the back button brings the same view back.
+   */
+  urlKey?: string;
   'aria-label': string;
   className?: string;
 };
@@ -130,6 +135,7 @@ export function DataTable<T extends RowData>({
   detailTitle,
   pageSize = 10,
   actions,
+  urlKey,
   'aria-label': label,
   className,
 }: DataTableProps<T>) {
@@ -177,6 +183,49 @@ export function DataTable<T extends RowData>({
     (sum, filter) => sum + ((filter.value as string[] | undefined)?.length ?? 0),
     0,
   );
+
+  // Read the view from the address once mounted, so server and first client render agree
+  const [urlReady, setUrlReady] = useState(!urlKey);
+  useEffect(() => {
+    if (!urlKey) return;
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get(`${urlKey}.q`);
+    if (q) table.setGlobalFilter(q);
+    const sort = params.get(`${urlKey}.sort`);
+    if (sort) {
+      const [id, dir] = sort.split(':');
+      if (id) table.setSorting([{ id, desc: dir === 'desc' }]);
+    }
+    const filters = [...params.entries()]
+      .filter(([key]) => key.startsWith(`${urlKey}.f.`))
+      .map(([key, value]) => ({ id: key.slice(`${urlKey}.f.`.length), value: value.split(',') }));
+    if (filters.length) table.setColumnFilters(filters);
+    const page = Number(params.get(`${urlKey}.page`));
+    if (page > 1) table.setPageIndex(page - 1);
+    setUrlReady(true);
+    // Only on mount: later changes flow the other way
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlKey]);
+
+  const { globalFilter, sorting, columnFilters, pagination } = table.state;
+  useEffect(() => {
+    if (!urlKey || !urlReady) return;
+    const params = new URLSearchParams(window.location.search);
+    for (const key of [...params.keys()]) if (key.startsWith(`${urlKey}.`)) params.delete(key);
+    if (globalFilter) params.set(`${urlKey}.q`, String(globalFilter));
+    if (sorting[0])
+      params.set(`${urlKey}.sort`, `${sorting[0].id}:${sorting[0].desc ? 'desc' : 'asc'}`);
+    for (const filter of columnFilters) {
+      const value = filter.value as string[] | undefined;
+      if (value?.length) params.set(`${urlKey}.f.${filter.id}`, value.join(','));
+    }
+    if (pagination.pageIndex > 0) params.set(`${urlKey}.page`, String(pagination.pageIndex + 1));
+    const query = params.toString();
+    const url = `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`;
+    if (url !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState(window.history.state, '', url);
+    }
+  }, [urlKey, urlReady, globalFilter, sorting, columnFilters, pagination.pageIndex]);
 
   // ↑ and ↓ walk the rows while the side panel is open, outside text fields
   useEffect(() => {
