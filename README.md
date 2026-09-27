@@ -93,7 +93,10 @@ Playground statik dosya olarak da derlenebilir; `DOCS_BASE_PATH` onu bir alt yol
 DOCS_EXPORT=1 DOCS_BASE_PATH=/playground pnpm --filter docs build   # çıktı: apps/docs/out
 ```
 
-Her değişiklik bir Changesets kaydıyla gelir: `pnpm changeset`.
+Her değişiklik bir Changesets kaydıyla gelir: `pnpm changeset`. 1.0'a kadar sürüm 0.x kuralıyla artar:
+
+- **patch** (0.1.0 → 0.1.1): yeni bileşen, yeni isteğe bağlı props ya da düzeltme; mevcut kullanımı bozmayan her şey.
+- **minor** (0.1 → 0.2): kullananların kodunu değiştirmesini gerektiren kıran değişiklik. `^0.1.0` gibi aralıklar bunu kendiliğinden almaz.
 
 ## Lisans
 
