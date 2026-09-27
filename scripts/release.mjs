@@ -1,6 +1,8 @@
-// Publishes the package with the npm CLI, whose trusted publishing (OIDC) flow
-// the registry accepts, then tags the release; changesets/action reads the
-// "New tag:" lines to push tags and open the GitHub release.
+// Stages the package on npm through trusted publishing (OIDC): the trusted
+// publisher allows staging only, so a maintainer approves each release on
+// npmjs.com (Staged Packages) with 2FA before it goes live. Then it tags the
+// release; changesets/action reads the "New tag:" lines to push the tag and
+// open the GitHub release.
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 
@@ -16,10 +18,19 @@ try {
   // The package or version is not on the registry yet
 }
 
+// A staged version is not on npm until it is approved, so its tag, pushed when
+// it was staged, is what keeps the next run from staging it again
+const tag = `${name}@${version}`;
+const tagged = execFileSync('git', ['ls-remote', '--tags', 'origin', `refs/tags/${tag}`], {
+  encoding: 'utf8',
+}).trim();
+
 if (published === version) {
-  console.log(`${name}@${version} is already on npm`);
+  console.log(`${tag} is already on npm`);
+} else if (tagged) {
+  console.log(`${tag} is staged; approve it on npmjs.com under Staged Packages`);
 } else {
-  execFileSync('npm', ['publish', '--access', 'public', '--provenance'], {
+  execFileSync('npm', ['stage', 'publish', '--access', 'public', '--provenance'], {
     cwd: dir,
     stdio: 'inherit',
   });

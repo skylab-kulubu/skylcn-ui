@@ -98,6 +98,8 @@ Her değişiklik bir Changesets kaydıyla gelir: `pnpm changeset`. 1.0'a kadar s
 - **patch** (0.1.0 → 0.1.1): yeni bileşen, yeni isteğe bağlı props ya da düzeltme; mevcut kullanımı bozmayan her şey.
 - **minor** (0.1 → 0.2): kullananların kodunu değiştirmesini gerektiren kıran değişiklik. `^0.1.0` gibi aralıklar bunu kendiliğinden almaz.
 
+Changesets'in açtığı "chore: version packages" PR'ı birleşince sürüm npm'e onay bekleyen (staged) olarak yüklenir; bir sorumlu npmjs.com'da **Staged Packages** bölümünden 2FA ile onaylayınca yayına çıkar.
+
 ## Lisans
 
 [MIT](LICENSE)
