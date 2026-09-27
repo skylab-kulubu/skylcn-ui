@@ -77,7 +77,9 @@ export function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size }), className)}
+      // Clipping at the button's own edge keeps the sliding icon whole; the
+      // 16px content box would shave its strokes
+      className={cn(buttonVariants({ variant, size }), HoverIcon && 'overflow-hidden', className)}
       disabled={disabled || pending || busy}
       aria-busy={busy || undefined}
       render={render}
@@ -89,7 +91,7 @@ export function Button({
         className={cn(
           'inline-flex items-center justify-center gap-[inherit] transition-opacity duration-(--motion-duration-fast)',
           busy && 'opacity-0',
-          HoverIcon && 'relative overflow-hidden',
+          HoverIcon && 'relative',
         )}
       >
         {HoverIcon ? (
