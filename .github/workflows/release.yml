@@ -28,7 +28,9 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          registry-url: https://registry.npmjs.org
+      # Trusted publishing needs npm 11.5.1 or later; no registry-url, whose
+      # placeholder token in .npmrc would keep npm from the OIDC exchange
+      - run: npm install -g npm@11
       - run: pnpm install --frozen-lockfile
       - uses: changesets/action@v1
         with:
