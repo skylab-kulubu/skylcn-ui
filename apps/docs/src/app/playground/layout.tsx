@@ -10,12 +10,13 @@ import {
   SidebarItem,
   SidebarSection,
 } from '@skylab-kulubu/skylcn-ui';
-import { LayoutGrid } from 'lucide-react';
+import { Blocks } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { CONSOLES } from '../../demo/consoles';
 import { PlaygroundControls } from '../../demo/controls';
 import { DemoProfile } from '../../demo/profile';
+import { ENTRIES } from '../../demo/catalog';
 import { SCENARIOS, SCENARIO_GROUPS } from '../../demo/scenarios';
 
 function Sidebar({ pathname }: { pathname: string }) {
@@ -41,9 +42,17 @@ function Sidebar({ pathname }: { pathname: string }) {
             ))}
           </SidebarSection>
         ))}
+        <SidebarSection label="Kütüphane">
+          <SidebarItem
+            href="/playground/components"
+            label="Bileşenler"
+            icon={Blocks}
+            badge={ENTRIES.length}
+            active={pathname.startsWith('/playground/components')}
+          />
+        </SidebarSection>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarItem href="/" label="Bileşen galerisi" icon={LayoutGrid} />
         <DemoProfile />
       </SidebarFooter>
     </>
@@ -53,20 +62,18 @@ function Sidebar({ pathname }: { pathname: string }) {
 export default function PlaygroundLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const scenario = SCENARIOS.find((item) => item.href === pathname);
+  const inLibrary = pathname.startsWith('/playground/components');
+  const entry = ENTRIES.find((item) => pathname === `/playground/components/${item.slug}`);
+  const crumbs = [
+    { href: '/playground', label: 'Playground' },
+    ...(inLibrary ? [{ href: '/playground/components', label: 'Bileşenler' }] : []),
+    ...(entry ? [{ href: pathname, label: entry.name }] : []),
+    ...(scenario && scenario.href !== '/playground'
+      ? [{ href: scenario.href, label: scenario.label }]
+      : []),
+  ];
   return (
-    <AppShell
-      sidebar={<Sidebar pathname={pathname} />}
-      header={
-        <Breadcrumbs
-          items={[
-            { href: '/playground', label: 'Playground' },
-            ...(scenario && scenario.href !== '/playground'
-              ? [{ href: scenario.href, label: scenario.label }]
-              : []),
-          ]}
-        />
-      }
-    >
+    <AppShell sidebar={<Sidebar pathname={pathname} />} header={<Breadcrumbs items={crumbs} />}>
       <AppShellActions>
         <PlaygroundControls />
       </AppShellActions>

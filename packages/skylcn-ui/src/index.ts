@@ -45,6 +45,7 @@ export {
   type StatCardProps,
 } from './components/card.js';
 export { Checkbox } from './components/checkbox.js';
+export { CopyButton, type CopyButtonProps } from './components/copy-button.js';
 export {
   Drawer,
   DrawerBody,
@@ -100,6 +101,13 @@ export {
   type SegmentedOption,
 } from './components/segmented-control.js';
 export { Select, type SelectOption, type SelectProps } from './components/select.js';
+export {
+  SideNav,
+  SideNavLayout,
+  type SideNavItem,
+  type SideNavProps,
+  type SideNavSection,
+} from './components/side-nav.js';
 export { Skeleton } from './components/skeleton.js';
 export { Sparkline, type SparklineProps } from './components/sparkline.js';
 export { SkylabLoader, type SkylabLoaderProps } from './components/skylab-loader.js';

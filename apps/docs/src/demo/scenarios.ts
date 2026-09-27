@@ -6,7 +6,7 @@ export type Scenario = { href: string; label: string; icon: LucideIcon; descript
 /** The playground's scenarios, grouped as its sidebar shows them. */
 export const SCENARIO_GROUPS: { label: string; scenarios: Scenario[] }[] = [
   {
-    label: 'Sayfalar',
+    label: 'Senaryolar',
     scenarios: [
       {
         href: '/playground',
