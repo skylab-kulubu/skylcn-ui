@@ -252,6 +252,18 @@ export const ENTRIES: Entry[] = [
     ],
   },
   {
+    slug: 'command',
+    name: 'CommandPalette',
+    category: 'overlays',
+    description: 'Ctrl/⌘+K ile açılan, uygulamanın tüm sayfa ve işlemlerinde arama.',
+    imports: ['CommandPalette', 'useCommandShortcut'],
+    a11y: [
+      'Ok tuşları gezer, Enter açar, Esc kapatır; etkin satır ekran okuyucuya bildirilir.',
+      'Arama aksanları ve noktasız ı’yı eşit sayar: "uyeler" yazmak "Üyeler"i bulur.',
+    ],
+    motion: ['Hafif büyüyerek açılır.'],
+  },
+  {
     slug: 'tooltip',
     name: 'Tooltip',
     category: 'overlays',

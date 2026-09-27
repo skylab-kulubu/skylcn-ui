@@ -462,6 +462,12 @@ const MINIS: Record<string, () => ReactNode> = {
     </div>
   ),
   toast: ToastMini,
+  command: () => (
+    <span className="flex w-48 flex-col gap-1 rounded-lg border border-border bg-background p-1.5 text-2xs shadow-overlay">
+      <span className="border-b border-border pb-1 text-subtle-foreground">uyeler</span>
+      <span className="rounded bg-accent px-1.5 py-1">Üyeler</span>
+    </span>
+  ),
   tooltip: () => (
     <span className="rounded-md border border-border bg-background px-2 py-1 text-2xs">
       Formu paylaş

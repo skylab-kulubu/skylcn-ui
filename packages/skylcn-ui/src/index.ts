@@ -31,6 +31,12 @@ export {
   type DialogContentProps,
 } from './components/dialog.js';
 export {
+  CommandPalette,
+  useCommandShortcut,
+  type CommandItem,
+  type CommandPaletteProps,
+} from './components/command.js';
+export {
   Combobox,
   MultiSelect,
   NumberField,

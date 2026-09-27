@@ -15,6 +15,7 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { CONSOLES } from '../../demo/consoles';
 import { PlaygroundControls } from '../../demo/controls';
+import { PlaygroundSearch } from '../../demo/palette';
 import { DemoProfile } from '../../demo/profile';
 import { ENTRIES } from '../../demo/catalog';
 import { SCENARIOS, SCENARIO_GROUPS } from '../../demo/scenarios';
@@ -75,6 +76,7 @@ export default function PlaygroundLayout({ children }: { children: ReactNode }) 
   return (
     <AppShell sidebar={<Sidebar pathname={pathname} />} header={<Breadcrumbs items={crumbs} />}>
       <AppShellActions>
+        <PlaygroundSearch />
         <PlaygroundControls />
       </AppShellActions>
       {children}

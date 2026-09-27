@@ -201,7 +201,19 @@ function RadioExamples() {
   );
 }
 
+function CommandExamples() {
+  return (
+    <Example
+      title="Bu sayfanın araması"
+      description="Başlıktaki Ara düğmesine bas ya da Ctrl/⌘+K: senaryolar ve bileşenler arasında ara, “uyeler” gibi aksansız yaz."
+    >
+      <p className="text-xs text-muted-foreground">Palet playground’un her sayfasında açık.</p>
+    </Example>
+  );
+}
+
 export const INTERACTION_EXAMPLES = {
+  command: CommandExamples,
   dialog: DialogExamples,
   toast: ToastExamples,
   tabs: TabsExamples,
