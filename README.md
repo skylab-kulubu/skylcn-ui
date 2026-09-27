@@ -2,7 +2,11 @@
 
 SKY LAB web ürünlerinin ortak tasarım sistemi: token'lar, tema ve [Base UI](https://base-ui.com) üzerine shadcn yaklaşımıyla yazılmış bileşenler. Karar kaydı: [ADR 0055](https://github.com/skylab-kulubu/e-skylab/blob/main/docs/adr/0055-skylcn-ui-is-the-shared-design-system.md).
 
-Paket `@skylab-kulubu/skylcn-ui` adıyla npm'de yayımlanacak; henüz yayımlanmadı.
+## Kurulum
+
+```sh
+pnpm add @skylab-kulubu/skylcn-ui
+```
 
 ## Kullanım
 

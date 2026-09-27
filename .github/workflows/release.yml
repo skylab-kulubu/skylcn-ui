@@ -37,3 +37,5 @@ jobs:
           commit: 'chore: version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Provenance only from CI; a first release from a laptop cannot sign it
+          NPM_CONFIG_PROVENANCE: 'true'
