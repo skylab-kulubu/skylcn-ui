@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { AnimatedNumber } from './motion.js';
 import { Sparkline } from './sparkline.js';
 
 /** A framed surface for one piece of content: a summary, a form section, a chart. */
@@ -122,7 +123,9 @@ export function StatCard({
         </p>
       </div>
       <div className="flex items-baseline gap-2">
-        <p className="text-2xl font-semibold text-foreground">{value}</p>
+        <p className="text-2xl font-semibold text-foreground">
+          {typeof value === 'number' ? <AnimatedNumber value={value} /> : value}
+        </p>
         {delta ? (
           <span className={cn('text-xs font-medium tabular-nums', DELTA_TONE[deltaTone])}>
             {delta}

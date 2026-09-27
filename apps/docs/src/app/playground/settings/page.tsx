@@ -77,13 +77,13 @@ export default function Settings() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Ad soyad">
-            <Input defaultValue="Kaan Necip Kalp" autoComplete="name" />
+            <Input defaultValue="Deniz Aydın" autoComplete="name" />
           </Field>
           <Field label="E-posta" description="Duyurular bu adrese gider.">
             <Input
               icon={AtSign}
               type="email"
-              defaultValue="kaan@example.com"
+              defaultValue="deniz@example.com"
               autoComplete="email"
             />
           </Field>

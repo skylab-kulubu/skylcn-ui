@@ -71,6 +71,18 @@ export {
   type ProportionSegment,
 } from './components/proportion-bar.js';
 export { Reveal, type RevealProps } from './components/reveal.js';
+export {
+  AnimatePresence,
+  AnimatedNumber,
+  Collapse,
+  LayoutGroup,
+  Swap,
+  m,
+  type AnimatedNumberProps,
+  type CollapseProps,
+  type SwapProps,
+} from './components/motion.js';
+export { motionTokens, transitions } from './lib/motion-tokens.js';
 export { TrendBadge, type TrendBadgeProps } from './components/trend-badge.js';
 export { Pagination, pageSlots, type PaginationProps } from './components/pagination.js';
 export {

@@ -111,7 +111,7 @@ function Gallery() {
       </Section>
 
       <Section title="Avatar">
-        <Avatar name="Yusuf Açmacı" size="sm" />
+        <Avatar name="Mira Tunç" size="sm" />
         <Avatar name="İlayda Şahin" />
         <Avatar email="fatih@example.com" size="lg" />
         <Avatar size="md" />

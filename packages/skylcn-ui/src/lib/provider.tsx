@@ -1,6 +1,9 @@
 'use client';
 
+import { LazyMotion, MotionConfig, domMax } from 'motion/react';
 import { createContext, useContext, type ComponentType, type ReactNode } from 'react';
+import { transitions } from './motion-tokens.js';
+import { useReducedMotion } from './use-reduced-motion.js';
 
 export type SkylcnLocale = 'tr' | 'en';
 
@@ -96,8 +99,9 @@ const SkylcnContext = createContext<SkylcnContextValue>({
 
 /**
  * Sets the language of the built-in labels and the component used for internal
- * links (pass `next/link` in Next apps). Everything works without it: Turkish
- * labels and plain anchors.
+ * links (pass `next/link` in Next apps), and loads the motion features the
+ * components animate with. Without it: Turkish labels, plain anchors and no
+ * script-driven animation.
  */
 export function SkylcnProvider({
   locale = 'tr',
@@ -108,9 +112,15 @@ export function SkylcnProvider({
   linkComponent?: ComponentType<LinkComponentProps> | 'a';
   children: ReactNode;
 }) {
+  // Reduced motion (system or in-product) keeps fades and drops travel, scaling and layout moves.
+  const reduced = useReducedMotion();
   return (
     <SkylcnContext.Provider value={{ locale, messages: MESSAGES[locale], Link: linkComponent }}>
-      {children}
+      <LazyMotion features={domMax}>
+        <MotionConfig reducedMotion={reduced ? 'always' : 'never'} transition={transitions.enter}>
+          {children}
+        </MotionConfig>
+      </LazyMotion>
     </SkylcnContext.Provider>
   );
 }

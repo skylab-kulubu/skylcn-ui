@@ -23,11 +23,14 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { LayoutGroup, m } from 'motion/react';
 import { SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from '../assets/skylab-mark.js';
 import { cn } from '../lib/cn.js';
+import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
 import { Avatar } from './avatar.js';
 import { IconSwap } from './icon-swap.js';
+import { AnimatedNumber } from './motion.js';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -253,16 +256,19 @@ export function AppShell({
 }
 
 function SidebarFrame({ children }: { children: ReactNode }) {
-  const { collapsed } = useContext(SidebarScopeContext);
+  const { collapsed, inDrawer } = useContext(SidebarScopeContext);
   return (
-    <div
-      className={cn(
-        'flex h-full w-full min-w-0 flex-col py-5',
-        collapsed ? 'gap-3 px-2' : 'gap-4 px-4',
-      )}
-    >
-      {children}
-    </div>
+    // The drawer and the desktop sidebar each keep their own sliding highlight
+    <LayoutGroup id={inDrawer ? 'skylcn-sidebar-drawer' : 'skylcn-sidebar'}>
+      <div
+        className={cn(
+          'flex h-full w-full min-w-0 flex-col py-5',
+          collapsed ? 'gap-3 px-2' : 'gap-4 px-4',
+        )}
+      >
+        {children}
+      </div>
+    </LayoutGroup>
   );
 }
 
@@ -474,21 +480,26 @@ export function SidebarItem({
   const { Link } = useSkylcn();
 
   const className = cn(
-    'group/item relative flex items-center rounded-md outline-hidden',
+    'group/item relative isolate flex items-center rounded-md outline-hidden',
     'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
     nested
       ? 'gap-2 px-2 py-1 text-xs pointer-coarse:py-1.5'
       : 'gap-3 px-3 py-2 text-sm pointer-coarse:py-2.5',
     collapsed && !nested && 'justify-center px-0',
-    active
-      ? nested
-        ? 'text-foreground'
-        : 'bg-accent-strong text-foreground'
-      : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+    active ? 'text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
   );
 
   const content = (
     <>
+      {active && !nested ? (
+        // One highlight that glides to the active item when the page changes
+        <m.span
+          layoutId="active-item"
+          aria-hidden
+          className="absolute inset-0 -z-10 rounded-md bg-accent-strong"
+          transition={transitions.layout}
+        />
+      ) : null}
       {Icon ? (
         <span className="relative">
           <Icon
@@ -505,7 +516,7 @@ export function SidebarItem({
           <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
           {badge ? (
             <span className="shrink-0 rounded-md bg-muted px-1.5 text-3xs text-muted-foreground tabular-nums">
-              {badge}
+              {typeof badge === 'number' ? <AnimatedNumber value={badge} tabular /> : badge}
             </span>
           ) : nested ? null : (
             <ChevronRight

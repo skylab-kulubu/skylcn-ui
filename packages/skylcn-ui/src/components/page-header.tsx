@@ -1,9 +1,12 @@
 'use client';
 
 import { Search, X } from 'lucide-react';
-import type { ComponentProps, ReactNode } from 'react';
+import { AnimatePresence, LayoutGroup, m } from 'motion/react';
+import { useId, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
+import { AnimatedNumber } from './motion.js';
 
 export type PageHeaderProps = {
   title: ReactNode;
@@ -99,17 +102,23 @@ export function SearchInput({
         )}
         {...props}
       />
-      {value ? (
-        <button
-          type="button"
-          onClick={() => onValueChange('')}
-          aria-label={messages.clearSearch}
-          title={messages.clearSearch}
-          className="absolute top-1/2 right-1.5 grid size-5 -translate-y-1/2 animate-in place-items-center rounded text-subtle-foreground outline-hidden transition-colors duration-(--motion-duration-fast) fade-in-0 zoom-in-90 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:zoom-in-100"
-        >
-          <X className="size-3.5" />
-        </button>
-      ) : null}
+      <AnimatePresence initial={false}>
+        {value ? (
+          <m.button
+            key="clear"
+            type="button"
+            onClick={() => onValueChange('')}
+            aria-label={messages.clearSearch}
+            title={messages.clearSearch}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1, transition: transitions.enter }}
+            exit={{ opacity: 0, scale: 0.8, transition: transitions.exit }}
+            className="absolute top-1/2 right-1.5 grid size-5 -translate-y-1/2 place-items-center rounded text-subtle-foreground outline-hidden transition-colors duration-(--motion-duration-fast) hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <X className="size-3.5" />
+          </m.button>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
@@ -132,47 +141,59 @@ export function FilterPills<T extends string>({
   'aria-label': ariaLabel,
   className,
 }: FilterPillsProps<T>) {
+  const group = useId();
   return (
-    <div
-      role="group"
-      aria-label={ariaLabel}
-      data-slot="filter-pills"
-      className={cn(
-        'inline-flex h-8 items-center gap-0.5 rounded-md border border-border bg-input-background p-0.5 pointer-coarse:h-10',
-        className,
-      )}
-    >
-      {options.map((option) => {
-        const active = option.value === value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={active}
-            onClick={() => onValueChange(option.value)}
-            className={cn(
-              'inline-flex h-full items-center gap-1.5 rounded px-2.5 text-xs outline-hidden',
-              'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
-              active
-                ? 'bg-skylab-500/20 text-skylab-300'
-                : 'text-muted-foreground hover:text-secondary-foreground',
-            )}
-          >
-            {option.label}
-            {option.count !== undefined ? (
-              <span
-                className={cn(
-                  'text-3xs tabular-nums',
-                  active ? 'text-skylab-300' : 'text-subtle-foreground',
-                )}
-              >
-                {option.count}
-              </span>
-            ) : null}
-          </button>
-        );
-      })}
-    </div>
+    <LayoutGroup id={group}>
+      <div
+        role="group"
+        aria-label={ariaLabel}
+        data-slot="filter-pills"
+        className={cn(
+          'inline-flex h-8 items-center gap-0.5 rounded-md border border-border bg-input-background p-0.5 pointer-coarse:h-10',
+          className,
+        )}
+      >
+        {options.map((option) => {
+          const active = option.value === value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onValueChange(option.value)}
+              className={cn(
+                'relative isolate inline-flex h-full items-center gap-1.5 rounded px-2.5 text-xs outline-hidden',
+                'transition-colors duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
+                active
+                  ? 'text-skylab-300'
+                  : 'text-muted-foreground hover:text-secondary-foreground',
+              )}
+            >
+              {active ? (
+                // The chosen pill's fill glides to the next choice
+                <m.span
+                  layoutId="pill"
+                  aria-hidden
+                  className="absolute inset-0 -z-10 rounded bg-skylab-500/20"
+                  transition={transitions.layout}
+                />
+              ) : null}
+              {option.label}
+              {option.count !== undefined ? (
+                <span
+                  className={cn(
+                    'text-3xs tabular-nums',
+                    active ? 'text-skylab-300' : 'text-subtle-foreground',
+                  )}
+                >
+                  <AnimatedNumber value={option.count} tabular />
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    </LayoutGroup>
   );
 }
 

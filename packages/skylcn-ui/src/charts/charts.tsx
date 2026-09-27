@@ -16,6 +16,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { AnimatedNumber } from '../components/motion.js';
 import { useSkylcn } from '../lib/provider.js';
 import { useReducedMotion } from '../lib/use-reduced-motion.js';
 import { ChartFrame, type ChartTable, type LegendItem } from './chart-frame.js';
@@ -546,7 +547,7 @@ export function DonutChart({ height = 220, ...props }: DonutChartProps) {
             <div className="pointer-events-none absolute inset-0 grid place-items-center">
               <div className="text-center">
                 <p className="text-xl font-semibold text-foreground">
-                  {props.centerLabel ?? format.value(shownTotal)}
+                  {props.centerLabel ?? <AnimatedNumber value={shownTotal} format={format.value} />}
                 </p>
                 <p className="text-3xs tracking-label text-subtle-foreground uppercase">
                   {messages.total}

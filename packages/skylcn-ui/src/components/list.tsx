@@ -4,6 +4,7 @@ import { ChevronRight, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
+import { Swap } from './motion.js';
 import { StateCard } from './state-card.js';
 
 export type ListStatus =
@@ -33,7 +34,7 @@ export type ListPanelProps = {
   children?: ReactNode;
 };
 
-/** A plain list of rows that shows its own loading and empty states and fades its rows in. */
+/** A plain list of rows that shows its own loading and empty states, cross-fading between them. */
 export function ListPanel({
   status,
   framed = true,
@@ -45,23 +46,21 @@ export function ListPanel({
 }: ListPanelProps) {
   return (
     <div
-      key={status.kind}
       data-slot="list-panel"
-      className={cn(
-        'enter-fade divide-y divide-border-subtle',
-        framed && 'overflow-hidden rounded-lg border border-border',
-        className,
-      )}
+      className={cn(framed && 'overflow-hidden rounded-lg border border-border', className)}
     >
-      {status.kind === 'loading' ? (
-        <StateCard loading />
-      ) : status.kind === 'empty' ? (
-        <StateCard title={status.message} description={emptyDescription} icon={emptyIcon}>
-          {emptyAction}
-        </StateCard>
-      ) : (
-        children
-      )}
+      {/* Loading, empty and filled cross-fade into each other */}
+      <Swap id={status.kind}>
+        {status.kind === 'loading' ? (
+          <StateCard loading />
+        ) : status.kind === 'empty' ? (
+          <StateCard title={status.message} description={emptyDescription} icon={emptyIcon}>
+            {emptyAction}
+          </StateCard>
+        ) : (
+          <div className="divide-y divide-border-subtle">{children}</div>
+        )}
+      </Swap>
     </div>
   );
 }

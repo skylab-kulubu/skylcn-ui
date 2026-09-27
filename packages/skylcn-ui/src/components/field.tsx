@@ -3,8 +3,9 @@
 import { Field as FieldPrimitive } from '@base-ui/react/field';
 import { Input as InputPrimitive } from '@base-ui/react/input';
 import type { LucideIcon } from 'lucide-react';
-import type { ComponentProps, ReactNode } from 'react';
+import { useState, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { Collapse } from './motion.js';
 
 const controlClass = [
   'w-full min-w-0 rounded-md border border-input bg-input-background text-xs text-foreground outline-hidden',
@@ -78,6 +79,9 @@ export type FieldProps = FieldPrimitive.Root.Props & {
 
 /** A label, a control, a hint and an error, wired together for assistive tech. */
 export function Field({ label, description, error, className, children, ...props }: FieldProps) {
+  // Keeps the last message while it closes, so it does not empty out on the way
+  const [shownError, setShownError] = useState(error);
+  if (error && error !== shownError) setShownError(error);
   return (
     <FieldPrimitive.Root
       data-slot="field"
@@ -96,11 +100,12 @@ export function Field({ label, description, error, className, children, ...props
           {description}
         </FieldPrimitive.Description>
       ) : null}
-      {error ? (
-        <FieldPrimitive.Error match className="text-2xs text-destructive">
-          {error}
+      {/* The gap is cancelled outside and restored inside, so it closes along with the message */}
+      <Collapse open={Boolean(error)} className="-mt-1.5">
+        <FieldPrimitive.Error match className="pt-1.5 text-2xs text-destructive">
+          {shownError}
         </FieldPrimitive.Error>
-      ) : null}
+      </Collapse>
     </FieldPrimitive.Root>
   );
 }

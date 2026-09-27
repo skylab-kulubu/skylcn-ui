@@ -21,12 +21,12 @@ export function DemoProfile() {
   const { theme, setTheme } = useTheme();
   return (
     <SidebarUser
-      name="Kaan Necip Kalp"
-      email="kaan@example.com"
+      name="Deniz Aydın"
+      email="deniz@example.com"
       subtitle="WebLab"
       menu={
         <>
-          <MenuLabel>kaan@example.com</MenuLabel>
+          <MenuLabel>deniz@example.com</MenuLabel>
           <MenuLinkItem href="#account" icon={UserRound}>
             Hesap merkezi
           </MenuLinkItem>

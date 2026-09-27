@@ -4,6 +4,7 @@ import { ChartColumn, Table2 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { Button } from '../components/button.js';
 import { IconSwap } from '../components/icon-swap.js';
+import { Swap } from '../components/motion.js';
 import { Skeleton } from '../components/skeleton.js';
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
@@ -149,7 +150,7 @@ export function ChartFrame({
         </ul>
       ) : null}
 
-      <div className={cn('min-w-0 pt-2', framed && 'px-2 pb-3')}>
+      <Swap id={asTable ? 'table' : 'chart'} className={cn('min-w-0 pt-2', framed && 'px-2 pb-3')}>
         {empty && loading ? (
           <Skeleton className="mx-2 rounded-lg" style={{ height: height - 8 }} />
         ) : empty ? (
@@ -211,7 +212,7 @@ export function ChartFrame({
             {children(hidden)}
           </div>
         )}
-      </div>
+      </Swap>
     </figure>
   );
 }

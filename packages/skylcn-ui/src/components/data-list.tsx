@@ -11,7 +11,9 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { m } from 'motion/react';
 import { cn } from '../lib/cn.js';
+import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
 import { Skeleton } from './skeleton.js';
 import { StateCard, type StateCardProps } from './state-card.js';
@@ -238,7 +240,10 @@ export function DataListBody({ className, children, ...props }: ComponentProps<'
   );
 }
 
-export type DataListRowProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
+// Motion owns these handler names with its own signatures on the row element.
+type MotionOwned = 'onSelect' | 'onAnimationStart' | 'onDrag' | 'onDragStart' | 'onDragEnd';
+
+export type DataListRowProps = Omit<ComponentProps<'div'>, MotionOwned> & {
   /** Makes the whole row a link. Interactive cells stay pressable on their own. */
   href?: string;
   /** Makes the whole row a button. */
@@ -261,13 +266,20 @@ export function DataListRow({
   children,
   ...props
 }: DataListRowProps) {
-  const entering = useContext(EntranceContext) && index !== undefined;
+  const firstFill = useContext(EntranceContext);
+  const entering = firstFill && index !== undefined;
   return (
     <RowTargetContext.Provider value={href || onSelect ? { href, onSelect, label } : null}>
-      <div
+      <m.div
         data-slot="data-list-row"
         role="row"
         aria-selected={selected || undefined}
+        // Rows glide to their new places when the sort changes; rows that turn
+        // up later (a search, a filter) fade in, the first fill staggers in CSS
+        layout="position"
+        transition={{ layout: transitions.layout }}
+        initial={firstFill ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
         className={cn(
           ROW_GRID,
           'group/row relative px-3 py-2.5 transition-colors duration-(--motion-duration-fast)',
@@ -287,7 +299,7 @@ export function DataListRow({
         {...props}
       >
         {children}
-      </div>
+      </m.div>
     </RowTargetContext.Provider>
   );
 }
