@@ -31,6 +31,19 @@ export {
   type DialogContentProps,
 } from './components/dialog.js';
 export {
+  Combobox,
+  MultiSelect,
+  NumberField,
+  OTPField,
+  Slider,
+  type ComboboxItem,
+  type ComboboxProps,
+  type MultiSelectProps,
+  type NumberFieldProps,
+  type OTPFieldProps,
+  type SliderProps,
+} from './components/form-extra.js';
+export {
   Kbd,
   Meter,
   Notice,

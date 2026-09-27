@@ -578,6 +578,33 @@ const MINIS: Record<string, () => ReactNode> = {
     />
   ),
   reveal: () => <Bars />,
+  combobox: () => (
+    <span className="flex h-8 w-44 items-center gap-1 rounded-md border border-input px-1.5 text-2xs">
+      <span className="rounded border border-skylab-400/30 bg-skylab-500/10 px-1.5 text-skylab-300">
+        WebLab
+      </span>
+      <span className="rounded border border-skylab-400/30 bg-skylab-500/10 px-1.5 text-skylab-300">
+        SkySec
+      </span>
+    </span>
+  ),
+  'number-field': () => (
+    <span className="flex h-8 w-28 items-center justify-between rounded-md border border-input px-2 text-xs">
+      − <span className="tabular-nums">4</span> +
+    </span>
+  ),
+  'otp-field': () => (
+    <span className="flex gap-1">
+      {['4', '8', '1', '', '', ''].map((c, i) => (
+        <span
+          key={i}
+          className="grid size-7 place-items-center rounded border border-input font-mono text-xs"
+        >
+          {c}
+        </span>
+      ))}
+    </span>
+  ),
   collapse: CollapseMini,
   swap: SwapMini,
   'animated-number': NumberMini,

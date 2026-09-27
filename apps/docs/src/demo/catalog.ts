@@ -162,6 +162,41 @@ export const ENTRIES: Entry[] = [
     a11y: ['Grup bir ad alır; ok tuşları seçenekler arasında gezer, satırın tamamı tıklanır.'],
   },
   {
+    slug: 'combobox',
+    name: 'Combobox ve MultiSelect',
+    category: 'forms',
+    description:
+      'Uzun listeden yazarak seçim; çoklu seçimde seçilenler kaldırılabilir çipler olur.',
+    imports: ['Combobox', 'MultiSelect'],
+    a11y: [
+      'Liste yazdıkça daralır; ok tuşları gezinir, Enter seçer, Esc kapatır.',
+      'Çipler Backspace ile silinir ve her birinin kaldırma düğmesi adını söyler.',
+    ],
+    motion: ['Liste tetikleyiciden büyüyerek açılır, eklenen çip solarak gelir.'],
+  },
+  {
+    slug: 'number-field',
+    name: 'NumberField ve Slider',
+    category: 'forms',
+    description: 'Adımlı sayı alanı; tek değer ya da iki uçlu aralık için kaydırıcı.',
+    imports: ['NumberField', 'Slider'],
+    a11y: [
+      'Ok tuşları bir, Shift ile on adım değiştirir; yazılan değer sınırlar içinde tutulur.',
+      'Etiketi görünmeyen kaydırıcı tutamaçları thumbLabels ile adlandırılır.',
+    ],
+  },
+  {
+    slug: 'otp-field',
+    name: 'OTPField',
+    category: 'forms',
+    description: 'Tek kullanımlık kod; her karakter için bir kutu.',
+    imports: ['OTPField'],
+    a11y: [
+      'Kodun tamamı yapıştırılabilir ve şifre yöneticileri doldurabilir; yapıştırma engellenmez.',
+      'Her kutu kaçıncı karakter olduğunu söyler.',
+    ],
+  },
+  {
     slug: 'dialog',
     name: 'Dialog ve ConfirmDialog',
     category: 'overlays',
