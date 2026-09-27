@@ -228,12 +228,14 @@ export default function Mail() {
         aria-label="Gönderimler"
         className={`flex min-h-0 flex-col gap-3 lg:flex ${open ? 'hidden' : 'flex'}`}
       >
-        <SearchInput
-          value={query}
-          onValueChange={setQuery}
-          placeholder="Konu, liste ya da kişi"
-          className="max-w-none"
-        />
+        <div>
+          <SearchInput
+            value={query}
+            onValueChange={setQuery}
+            placeholder="Konu, liste ya da kişi"
+            className="max-w-none"
+          />
+        </div>
         <ul className="flex scrollbar min-h-0 flex-col gap-1 overflow-y-auto">
           {sends.map((send) => {
             const active = send.id === openId;
