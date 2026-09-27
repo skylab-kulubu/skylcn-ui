@@ -27,6 +27,7 @@ import { SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from '../assets/skylab-mark.js
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
 import { Avatar } from './avatar.js';
+import { IconSwap } from './icon-swap.js';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -160,11 +161,19 @@ export function AppShell({
         data-slot="app-shell"
         data-collapsed={collapsed || undefined}
         className={cn(
-          'min-h-dvh bg-background md:h-dvh md:bg-sidebar md:py-2 md:pr-2',
+          // Sticky parts inside the page (list headers) stick below the phone's top bar
+          'min-h-dvh bg-background [--skylcn-sticky-top:3.5rem] md:h-dvh md:bg-sidebar md:py-2 md:pr-2 md:[--skylcn-sticky-top:0px]',
           'transition-[padding] duration-(--motion-duration-base) ease-enter',
           collapsed ? 'md:pl-18' : 'md:pl-66',
         )}
       >
+        <a
+          href="#skylcn-main"
+          className="fixed top-2 left-2 z-60 -translate-y-16 rounded-md border border-border bg-popover px-3 py-2 text-sm text-foreground shadow-overlay outline-hidden focus-visible:translate-y-0 focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {messages.skipToContent}
+        </a>
+
         <aside
           aria-label={messages.navigation}
           className={cn(
@@ -184,7 +193,7 @@ export function AppShell({
               type="button"
               onClick={() => setMobileOpen(true)}
               aria-label={messages.openMenu}
-              className="grid size-10 place-items-center rounded-md text-secondary-foreground outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+              className="grid size-10 place-items-center rounded-md text-secondary-foreground outline-hidden hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Menu className="size-5" />
             </button>
@@ -199,7 +208,7 @@ export function AppShell({
             <Dialog.Popup
               aria-label={messages.navigation}
               className={cn(
-                'fixed inset-y-0 left-0 z-50 flex outline-none md:hidden',
+                'fixed inset-y-0 left-0 z-50 flex outline-hidden md:hidden',
                 'transition-transform duration-(--motion-duration-spring) ease-spring',
                 'data-ending-style:-translate-x-full data-ending-style:duration-(--motion-duration-base) data-ending-style:ease-exit data-starting-style:-translate-x-full',
               )}
@@ -212,7 +221,7 @@ export function AppShell({
               <Dialog.Close
                 aria-label={messages.close}
                 title={messages.close}
-                className="group -ml-px flex h-full w-5 items-center justify-center rounded-r-full border-y border-r border-border bg-sidebar text-subtle-foreground transition-colors outline-none hover:text-secondary-foreground"
+                className="group -ml-px flex h-full w-5 items-center justify-center rounded-r-full border-y border-r border-border bg-sidebar text-subtle-foreground outline-hidden transition-colors hover:text-secondary-foreground"
               >
                 <ChevronsLeft
                   className="size-3.5 opacity-60 transition-transform duration-(--motion-duration-base) group-hover:scale-110 group-hover:opacity-100"
@@ -230,7 +239,11 @@ export function AppShell({
             <div className="min-w-0 flex-1">{header}</div>
             <div ref={setDesktopSlot} className="flex shrink-0 items-center gap-1.5" />
           </div>
-          <main className="scrollbar md:min-h-0 md:flex-1 md:overflow-y-auto">
+          <main
+            id="skylcn-main"
+            tabIndex={-1}
+            className="scrollbar outline-hidden md:min-h-0 md:flex-1 md:scroll-pt-12 md:overflow-y-auto"
+          >
             <div className="mx-auto w-full max-w-400 p-4 sm:p-6">{children}</div>
           </main>
         </div>
@@ -355,7 +368,7 @@ export function SidebarBrand({ name, subtitle, href, consoles, current }: Sideba
     </>
   );
   const base = cn(
-    'flex w-full items-center gap-2.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    'flex w-full items-center gap-2.5 rounded-lg outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
     collapsed ? 'justify-center p-1' : 'p-1.5',
   );
 
@@ -461,7 +474,7 @@ export function SidebarItem({
   const { Link } = useSkylcn();
 
   const className = cn(
-    'group/item relative flex items-center rounded-md outline-none',
+    'group/item relative flex items-center rounded-md outline-hidden',
     'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
     nested
       ? 'gap-2 px-2 py-1 text-xs pointer-coarse:py-1.5'
@@ -564,7 +577,7 @@ export function SidebarGroup({
   }
 
   const rowClass = cn(
-    'group/group flex w-full items-center rounded-md text-sm outline-none',
+    'group/group flex w-full items-center rounded-md text-sm outline-hidden',
     'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
     active ? 'text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
     collapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2 pointer-coarse:py-2.5',
@@ -649,7 +662,7 @@ export function SidebarUser({ name, email, subtitle, avatarSrc, action, menu }: 
         <DropdownMenuTrigger
           aria-label={name}
           className={cn(
-            'flex w-full items-center rounded-lg outline-none',
+            'flex w-full items-center rounded-lg outline-hidden',
             'transition-colors duration-(--motion-duration-fast) hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-accent',
             collapsed ? 'justify-center p-1' : 'gap-3 p-2',
           )}
@@ -696,7 +709,6 @@ export function SidebarUser({ name, email, subtitle, avatarSrc, action, menu }: 
 function CollapseToggle({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   const { messages } = useSkylcn();
   const label = collapsed ? messages.expandSidebar : messages.collapseSidebar;
-  const Icon = collapsed ? PanelLeftOpen : PanelLeftClose;
   return (
     <Tooltip label={`${label} · Ctrl+B`}>
       <button
@@ -704,9 +716,15 @@ function CollapseToggle({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         onClick={onToggle}
         aria-label={label}
         aria-expanded={!collapsed}
-        className="grid size-7 shrink-0 place-items-center rounded-md text-subtle-foreground transition-colors duration-(--motion-duration-fast) outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        className="grid size-7 shrink-0 place-items-center rounded-md text-subtle-foreground outline-hidden transition-colors duration-(--motion-duration-fast) hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <Icon className="size-4" strokeWidth={1.75} />
+        <IconSwap
+          swapped={collapsed}
+          icon={PanelLeftClose}
+          swappedIcon={PanelLeftOpen}
+          className="size-4"
+          strokeWidth={1.75}
+        />
       </button>
     </Tooltip>
   );

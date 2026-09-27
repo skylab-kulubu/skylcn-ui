@@ -30,13 +30,7 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <header
-      data-slot="page-header"
-      className={cn(
-        'slide-in-from-top-1.5 flex animate-in flex-col gap-3 duration-(--motion-duration-base) ease-enter fade-in-0',
-        className,
-      )}
-    >
+    <header data-slot="page-header" className={cn('flex flex-col gap-3', className)}>
       <div className="flex min-w-0 items-center gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2.5">
@@ -96,8 +90,8 @@ export function SearchInput({
           props['aria-label'] ?? (typeof placeholder === 'string' ? placeholder : messages.search)
         }
         className={cn(
-          'w-full rounded-md border border-input bg-card pr-8 pl-8 text-xs text-foreground outline-none placeholder:text-faint-foreground',
-          'transition-[border-color,background-color,box-shadow] duration-(--motion-duration-fast) ease-enter',
+          'w-full rounded-md border border-input bg-card pr-8 pl-8 text-xs text-foreground outline-hidden placeholder:text-subtle-foreground',
+          'transition-[border-color,background-color] duration-(--motion-duration-fast) ease-enter',
           'focus-visible:border-skylab-400/50 focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-skylab-400/20',
           '[&::-webkit-search-cancel-button]:hidden',
           compact ? 'h-8' : 'h-9 rounded-lg',
@@ -111,7 +105,7 @@ export function SearchInput({
           onClick={() => onValueChange('')}
           aria-label={messages.clearSearch}
           title={messages.clearSearch}
-          className="absolute top-1/2 right-1.5 grid size-5 -translate-y-1/2 animate-in place-items-center rounded text-subtle-foreground transition-colors duration-(--motion-duration-fast) fade-in-0 outline-none zoom-in-90 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          className="absolute top-1/2 right-1.5 grid size-5 -translate-y-1/2 animate-in place-items-center rounded text-subtle-foreground outline-hidden transition-colors duration-(--motion-duration-fast) fade-in-0 zoom-in-90 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring motion-reduce:zoom-in-100"
         >
           <X className="size-3.5" />
         </button>
@@ -157,7 +151,7 @@ export function FilterPills<T extends string>({
             aria-pressed={active}
             onClick={() => onValueChange(option.value)}
             className={cn(
-              'inline-flex h-full items-center gap-1.5 rounded px-2.5 text-xs outline-none',
+              'inline-flex h-full items-center gap-1.5 rounded px-2.5 text-xs outline-hidden',
               'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
               active
                 ? 'bg-skylab-500/20 text-skylab-300'
@@ -169,7 +163,7 @@ export function FilterPills<T extends string>({
               <span
                 className={cn(
                   'text-3xs tabular-nums',
-                  active ? 'text-skylab-300/80' : 'text-faint-foreground',
+                  active ? 'text-skylab-300/80' : 'text-subtle-foreground',
                 )}
               >
                 {option.count}

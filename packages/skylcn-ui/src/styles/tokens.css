@@ -24,12 +24,13 @@
   --popover: #1a1a1a;
   --card: rgb(255 255 255 / 3%);
 
-  /* Text */
+  /* Text. Down to subtle every step reads at 4.5:1 or more on every surface;
+     faint is for decoration and disabled states only, never for text to be read. */
   --foreground: #f5f5f5;
   --foreground-strong: #fafafa;
   --secondary-foreground: #e5e5e5;
   --muted-foreground: #a3a3a3;
-  --subtle-foreground: #737373;
+  --subtle-foreground: #8c8c8c;
   --faint-foreground: #525252;
 
   /* Washes and lines, drawn as foreground at low opacity so they sit on any surface */
@@ -110,10 +111,10 @@
   --destructive: #c81e1e;
   --destructive-foreground: #7f1d1d;
   --success: #047857;
-  --warning: #b45309;
+  --warning: #a44a07;
   --info: #1d4ed8;
 
-  --chart-2: #b45309;
+  --chart-2: #a44a07;
   --chart-3: #047857;
   --chart-4: #6b665f;
 
@@ -130,13 +131,11 @@
   --font-family-mono:
     var(--skylcn-font-mono, 'Space Mono'), ui-monospace, SFMono-Regular, monospace;
 
-  /* Micro type scale below Tailwind's xs: 2xs meta lines, 3xs chips and labels, 4xs inline role badges */
+  /* Micro type scale below Tailwind's xs: 2xs meta lines, 3xs chips and labels (the smallest text) */
   --type-2xs: 0.6875rem;
   --type-2xs-leading: 1rem;
   --type-3xs: 0.625rem;
   --type-3xs-leading: 0.875rem;
-  --type-4xs: 0.5rem;
-  --type-4xs-leading: 0.75rem;
   --letter-spacing-label: 0.18em;
 
   /* Motion */
@@ -176,15 +175,39 @@
   --motion-duration-slow: 350ms;
   --motion-duration-spring: 450ms;
   --motion-stagger: 60ms;
+  /* How far things travel as they appear: popups and rows, then larger surfaces */
+  --motion-shift: 4px;
+  --motion-shift-lg: 8px;
+  --motion-scale-from: 0.98;
 }
 
+/* Reduced motion keeps short fades, so changes stay noticeable, and drops all travel and scaling */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --motion-duration-instant: 0ms;
-    --motion-duration-fast: 0ms;
-    --motion-duration-base: 0ms;
-    --motion-duration-slow: 0ms;
-    --motion-duration-spring: 0ms;
+    --motion-duration-slow: 200ms;
+    --motion-duration-spring: 200ms;
     --motion-stagger: 0ms;
+    --motion-shift: 0px;
+    --motion-shift-lg: 0px;
+    --motion-scale-from: 1;
+  }
+}
+
+/* A stronger contrast request lifts quiet text one step and firms up the lines */
+@media (prefers-contrast: more) {
+  :root,
+  [data-theme='dark'] {
+    --subtle-foreground: #a3a3a3;
+    --faint-foreground: #828282;
+    --border: rgb(255 255 255 / 22%);
+    --border-subtle: rgb(255 255 255 / 14%);
+    --input: rgb(255 255 255 / 30%);
+  }
+  [data-theme='light'] {
+    --subtle-foreground: #57524c;
+    --faint-foreground: #6b665f;
+    --border: rgb(0 0 0 / 25%);
+    --border-subtle: rgb(0 0 0 / 15%);
+    --input: rgb(0 0 0 / 35%);
   }
 }

@@ -8,12 +8,12 @@ import { cn } from '../lib/cn.js';
 import { popupMotionFast } from '../lib/motion.js';
 
 const popupClass = cn(
-  'min-w-44 rounded-lg border border-border bg-popover p-1 text-foreground shadow-overlay outline-none',
+  'min-w-44 rounded-lg border border-border bg-popover p-1 text-foreground shadow-overlay outline-hidden',
   popupMotionFast,
 );
 
 const itemClass = cn(
-  'group/menu-item relative flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-xs text-secondary-foreground outline-none select-none',
+  'group/menu-item relative flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-xs text-secondary-foreground outline-hidden select-none',
   'transition-colors duration-(--motion-duration-instant)',
   'data-highlighted:bg-accent data-highlighted:text-foreground-strong',
   'data-disabled:cursor-not-allowed data-disabled:text-faint-foreground',
@@ -146,7 +146,7 @@ export function MenuRadioItem({ className, children, ...props }: MenuPrimitive.R
 }
 
 const labelClass =
-  'px-2 pt-2 pb-1 text-3xs font-medium tracking-label text-faint-foreground uppercase';
+  'px-2 pt-2 pb-1 text-3xs font-medium tracking-label text-subtle-foreground uppercase';
 
 /** A run of related items; `label` names the group for assistive tech too. */
 export function MenuGroup({
@@ -191,7 +191,7 @@ export function MenuShortcut({ className, ...props }: ComponentProps<'span'>) {
     <span
       data-slot="menu-shortcut"
       className={cn(
-        'ml-auto pl-4 font-mono text-3xs tracking-wide text-faint-foreground',
+        'ml-auto pl-4 font-mono text-3xs tracking-wide text-subtle-foreground',
         className,
       )}
       {...props}
@@ -245,7 +245,7 @@ function MenuContent({
         align={align}
         sideOffset={sideOffset}
         alignOffset={alignOffset}
-        className="z-50 outline-none"
+        className="z-50 outline-hidden"
       >
         <MenuPrimitive.Popup
           data-slot="menu-content"
@@ -306,7 +306,7 @@ export function ContextMenuTrigger({ className, ...props }: ContextMenuPrimitive
 export function ContextMenuContent({ className, ...props }: MenuPrimitive.Popup.Props) {
   return (
     <ContextMenuPrimitive.Portal>
-      <ContextMenuPrimitive.Positioner className="z-50 outline-none">
+      <ContextMenuPrimitive.Positioner className="z-50 outline-hidden">
         <ContextMenuPrimitive.Popup
           data-slot="context-menu-content"
           className={cn(popupClass, className)}

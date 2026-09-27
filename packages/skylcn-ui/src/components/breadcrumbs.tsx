@@ -75,7 +75,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 <Link
                   href={item.href}
                   title={item.label}
-                  className="min-w-0 truncate rounded-md px-1.5 py-1 transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                  className="min-w-0 truncate rounded-md px-1.5 py-1 outline-hidden transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {item.label}
                 </Link>

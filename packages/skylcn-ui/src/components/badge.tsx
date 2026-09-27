@@ -18,7 +18,7 @@ const badgeVariants = cva(
     variants: {
       tone: TONES,
       size: {
-        xs: 'rounded-md px-1 py-0.5 text-4xs tracking-label uppercase',
+        xs: 'rounded-md px-1 py-px text-3xs leading-3.5 tracking-wide uppercase',
         sm: 'rounded-md px-1.5 py-0.5 text-3xs',
         md: 'rounded-md px-2 py-0.5 text-2xs',
         pill: 'rounded-full px-3 py-0.5 text-3xs font-semibold tracking-label uppercase',
@@ -52,18 +52,28 @@ export type StatusDotProps = ComponentProps<'span'> & {
   tone?: keyof typeof DOT_TONES;
   /** Adds the soft glow used for live states. */
   glow?: boolean;
+  /**
+   * What the state is, such as "Açık". Colour alone does not reach everyone, so
+   * give it unless the same words already sit next to the dot.
+   */
+  label?: string;
 };
 
 /** A 6px state dot, glowing for live states. */
 export function StatusDot({
   tone = 'neutral',
   glow = tone !== 'neutral',
+  label,
   className,
   ...props
 }: StatusDotProps) {
   return (
     <span
       data-slot="status-dot"
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+      title={label}
       className={cn(
         'inline-block size-1.5 shrink-0 rounded-full',
         DOT_TONES[tone],

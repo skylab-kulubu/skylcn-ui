@@ -48,7 +48,7 @@ export function ListPanel({
       key={status.kind}
       data-slot="list-panel"
       className={cn(
-        'animate-in divide-y divide-border-subtle duration-(--motion-duration-base) ease-enter fade-in-0',
+        'enter-fade divide-y divide-border-subtle',
         framed && 'overflow-hidden rounded-lg border border-border',
         className,
       )}
@@ -91,7 +91,7 @@ export function ListItem({
   const { Link } = useSkylcn();
   const pressable = Boolean(href || onSelect);
   const overlay =
-    'absolute inset-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset';
+    'absolute inset-0 outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset';
   const name = typeof title === 'string' ? title : undefined;
 
   return (

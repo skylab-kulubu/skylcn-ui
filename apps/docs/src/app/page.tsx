@@ -153,6 +153,7 @@ function Gallery() {
             onValueChange={() => undefined}
             options={['Etkinlik', 'Duyuru']}
             size="sm"
+            aria-label="Tür"
           />
         </div>
         <span className="text-2xs text-muted-foreground">
@@ -162,6 +163,7 @@ function Gallery() {
             value="open"
             onValueChange={() => undefined}
             tone="text-success"
+            aria-label="Durum"
             options={[
               { value: 'open', label: 'Açık' },
               { value: 'closed', label: 'Kapalı' },
@@ -196,11 +198,11 @@ function Gallery() {
       </Section>
 
       <Section title="Switch">
-        <Switch defaultChecked />
-        <Switch />
-        <Checkbox defaultChecked />
-        <Checkbox />
-        <Checkbox indeterminate />
+        <Switch defaultChecked aria-label="Bildirimler" />
+        <Switch aria-label="Otomatik kaydet" />
+        <Checkbox defaultChecked aria-label="Seçili" />
+        <Checkbox aria-label="Seçili değil" />
+        <Checkbox indeterminate aria-label="Kısmen seçili" />
         <div className="w-80">
           <ToggleRow
             title="Anonim cevap"
@@ -263,7 +265,7 @@ function Gallery() {
           ]}
         />
         <Pagination current={page} totalPages={12} onPageChange={setPage} />
-        <Pagination current={page} totalPages={48} onPageChange={setPage} jumpToPage />
+        <Pagination current={page} totalPages={48} onPageChange={setPage} />
       </Section>
 
       <Section title="States">
@@ -306,6 +308,7 @@ function Gallery() {
 export default function Page() {
   return (
     <main className="grid min-h-dvh grid-cols-1 bg-sidebar xl:grid-cols-2">
+      <h1 className="sr-only">skylcn-ui bileşenleri</h1>
       {(['dark', 'light'] as const).map((theme) => (
         <div key={theme} data-theme={theme} className="bg-sidebar p-2" id={`theme-${theme}`}>
           <div className="rounded-xl border border-border-subtle bg-background p-6 text-foreground">

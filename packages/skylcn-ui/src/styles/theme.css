@@ -132,8 +132,6 @@
   --text-2xs--line-height: var(--type-2xs-leading);
   --text-3xs: var(--type-3xs);
   --text-3xs--line-height: var(--type-3xs-leading);
-  --text-4xs: var(--type-4xs);
-  --text-4xs--line-height: var(--type-4xs-leading);
   --tracking-label: var(--letter-spacing-label);
 
   --ease-enter: var(--motion-ease-enter);
@@ -158,6 +156,49 @@
   }
   to {
     background-position: 0 0;
+  }
+}
+
+/* Entrances. The travel comes from the motion tokens, so reduced motion leaves a plain fade. */
+@keyframes skylcn-enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--skylcn-enter-shift, var(--motion-shift));
+  }
+}
+
+@utility enter-rise {
+  animation: skylcn-enter var(--motion-duration-base) var(--motion-ease-enter) backwards;
+}
+
+@utility enter-rise-lg {
+  --skylcn-enter-shift: var(--motion-shift-lg);
+  animation: skylcn-enter var(--motion-duration-slow) var(--motion-ease-enter) backwards;
+}
+
+@utility enter-fade {
+  --skylcn-enter-shift: 0px;
+  animation: skylcn-enter var(--motion-duration-base) var(--motion-ease-enter) backwards;
+}
+
+/*
+ * useTheme swaps the theme inside a view transition: the page cross-fades as a
+ * whole, and per-element colour transitions are held off so nothing lags behind.
+ */
+:root.skylcn-theme-switching,
+:root.skylcn-theme-switching * {
+  transition: none !important;
+}
+:root.skylcn-theme-switching::view-transition-old(root),
+:root.skylcn-theme-switching::view-transition-new(root) {
+  animation-duration: var(--motion-duration-slow);
+  animation-timing-function: var(--motion-ease-exit);
+}
+
+/* Keyboard focus scrolled into view stays clear of AppShell's sticky phone bar and list header */
+@media (width < 48rem) {
+  html:has([data-slot='app-shell']) {
+    scroll-padding-top: 6.5rem;
   }
 }
 

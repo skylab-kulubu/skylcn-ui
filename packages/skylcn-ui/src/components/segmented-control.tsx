@@ -60,7 +60,7 @@ export function SegmentedControl({
             aria-label={option.label}
             title={option.label}
             className={cn(
-              'relative z-10 flex h-7 w-full items-center justify-center rounded-md px-2 font-medium text-secondary-foreground outline-none pointer-coarse:h-9',
+              'relative z-10 flex h-7 w-full items-center justify-center rounded-md px-2 font-medium text-secondary-foreground outline-hidden pointer-coarse:h-9',
               'transition-colors duration-(--motion-duration-fast) hover:text-skylab-300 focus-visible:ring-2 focus-visible:ring-ring',
               'data-pressed:text-skylab-300',
             )}

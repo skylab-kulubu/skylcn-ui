@@ -31,7 +31,7 @@ export function DrawerContent({ className, container, children, ...props }: Draw
       <DialogPrimitive.Popup
         data-slot="drawer-content"
         className={cn(
-          'inset-y-0 right-0 z-50 flex outline-none',
+          'inset-y-0 right-0 z-50 flex outline-hidden',
           scoped ? 'absolute' : 'fixed',
           'transition-transform duration-(--motion-duration-spring) ease-spring',
           'data-ending-style:translate-x-full data-ending-style:duration-(--motion-duration-base) data-ending-style:ease-exit data-starting-style:translate-x-full',
@@ -41,7 +41,7 @@ export function DrawerContent({ className, container, children, ...props }: Draw
         <DialogPrimitive.Close
           title={messages.closePanel}
           aria-label={messages.closePanel}
-          className="group relative -mr-px flex h-full w-5 items-center justify-center rounded-l-full border-y border-l border-border bg-sheet text-subtle-foreground transition-colors outline-none hover:text-secondary-foreground focus-visible:text-foreground"
+          className="group relative -mr-px flex h-full w-5 items-center justify-center rounded-l-full border-y border-l border-border bg-sheet text-subtle-foreground outline-hidden transition-colors hover:text-secondary-foreground focus-visible:text-foreground"
         >
           <ChevronsRight
             className="size-3.5 opacity-60 transition-transform duration-(--motion-duration-base) group-hover:scale-110 group-hover:opacity-100"

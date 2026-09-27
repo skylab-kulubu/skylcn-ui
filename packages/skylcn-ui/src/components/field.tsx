@@ -7,11 +7,11 @@ import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 
 const controlClass = [
-  'w-full min-w-0 rounded-md border border-input bg-input-background text-xs text-foreground outline-none',
+  'w-full min-w-0 rounded-md border border-input bg-input-background text-xs text-foreground outline-hidden',
   // 16px on touch screens keeps iOS from zooming into the field
   'pointer-coarse:text-base',
-  'transition-[border-color,box-shadow] duration-(--motion-duration-fast) ease-enter',
-  'placeholder:text-faint-foreground',
+  'transition-[border-color] duration-(--motion-duration-fast) ease-enter',
+  'placeholder:text-subtle-foreground',
   'hover:border-border-strong focus-visible:border-skylab-400/50 focus-visible:ring-2 focus-visible:ring-skylab-400/20',
   'aria-invalid:border-destructive/60 aria-invalid:ring-destructive/20 data-invalid:border-destructive/60',
   'disabled:cursor-not-allowed disabled:opacity-60',

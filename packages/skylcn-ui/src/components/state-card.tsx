@@ -49,7 +49,7 @@ export function StateCard({
       aria-live={loading ? 'polite' : undefined}
       className={cn('flex w-full flex-1 items-center justify-center px-6 py-10', className)}
     >
-      <div className="mx-auto flex w-full max-w-md animate-in flex-col items-center text-center duration-(--motion-duration-slow) ease-enter fade-in-0 slide-in-from-bottom-6 zoom-in-98">
+      <div className="mx-auto flex w-full max-w-md enter-rise-lg flex-col items-center text-center">
         {top ? <div className="mb-8 w-full max-w-85">{top}</div> : null}
         {loading ? (
           <SkylabLoader size={72} />

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Space_Mono } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { ThemeScript } from '@skylab-kulubu/skylcn-ui';
 import { Providers } from './providers';
 import './globals.css';
 
@@ -18,7 +19,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="tr" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="tr" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className="antialiased">
         <Providers>{children}</Providers>
       </body>

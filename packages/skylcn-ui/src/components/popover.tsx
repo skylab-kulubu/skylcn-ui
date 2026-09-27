@@ -37,7 +37,7 @@ export function PopoverContent({
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            'w-80 max-w-[calc(100vw-1rem)] rounded-xl border border-border-strong bg-popover/85 p-3 text-foreground shadow-overlay backdrop-blur outline-none',
+            'w-80 max-w-[calc(100vw-1rem)] rounded-xl border border-border-strong bg-popover/85 p-3 text-foreground shadow-overlay outline-hidden backdrop-blur',
             popupMotionBase,
             className,
           )}

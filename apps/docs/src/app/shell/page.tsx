@@ -362,7 +362,7 @@ export default function ShellDemo() {
           }
         >
           <DataListHeader>
-            <DataListColumnHeader column="status" sortable />
+            <DataListColumnHeader column="status" sortable label="Durum" />
             <DataListColumnHeader column="name">Form adı</DataListColumnHeader>
             <DataListColumnHeader column="workflow" sortable>
               Akış
@@ -374,7 +374,7 @@ export default function ShellDemo() {
               Yanıt
             </DataListColumnHeader>
             <DataListColumnHeader column="role">Yetki</DataListColumnHeader>
-            <DataListColumnHeader column="actions" />
+            <DataListColumnHeader column="actions" label="İşlemler" />
           </DataListHeader>
           {loading ? (
             <DataListSkeleton rows={5} />
@@ -396,7 +396,7 @@ export default function ShellDemo() {
                     <DataListCell column="status">
                       <StatusDot
                         tone={row.open ? 'success' : 'danger'}
-                        title={row.open ? 'Açık' : 'Kapalı'}
+                        label={row.open ? 'Açık' : 'Kapalı'}
                       />
                     </DataListCell>
                     <DataListCell column="name" className="gap-3">

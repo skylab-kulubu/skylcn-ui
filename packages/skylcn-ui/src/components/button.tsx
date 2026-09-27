@@ -4,13 +4,14 @@ import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import { usePendingIndicator } from '../lib/use-pending-indicator.js';
 import { SkylabLoader } from './skylab-loader.js';
 
 const buttonVariants = cva(
   [
-    'group/button inline-flex shrink-0 items-center justify-center gap-2 border font-medium whitespace-nowrap select-none',
-    'transition-[color,background-color,border-color,box-shadow,transform] duration-(--motion-duration-fast) ease-enter',
-    'outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    'group/button relative inline-flex shrink-0 items-center justify-center gap-2 border font-medium whitespace-nowrap select-none',
+    'transition-[color,background-color,border-color,translate] duration-(--motion-duration-fast) ease-enter',
+    'outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
     'active:not-aria-[haspopup]:translate-y-px',
     'disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-wait aria-busy:opacity-100',
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -44,7 +45,10 @@ const buttonVariants = cva(
 
 export type ButtonProps = ButtonPrimitive.Props &
   VariantProps<typeof buttonVariants> & {
-    /** Locks the button and shows the SKY LAB mark while an action runs. */
+    /**
+     * Locks the button while an action runs. The SKY LAB mark takes the place of
+     * the content only if the wait lasts, so quick actions never flash it.
+     */
     pending?: boolean;
   };
 
@@ -57,16 +61,27 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
+  const busy = usePendingIndicator(pending);
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size }), className)}
-      disabled={disabled || pending}
-      aria-busy={pending || undefined}
+      disabled={disabled || pending || busy}
+      aria-busy={busy || undefined}
       {...props}
     >
-      {pending ? <SkylabLoader size={16} className="text-current" /> : null}
-      {children}
+      <span
+        data-slot="button-content"
+        className={cn(
+          'inline-flex items-center justify-center gap-[inherit] transition-opacity duration-(--motion-duration-fast)',
+          busy && 'opacity-0',
+        )}
+      >
+        {children}
+      </span>
+      {busy ? (
+        <SkylabLoader size={16} className="absolute inset-0 m-auto enter-fade text-current" />
+      ) : null}
     </ButtonPrimitive>
   );
 }
@@ -88,7 +103,7 @@ export function IconButton({
 }: IconButtonProps) {
   return (
     <Button size={size} aria-label={label} title={title ?? label} pending={pending} {...props}>
-      {pending ? null : <Icon />}
+      <Icon />
     </Button>
   );
 }

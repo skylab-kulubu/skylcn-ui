@@ -61,8 +61,8 @@ export function Select({
         data-slot="select-trigger"
         aria-label={ariaLabel}
         className={cn(
-          'group/select font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60',
-          'transition-[color,background-color,border-color,box-shadow] duration-(--motion-duration-fast) ease-enter',
+          'group/select font-medium outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60',
+          'transition-[color,background-color,border-color] duration-(--motion-duration-fast) ease-enter',
           inline
             ? 'inline-flex max-w-full items-center gap-0.5 rounded px-1 py-0.5 text-2xs hover:bg-accent data-popup-open:bg-accent'
             : [
@@ -95,12 +95,12 @@ export function Select({
           alignItemWithTrigger={false}
           sideOffset={4}
           align="start"
-          className="z-50 outline-none"
+          className="z-50 outline-hidden"
         >
           <SelectPrimitive.Popup
             data-slot="select-content"
             className={cn(
-              'rounded-lg border border-border bg-popover shadow-overlay outline-none',
+              'rounded-lg border border-border bg-popover shadow-overlay outline-hidden',
               popupMotionFast,
               inline ? 'max-w-72 min-w-44' : 'w-(--anchor-width) min-w-40',
             )}
@@ -120,7 +120,7 @@ export function Select({
                       value={optionValue}
                       disabled={typeof option !== 'string' && option.disabled}
                       className={cn(
-                        'group/item flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-xs text-secondary-foreground outline-none select-none pointer-coarse:py-2.5 pointer-coarse:text-sm',
+                        'group/item flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-xs text-secondary-foreground outline-hidden select-none pointer-coarse:py-2.5 pointer-coarse:text-sm',
                         'transition-colors duration-(--motion-duration-instant)',
                         'data-highlighted:bg-accent data-highlighted:text-foreground-strong',
                         'data-selected:bg-skylab-500/20 data-selected:text-skylab-300',
@@ -134,7 +134,7 @@ export function Select({
                         <Check className="size-3" />
                       </SelectPrimitive.ItemIndicator>
                       {hint ? (
-                        <span className="shrink-0 text-3xs text-faint-foreground group-data-selected/item:hidden">
+                        <span className="shrink-0 text-3xs text-subtle-foreground group-data-selected/item:hidden">
                           {hint}
                         </span>
                       ) : null}

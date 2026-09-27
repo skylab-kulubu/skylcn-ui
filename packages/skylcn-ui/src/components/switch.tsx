@@ -11,7 +11,7 @@ export function Switch({ className, ...props }: SwitchProps) {
     <SwitchPrimitive.Root
       data-slot="switch"
       className={cn(
-        'relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border border-border bg-muted px-0.5 outline-none after:absolute after:-inset-2',
+        'relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border border-border bg-muted px-0.5 outline-hidden after:absolute after:-inset-2',
         'transition-[background-color,border-color] duration-(--motion-duration-base) ease-enter',
         'focus-visible:ring-2 focus-visible:ring-ring',
         'data-checked:border-skylab-400/50 data-checked:bg-skylab-400/20',

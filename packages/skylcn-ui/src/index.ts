@@ -7,6 +7,8 @@ export {
   type SkylcnMessages,
 } from './lib/provider.js';
 export { SKYLAB_MARK_RADII, SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from './assets/skylab-mark.js';
+export { popupMotionBase, popupMotionFast } from './lib/motion.js';
+export { usePendingIndicator } from './lib/use-pending-indicator.js';
 
 export { Avatar, initialsOf, type AvatarProps } from './components/avatar.js';
 export {
@@ -49,6 +51,7 @@ export {
   type FieldProps,
   type InputProps,
 } from './components/field.js';
+export { IconSwap, type IconSwapProps } from './components/icon-swap.js';
 export { Pagination, pageSlots, type PaginationProps } from './components/pagination.js';
 export {
   Popover,
@@ -145,4 +148,5 @@ export {
   type MenuItemProps,
   type MenuLinkItemProps,
 } from './components/menu.js';
-export { useTheme, type ThemePreference } from './lib/theme.js';
+export { useTheme } from './lib/theme.js';
+export { THEME_STORAGE_KEY, ThemeScript, type ThemePreference } from './lib/theme-script.js';

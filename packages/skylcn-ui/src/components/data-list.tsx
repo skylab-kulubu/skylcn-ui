@@ -1,9 +1,12 @@
 'use client';
 
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import {
+  Children,
   createContext,
   useContext,
+  useEffect,
+  useState,
   type ComponentProps,
   type CSSProperties,
   type ReactNode,
@@ -45,6 +48,14 @@ type DataListContextValue = {
 };
 
 const DataListContext = createContext<DataListContextValue | null>(null);
+
+type RowTarget = { href?: string; onSelect?: () => void; label?: string };
+
+/** The row's link or button, handed to its first always-visible cell to render. */
+const RowTargetContext = createContext<RowTarget | null>(null);
+
+/** Whether rows mounting now are the list's first rows, which fade in one after another. */
+const EntranceContext = createContext(false);
 
 function useDataList() {
   const context = useContext(DataListContext);
@@ -114,7 +125,7 @@ export function DataListHeader({ className, children, ...props }: ComponentProps
       role="row"
       className={cn(
         ROW_GRID,
-        'sticky top-0 z-20 border-b border-border bg-background px-3 pb-2',
+        'sticky top-[var(--skylcn-sticky-top,0px)] z-20 border-b border-border bg-background px-3 pb-2',
         className,
       )}
       {...props}
@@ -128,14 +139,17 @@ export type DataListColumnHeaderProps = Omit<ComponentProps<'div'>, 'children'> 
   column: string;
   /** Pressing the header asks the list to sort by this column. */
   sortable?: boolean;
+  /** Names a column whose header shows no text, such as a status dot or row actions. */
+  label?: string;
   children?: ReactNode;
 };
 
-const COLUMN_LABEL = 'text-3xs font-medium tracking-label text-faint-foreground uppercase';
+const COLUMN_LABEL = 'text-3xs font-medium tracking-label text-subtle-foreground uppercase';
 
 export function DataListColumnHeader({
   column,
   sortable = false,
+  label,
   className,
   children,
   ...props
@@ -144,11 +158,15 @@ export function DataListColumnHeader({
   const { messages } = useSkylcn();
   const def = columns.find((c) => c.id === column);
   const active = sort?.field === column;
+  const descending = active && sort!.direction === 'desc';
+  const name = label ?? (typeof children === 'string' ? children : undefined);
+  const hiddenName = label && !children ? <span className="sr-only">{label}</span> : null;
 
   if (!sortable || !onSortChange) {
     return (
       <div role="columnheader" className={cn(columnClass(def), COLUMN_LABEL, className)} {...props}>
         {children}
+        {hiddenName}
       </div>
     );
   }
@@ -163,37 +181,60 @@ export function DataListColumnHeader({
       <button
         type="button"
         onClick={() => onSortChange(column)}
-        title={typeof children === 'string' ? messages.sortBy(children) : undefined}
+        title={name ? messages.sortBy(name) : undefined}
         className={cn(
           COLUMN_LABEL,
-          'group/sort inline-flex min-w-0 items-center gap-1 rounded outline-none',
+          'group/sort inline-flex min-w-0 items-center gap-1 rounded outline-hidden',
           'transition-colors duration-(--motion-duration-fast) hover:text-secondary-foreground focus-visible:ring-2 focus-visible:ring-ring',
           active && 'text-secondary-foreground',
         )}
       >
         {children ? <span className="truncate">{children}</span> : null}
-        {active ? (
-          sort!.direction === 'asc' ? (
-            <ArrowUp className="size-2.75 shrink-0 text-skylab-300" strokeWidth={2} />
-          ) : (
-            <ArrowDown className="size-2.75 shrink-0 text-skylab-300" strokeWidth={2} />
-          )
-        ) : (
-          <span className="size-1 shrink-0 rounded-full bg-faint-foreground transition-colors group-hover/sort:bg-muted-foreground" />
-        )}
+        {hiddenName}
+        {/* The dot turns into an arrow when the column sorts, and the arrow turns over with the direction */}
+        <span aria-hidden className="grid size-2.75 shrink-0 place-items-center">
+          <span
+            className={cn(
+              'col-start-1 row-start-1 size-1 rounded-full bg-faint-foreground transition-[opacity,scale,background-color] duration-(--motion-duration-base) ease-enter group-hover/sort:bg-muted-foreground',
+              active ? 'scale-50 opacity-0' : 'scale-100 opacity-100',
+            )}
+          />
+          <ArrowUp
+            strokeWidth={2}
+            className={cn(
+              'col-start-1 row-start-1 size-2.75 text-skylab-300 transition-[opacity,scale,rotate] duration-(--motion-duration-base) ease-enter motion-reduce:scale-100',
+              active ? 'scale-100 opacity-100' : 'scale-50 opacity-0',
+              descending ? 'rotate-180' : 'rotate-0',
+            )}
+          />
+        </span>
       </button>
     </div>
   );
 }
 
-export function DataListBody({ className, ...props }: ComponentProps<'div'>) {
+/** Rows fade in one after another when they first arrive; later sorts, searches and pages swap in place. */
+export function DataListBody({ className, children, ...props }: ComponentProps<'div'>) {
+  const hasRows = Children.count(children) > 0;
+  const [settled, setSettled] = useState(false);
+
+  useEffect(() => {
+    if (!hasRows || settled) return;
+    const timer = setTimeout(() => setSettled(true), 800);
+    return () => clearTimeout(timer);
+  }, [hasRows, settled]);
+
   return (
-    <div
-      data-slot="data-list-body"
-      role="rowgroup"
-      className={cn('divide-y divide-border-subtle', className)}
-      {...props}
-    />
+    <EntranceContext.Provider value={!settled}>
+      <div
+        data-slot="data-list-body"
+        role="rowgroup"
+        className={cn('divide-y divide-border-subtle', className)}
+        {...props}
+      >
+        {children}
+      </div>
+    </EntranceContext.Provider>
   );
 }
 
@@ -205,7 +246,7 @@ export type DataListRowProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   /** The accessible name of the row link or button. */
   label?: string;
   selected?: boolean;
-  /** Position in the list; staggers the entrance of the first rows. */
+  /** Position in the list; staggers the first rows as the list first appears. */
   index?: number;
 };
 
@@ -220,44 +261,51 @@ export function DataListRow({
   children,
   ...props
 }: DataListRowProps) {
-  const { Link } = useSkylcn();
-  const overlay =
-    'absolute inset-0 rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset';
+  const entering = useContext(EntranceContext) && index !== undefined;
   return (
-    <div
-      data-slot="data-list-row"
-      role="row"
-      aria-selected={selected || undefined}
-      className={cn(
-        ROW_GRID,
-        'group/row relative px-3 py-2.5 transition-colors duration-(--motion-duration-fast)',
-        (href || onSelect) && 'hover:bg-card',
-        selected && 'bg-skylab-500/5',
-        index !== undefined &&
-          'animate-in duration-(--motion-duration-base) ease-enter fade-in-0 slide-in-from-bottom-1',
-        className,
-      )}
-      style={
-        index !== undefined
-          ? {
-              animationDelay: `calc(var(--motion-stagger) * ${Math.min(index, STAGGER_CAP)})`,
-              animationFillMode: 'backwards',
-              ...style,
-            }
-          : style
-      }
-      {...props}
-    >
-      {href ? (
-        <Link href={href} className={overlay}>
-          <span className="sr-only">{label}</span>
-        </Link>
-      ) : onSelect ? (
-        <button type="button" onClick={onSelect} aria-label={label} className={overlay} />
-      ) : null}
-      {children}
-    </div>
+    <RowTargetContext.Provider value={href || onSelect ? { href, onSelect, label } : null}>
+      <div
+        data-slot="data-list-row"
+        role="row"
+        aria-selected={selected || undefined}
+        className={cn(
+          ROW_GRID,
+          'group/row relative px-3 py-2.5 transition-colors duration-(--motion-duration-fast)',
+          (href || onSelect) && 'hover:bg-card',
+          selected && 'bg-skylab-500/5',
+          entering && 'enter-rise',
+          className,
+        )}
+        style={
+          entering
+            ? {
+                animationDelay: `calc(var(--motion-stagger) * ${Math.min(index, STAGGER_CAP)})`,
+                ...style,
+              }
+            : style
+        }
+        {...props}
+      >
+        {children}
+      </div>
+    </RowTargetContext.Provider>
   );
+}
+
+const OVERLAY =
+  'absolute inset-0 rounded-[inherit] outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset';
+
+/** Stretches over the whole row from inside a cell, so the table keeps only cells in its rows. */
+function RowTargetOverlay({ href, onSelect, label }: RowTarget) {
+  const { Link } = useSkylcn();
+  if (href) {
+    return (
+      <Link href={href} className={OVERLAY}>
+        <span className="sr-only">{label}</span>
+      </Link>
+    );
+  }
+  return <button type="button" onClick={onSelect} aria-label={label} className={OVERLAY} />;
 }
 
 export type DataListCellProps = ComponentProps<'div'> & {
@@ -270,9 +318,13 @@ export function DataListCell({
   column,
   interactive = false,
   className,
+  children,
   ...props
 }: DataListCellProps) {
   const { columns } = useDataList();
+  const target = useContext(RowTargetContext);
+  // The row's link lives in the first column that never hides, so it is always reachable.
+  const holdsTarget = target && columns.find((c) => !c.from)?.id === column;
   return (
     <div
       role="cell"
@@ -282,7 +334,10 @@ export function DataListCell({
         className,
       )}
       {...props}
-    />
+    >
+      {holdsTarget ? <RowTargetOverlay {...target} /> : null}
+      {children}
+    </div>
   );
 }
 
