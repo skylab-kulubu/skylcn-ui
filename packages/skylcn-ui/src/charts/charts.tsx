@@ -76,6 +76,8 @@ type CartesianProps = {
   formatValue?: (value: number) => string;
   formatX?: (value: string | number) => string;
   loading?: boolean;
+  /** What the empty state says; "No data to show" by default. */
+  emptyMessage?: ReactNode;
   className?: string;
 };
 
@@ -168,6 +170,7 @@ function frameProps(props: SharedProps, resolved: Resolved[], format: (value: nu
     table: tableOf(props, resolved, format),
     loading: props.loading,
     empty: props.data.length === 0,
+    emptyMessage: props.emptyMessage,
     className: props.className,
   };
 }
@@ -454,6 +457,10 @@ export type DonutChartProps = {
   height?: number;
   formatValue?: (value: number) => string;
   loading?: boolean;
+  /** What the empty state says, shown when every slice is zero; "No data to show" by default. */
+  emptyMessage?: ReactNode;
+  /** Draws the card; turn off to set the chart straight into a section or another card. */
+  framed?: boolean;
   className?: string;
 };
 
@@ -502,7 +509,9 @@ export function DonutChart({ height = 220, ...props }: DonutChartProps) {
         ]),
       }}
       loading={props.loading}
-      empty={props.data.length === 0}
+      empty={props.data.every((slice) => slice.value <= 0)}
+      emptyMessage={props.emptyMessage}
+      framed={props.framed}
       className={props.className}
     >
       {(hidden) => {

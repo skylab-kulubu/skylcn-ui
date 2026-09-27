@@ -40,6 +40,8 @@ export type ChartFrameProps = {
   /** While data reloads the last render stays, dimmed, instead of a skeleton. */
   loading?: boolean;
   empty?: boolean;
+  /** What the empty state says, such as "No applications for this event yet". */
+  emptyMessage?: ReactNode;
   /** Draws the card; turn off to set the chart straight into a section or another card. */
   framed?: boolean;
   className?: string;
@@ -62,6 +64,7 @@ export function ChartFrame({
   table,
   loading = false,
   empty = false,
+  emptyMessage,
   framed = true,
   className,
   children,
@@ -155,7 +158,7 @@ export function ChartFrame({
           <Skeleton className="mx-2 rounded-lg" style={{ height: height - 8 }} />
         ) : empty ? (
           <p className="grid place-items-center text-xs text-muted-foreground" style={{ height }}>
-            {messages.noData}
+            {emptyMessage ?? messages.noData}
           </p>
         ) : asTable ? (
           <div className="scrollbar overflow-auto px-2" style={{ maxHeight: height }}>
