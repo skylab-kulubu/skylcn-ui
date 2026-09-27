@@ -191,10 +191,12 @@ export const ENTRIES: Entry[] = [
     name: 'DatePicker ve Calendar',
     category: 'forms',
     description:
-      'Takvimle gün, gün ve saat ya da aralık seçimi; aralıkta hazır seçenekler önce gelir.',
+      'Takvimle gün, gün ve saat ya da aralık seçimi; aralıkta hazır seçenekler önce gelir. Başlığa basınca aylar, yıllar ve on yıllar açılır.',
     imports: ['DatePicker', 'DateTimePicker', 'DateRangePicker', 'Calendar'],
     a11y: [
       'Ok tuşları günler, PageUp ve PageDown aylar arasında gezer.',
+      'Ay, yıl ve on yıl ızgaralarında ok tuşları hücreler, PageUp ve PageDown dönemler arasında gezer; seçim bir alt seviyeye iner ve odak orada kalır.',
+      'min ve max dışında kalan aylar ve yıllar seçilemez.',
       'Türkçede hafta pazartesi başlar; tarih okura kendi dilinde yazılır.',
     ],
   },
