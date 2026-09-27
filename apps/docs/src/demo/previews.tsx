@@ -641,6 +641,14 @@ const MINIS: Record<string, () => ReactNode> = {
       </span>
     </span>
   ),
+  tree: () => (
+    <span className="flex flex-col gap-1 text-2xs">
+      <span>▾ Üyeler</span>
+      <span className="pl-3">▾ Ekipler</span>
+      <span className="ml-6 rounded bg-skylab-500/10 px-1.5">WebLab</span>
+      <span className="pl-6 text-muted-foreground">SkySec</span>
+    </span>
+  ),
   timeline: () => (
     <span className="flex flex-col gap-2 text-2xs">
       {['Onaya sunuldu', 'Onaylandı', 'Gönderildi'].map((t) => (

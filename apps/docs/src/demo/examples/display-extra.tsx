@@ -12,8 +12,9 @@ import {
   Stepper,
   Swap,
   Timeline,
+  Tree,
 } from '@skylab-kulubu/skylcn-ui';
-import { CheckCircle2, Mail, Send, Trash2, UserPlus, XCircle } from 'lucide-react';
+import { CheckCircle2, Mail, Send, Shield, Trash2, UserPlus, Users, XCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Example } from '../doc';
 import { MEMBERS } from '../members';
@@ -200,7 +201,48 @@ function BulkExamples() {
   );
 }
 
+function TreeExamples() {
+  const [selected, setSelected] = useState<string | null>('weblab');
+  return (
+    <Example
+      title="Kulüp grupları"
+      description="Klavyeyle dene: oklar, Home, End, Enter."
+      align="start"
+    >
+      <Tree
+        aria-label="Gruplar"
+        className="max-w-sm"
+        selected={selected}
+        onSelect={setSelected}
+        defaultExpanded={['members', 'teams']}
+        nodes={[
+          { id: 'board', label: 'Yönetim kurulu', icon: Shield, meta: 7 },
+          {
+            id: 'members',
+            label: 'Üyeler',
+            icon: Users,
+            meta: 124,
+            children: [
+              {
+                id: 'teams',
+                label: 'Ekipler',
+                children: [
+                  { id: 'weblab', label: 'WebLab', meta: 19 },
+                  { id: 'skysec', label: 'SkySec', meta: 13 },
+                  { id: 'game', label: 'Oyun', meta: 12 },
+                ],
+              },
+              { id: 'alumni', label: 'Mezunlar', meta: 19 },
+            ],
+          },
+        ]}
+      />
+    </Example>
+  );
+}
+
 export const DISPLAY_EXTRA_EXAMPLES = {
+  tree: TreeExamples,
   dropzone: DropzoneExamples,
   stepper: StepperExamples,
   'description-list': DescriptionExamples,

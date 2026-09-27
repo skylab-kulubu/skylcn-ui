@@ -480,6 +480,18 @@ export const ENTRIES: Entry[] = [
     imports: ['DescriptionList', 'AvatarGroup'],
   },
   {
+    slug: 'tree',
+    name: 'Tree',
+    category: 'data',
+    description: 'İç içe öğeler: Keycloak grupları, klasörler, ekip yapısı.',
+    imports: ['Tree'],
+    a11y: [
+      'Sekmeyle tek satır odak alır; oklar gezer, sağ ok açar ya da içeri girer, sol ok kapatır ya da üste çıkar.',
+      'Home ve End ilk ve son satıra gider, Enter seçer.',
+    ],
+    motion: ['Dal doğal yüksekliğine açılır, ok döner.'],
+  },
+  {
     slug: 'timeline',
     name: 'Timeline',
     category: 'data',
