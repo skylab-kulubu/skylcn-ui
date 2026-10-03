@@ -343,7 +343,9 @@ function ConsoleRow({ app, current }: { app: ClubConsole; current: boolean }) {
           {app.label}
         </span>
         {app.description ? (
-          <span className="block truncate text-3xs text-subtle-foreground">{app.description}</span>
+          <span className="block text-3xs leading-snug text-pretty text-subtle-foreground">
+            {app.description}
+          </span>
         ) : null}
       </span>
       {current ? <Check className="size-3.5! shrink-0 text-skylab-400" /> : null}
