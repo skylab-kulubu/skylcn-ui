@@ -53,3 +53,36 @@ test('the carousel steps one slide at a time', async ({ page }) => {
   await carousel.getByRole('button', { name: 'Sonraki' }).click();
   await expect(carousel.locator('button[aria-current="true"]')).toHaveAccessibleName(/öğeden 2\./);
 });
+
+test('the page builder adds, edits, undoes and exports a block', async ({ page }) => {
+  await page.goto('/playground/builder');
+  await page.waitForLoadState('networkidle');
+  await page.getByRole('button', { name: 'Şablon' }).click();
+  await page.getByRole('menuitem', { name: /Boş sayfa/ }).click();
+  await page
+    .getByRole('button', { name: /Sayı kartı/ })
+    .first()
+    .click();
+  await page.getByLabel('Etiket').fill('Gönüllü');
+  const canvas = page.locator('[data-slot="builder-canvas"]');
+  await expect(canvas.getByText('Gönüllü')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Kaldır (Delete)' }).click();
+  await expect(canvas.getByText('Gönüllü')).toHaveCount(0);
+  await page.keyboard.press('Control+z');
+  await expect(canvas.getByText('Gönüllü')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Kodu al' }).click();
+  const code = page.getByRole('dialog').locator('pre');
+  await expect(code).toContainText('label="Gönüllü"');
+  await expect(code).toContainText("from '@skylab-kulubu/skylcn-ui'");
+});
+
+test('the page builder moves a block into another column', async ({ page }) => {
+  await page.goto('/playground/builder');
+  await page.waitForLoadState('networkidle');
+  const second = page.getByRole('region', { name: 'Bölüm 2' });
+  await second.getByRole('button', { name: 'Sayı kartı bloğunu seç' }).first().click();
+  await page.getByRole('button', { name: 'Sağdaki sütuna taşı' }).click();
+  await expect(page.getByRole('button', { name: 'Soldaki sütuna taşı' })).toBeEnabled();
+});

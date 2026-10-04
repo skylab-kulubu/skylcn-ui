@@ -12,6 +12,7 @@ export const SCENARIOS = [
   '/playground/settings',
   '/playground/states',
   '/playground/status',
+  '/playground/builder',
   '/site',
   '/forms',
 ];

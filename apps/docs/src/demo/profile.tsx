@@ -15,19 +15,32 @@ import {
   type ThemePreference,
 } from '@skylab-kulubu/skylcn-ui';
 import { LogOut, Palette, UserRound } from 'lucide-react';
+import { HOSTED_IN_ADMIN } from './hosting';
+import { ACCOUNT_URL, signOutOfHost, useHostUser } from './session';
 
-/** The signed-in person at the foot of a demo sidebar, with the profile menu every console shares. */
+const DEMO_PERSON = { name: 'Deniz Aydın', email: 'deniz@example.com', subtitle: 'WebLab' };
+
+/**
+ * The signed-in person at the foot of a demo sidebar, with the profile menu
+ * every console shares: a made-up member on its own, the real one inside the
+ * admin panel.
+ */
 export function DemoProfile() {
   const { theme, setTheme } = useTheme();
+  const { user, loading } = useHostUser();
+  if (HOSTED_IN_ADMIN && !user) {
+    return loading ? <div aria-hidden className="h-13" /> : null;
+  }
+  const person = user ?? DEMO_PERSON;
   return (
     <SidebarUser
-      name="Deniz Aydın"
-      email="deniz@example.com"
-      subtitle="WebLab"
+      name={person.name}
+      email={person.email}
+      subtitle={user ? user.roleLabel : DEMO_PERSON.subtitle}
       menu={
         <>
-          <MenuLabel>deniz@example.com</MenuLabel>
-          <MenuLinkItem href="#account" icon={UserRound}>
+          {person.email ? <MenuLabel>{person.email}</MenuLabel> : null}
+          <MenuLinkItem href={HOSTED_IN_ADMIN ? ACCOUNT_URL : '#account'} icon={UserRound}>
             Hesap merkezi
           </MenuLinkItem>
           <MenuSub>
@@ -44,7 +57,11 @@ export function DemoProfile() {
             </MenuSubContent>
           </MenuSub>
           <MenuSeparator />
-          <MenuItem icon={LogOut} destructive>
+          <MenuItem
+            icon={LogOut}
+            destructive
+            onClick={HOSTED_IN_ADMIN ? () => void signOutOfHost() : undefined}
+          >
             Çıkış yap
           </MenuItem>
         </>
