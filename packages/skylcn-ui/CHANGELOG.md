@@ -1,5 +1,11 @@
 # @skylab-kulubu/skylcn-ui
 
+## 0.1.3
+
+### Patch Changes
+
+- 2a46fef: A club console's description in the brand switcher wraps onto a second line instead of being cut off.
+
 ## 0.1.2
 
 ### Patch Changes
