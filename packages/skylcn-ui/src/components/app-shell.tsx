@@ -251,7 +251,9 @@ export function AppShell({
           <main
             id="skylcn-main"
             tabIndex={-1}
-            className="scrollbar outline-hidden md:min-h-0 md:flex-1 md:scroll-pt-12 md:overflow-y-auto"
+            // Positioned, so absolute children (a Sparkline's layers, screen-reader copy)
+            // scroll with the content instead of stretching the page into a second scroll
+            className="relative scrollbar outline-hidden md:min-h-0 md:flex-1 md:scroll-pt-12 md:overflow-y-auto"
           >
             <div className="mx-auto w-full max-w-400 p-4 sm:p-6">{children}</div>
           </main>
