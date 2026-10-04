@@ -1,5 +1,13 @@
 # @skylab-kulubu/skylcn-ui
 
+## 0.1.3
+
+### Patch Changes
+
+- 7549317: Avatar initials sit on a faint tone of their own, picked from the person's name or e-mail, so people in a list tell apart at a glance; `avatarTone` is exported for anything that wants the same tone.
+- 2a46fef: A club console's description in the brand switcher wraps onto a second line instead of being cut off.
+- 5163227: AppShell's content area is positioned, so a Sparkline or an animated number below the fold no longer stretches the page into a second, empty scroll on wide screens.
+
 ## 0.1.2
 
 ### Patch Changes
