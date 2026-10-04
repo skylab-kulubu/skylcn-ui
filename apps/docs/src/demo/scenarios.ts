@@ -8,6 +8,7 @@ import {
   LoaderCircle,
   Mail,
   OctagonAlert,
+  PencilRuler,
   Settings,
   Table2,
   Users,
@@ -96,6 +97,17 @@ const ALL_GROUPS: { label: string; scenarios: Scenario[] }[] = [
         label: 'Hata ve yönlendirme',
         icon: OctagonAlert,
         description: '404, 403, 500 ve giriş yönlendirmesi.',
+      },
+    ],
+  },
+  {
+    label: 'Araçlar',
+    scenarios: [
+      {
+        href: '/playground/builder',
+        label: 'Sayfa kurucu',
+        icon: PencilRuler,
+        description: 'Bileşenleri yerleştirip bir sayfa kur, kodunu al.',
       },
     ],
   },
