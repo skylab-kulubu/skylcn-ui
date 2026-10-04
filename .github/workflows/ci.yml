@@ -43,9 +43,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @skylab-kulubu/skylcn-ui build
       - run: pnpm --filter docs build
-      - run: pnpm --filter docs exec playwright install --with-deps chromium
-      # Every page through axe in both themes, with no console errors, plus the main interactions
+      # Every page through axe in both themes, with no console errors, plus the main
+      # interactions; in the runner's own Chrome instead of downloading a Chromium
       - run: pnpm --filter docs e2e
+        env:
+          PLAYWRIGHT_CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
       - if: failure()
         uses: actions/upload-artifact@v4
         with:
