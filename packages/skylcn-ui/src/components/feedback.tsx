@@ -3,7 +3,7 @@
 import { Meter as MeterPrimitive } from '@base-ui/react/meter';
 import { Progress as ProgressPrimitive } from '@base-ui/react/progress';
 import { Separator as SeparatorPrimitive } from '@base-ui/react/separator';
-import { CircleAlert, CircleCheck, Info, TriangleAlert, X } from 'lucide-react';
+import { CircleAlert, CircleCheck, Info, TriangleAlert, X, type LucideIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
@@ -151,6 +151,11 @@ const NOTICE = {
 
 export type NoticeProps = Omit<ComponentProps<'div'>, 'title'> & {
   tone?: keyof typeof NOTICE;
+  /**
+   * Replaces the tone's icon, such as a calendar for a deadline; it keeps the tone's
+   * colour. Its shape no longer tells the tone, so the text has to.
+   */
+  icon?: LucideIcon;
   title?: ReactNode;
   /** A button or link under the text. */
   action?: ReactNode;
@@ -164,6 +169,7 @@ export type NoticeProps = Omit<ComponentProps<'div'>, 'title'> & {
  */
 export function Notice({
   tone = 'info',
+  icon,
   title,
   action,
   onDismiss,
@@ -173,7 +179,7 @@ export function Notice({
 }: NoticeProps) {
   const { messages } = useSkylcn();
   const style = NOTICE[tone];
-  const Icon = style.icon;
+  const Icon = icon ?? style.icon;
   return (
     <div
       data-slot="notice"

@@ -592,7 +592,7 @@ export const ENTRIES: Entry[] = [
       'Sayfa içi uyarılar, bir işin ilerlemesi ve sınırları belli bir düzey; kısayollar için Kbd.',
     imports: ['Notice', 'Progress', 'Meter', 'Kbd', 'Separator'],
     a11y: [
-      'Notice tonunu ikonla da söyler; tehlike tonu ekran okuyucuya hemen duyurulur.',
+      'Notice tonunu ikonla da söyler; tehlike tonu ekran okuyucuya hemen duyurulur. icon ile verilen ikon da tonun rengini alır, ikon hiç kalkmaz. Özel ikon verilince ton artık ikonun şekliyle anlatılmaz; tonu metin söylemeli.',
       'Meter değerini her zaman yazar; eşik renkleri tek başına anlam taşımaz.',
     ],
     motion: ['Dolgular yeni değerlerine uzar.'],
