@@ -260,31 +260,129 @@
   }
 }
 
-/* The crisp SKY LAB mark lighting up from its centre; SkylabLoader sets each path's delay */
+/*
+ * SkylabLoader: the mark lights up group by group from its centre (each path's delay comes
+ * from the component), never fading below a floor, with a shimmer band and a soft halo from
+ * 32px and a diagonal glint along a steel outline from 64px. Still under reduced motion.
+ */
 @layer components {
-  .skylcn-mark-radiate path {
-    opacity: 0.22;
-    animation: skylcn-mark-radiate 1.6s var(--motion-ease-enter) infinite;
+  .skylcn-loader {
+    --skylcn-loader-cycle: 2.4s;
+    --skylcn-loader-floor: 0.2;
+    --skylcn-steel-hi: color-mix(in srgb, currentColor 30%, white);
+    --skylcn-steel-lo: color-mix(in srgb, currentColor 55%, black);
+  }
+  :where([data-theme='light']) .skylcn-loader {
+    --skylcn-loader-floor: 0.3;
+    --skylcn-steel-hi: color-mix(in srgb, currentColor 35%, white);
+    --skylcn-steel-lo: color-mix(in srgb, currentColor 80%, black);
+  }
+  .skylcn-loader .skylcn-loader-mark path,
+  .skylcn-loader .skylcn-loader-metal path {
+    animation: skylcn-loader-reveal var(--skylcn-loader-cycle) ease-in-out infinite both;
+  }
+  .skylcn-loader-rich .skylcn-loader-mark {
+    /* a 200-unit bright band crossing the 586-unit mark; the mask is four times as wide */
+    mask-image: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.55) 0%,
+      rgb(0 0 0 / 0.55) 45.74%,
+      #000 50%,
+      rgb(0 0 0 / 0.55) 54.26%,
+      rgb(0 0 0 / 0.55) 100%
+    );
+    mask-size: 400% 100%;
+    mask-repeat: no-repeat;
+    animation: skylcn-loader-shimmer var(--skylcn-loader-cycle) ease-in-out infinite;
+  }
+  .skylcn-loader-metal {
+    mask-image: linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 44%,
+      #000 49%,
+      #000 51%,
+      transparent 56%,
+      transparent 100%
+    );
+    mask-size: 400% 400%;
+    mask-repeat: no-repeat;
+    animation: skylcn-loader-glint var(--skylcn-loader-cycle) ease-in-out infinite;
+  }
+  .skylcn-loader-halo {
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, currentColor 14%, transparent) 0%,
+      transparent 70%
+    );
+    filter: blur(8px);
+    animation: skylcn-loader-halo var(--skylcn-loader-cycle) ease-in-out infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .skylcn-mark-radiate path {
+    .skylcn-loader .skylcn-loader-mark,
+    .skylcn-loader .skylcn-loader-mark path {
       animation: none;
-      opacity: 1;
+      mask-image: none;
+    }
+    .skylcn-loader .skylcn-loader-metal,
+    .skylcn-loader .skylcn-loader-halo {
+      display: none;
     }
   }
-  [data-motion='reduced'] .skylcn-mark-radiate path {
+  [data-motion='reduced'] .skylcn-loader .skylcn-loader-mark,
+  [data-motion='reduced'] .skylcn-loader .skylcn-loader-mark path {
     animation: none;
+    mask-image: none;
+  }
+  [data-motion='reduced'] .skylcn-loader .skylcn-loader-metal,
+  [data-motion='reduced'] .skylcn-loader .skylcn-loader-halo {
+    display: none;
+  }
+}
+
+@keyframes skylcn-loader-reveal {
+  0%,
+  100% {
+    opacity: var(--skylcn-loader-floor);
+  }
+  37.5%,
+  70.8% {
     opacity: 1;
   }
 }
 
-@keyframes skylcn-mark-radiate {
+/* the band's centre runs from the mark's left edge to past its right one */
+@keyframes skylcn-loader-shimmer {
+  from {
+    mask-position: 66.67% 0;
+  }
+  to {
+    mask-position: 21.17% 0;
+  }
+}
+
+@keyframes skylcn-loader-glint {
+  0%,
+  15% {
+    mask-position: 70% 70%;
+  }
+  65%,
+  100% {
+    mask-position: 25% 25%;
+  }
+}
+
+@keyframes skylcn-loader-halo {
   0%,
   100% {
-    opacity: 0.22;
+    opacity: 0;
   }
-  35% {
+  30%,
+  75% {
+    opacity: 0.6;
+  }
+  50% {
     opacity: 1;
   }
 }
