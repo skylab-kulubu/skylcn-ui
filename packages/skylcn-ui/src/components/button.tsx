@@ -3,7 +3,7 @@
 import { Button as ButtonPrimitive } from '@base-ui/react/button';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { LucideIcon } from 'lucide-react';
-import { isValidElement } from 'react';
+import { cloneElement, isValidElement, type MouseEvent, type ReactElement } from 'react';
 import { cn } from '../lib/cn.js';
 import { usePendingIndicator } from '../lib/use-pending-indicator.js';
 import { SkylabLoader } from './skylab-loader.js';
@@ -59,6 +59,12 @@ export type ButtonProps = ButtonPrimitive.Props &
     hoverIcon?: LucideIcon;
   };
 
+type LinkElementProps = Record<string, unknown> & {
+  className?: string;
+  tabIndex?: number;
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
+};
+
 export function Button({
   className,
   variant,
@@ -68,24 +74,13 @@ export function Button({
   children,
   render,
   nativeButton,
+  focusableWhenDisabled,
   hoverIcon: HoverIcon,
   ...props
 }: ButtonProps) {
   const busy = usePendingIndicator(pending);
-  // A button rendered as a link (render={<a href />}) keeps link semantics.
-  const native = nativeButton ?? !(isValidElement(render) && render.type !== 'button');
-  return (
-    <ButtonPrimitive
-      data-slot="button"
-      // Clipping at the button's own edge keeps the sliding icon whole; the
-      // 16px content box would shave its strokes
-      className={cn(buttonVariants({ variant, size }), HoverIcon && 'overflow-hidden', className)}
-      disabled={disabled || pending || busy}
-      aria-busy={busy || undefined}
-      render={render}
-      nativeButton={native}
-      {...props}
-    >
+  const content = (
+    <>
       <span
         data-slot="button-content"
         className={cn(
@@ -113,6 +108,56 @@ export function Button({
       {busy ? (
         <SkylabLoader size={16} className="absolute inset-0 m-auto enter-fade text-current" />
       ) : null}
+    </>
+  );
+
+  // Rendered as a link (render={<a href />} or a router Link) it stays a link: Base UI's
+  // Button would give it role="button", so the link itself takes the button's look.
+  if (nativeButton === undefined && isValidElement(render) && render.type !== 'button') {
+    const link = render as ReactElement<LinkElementProps>;
+    const blocked = Boolean(disabled || pending);
+    const linkProps = props as LinkElementProps;
+    return cloneElement(
+      link,
+      {
+        ...linkProps,
+        'data-slot': 'button',
+        className: cn(
+          buttonVariants({ variant, size }),
+          'aria-disabled:pointer-events-none aria-disabled:opacity-60',
+          HoverIcon && 'overflow-hidden',
+          link.props.className,
+          typeof className === 'string' ? className : undefined,
+        ),
+        'aria-disabled': blocked || undefined,
+        tabIndex: blocked ? -1 : linkProps.tabIndex,
+        onClick: (event: MouseEvent<HTMLElement>) => {
+          if (blocked) {
+            event.preventDefault();
+            return;
+          }
+          link.props.onClick?.(event);
+          linkProps.onClick?.(event);
+        },
+      },
+      content,
+    );
+  }
+
+  return (
+    <ButtonPrimitive
+      data-slot="button"
+      // Clipping at the button's own edge keeps the sliding icon whole; the
+      // 16px content box would shave its strokes
+      className={cn(buttonVariants({ variant, size }), HoverIcon && 'overflow-hidden', className)}
+      disabled={disabled || pending || busy}
+      aria-busy={busy || undefined}
+      render={render}
+      nativeButton={nativeButton ?? true}
+      focusableWhenDisabled={focusableWhenDisabled}
+      {...props}
+    >
+      {content}
     </ButtonPrimitive>
   );
 }
