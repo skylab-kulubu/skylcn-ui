@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Kbd, Meter, Notice, Progress, Separator } from '@skylab-kulubu/skylcn-ui';
+import { CalendarClock } from 'lucide-react';
 import { useState } from 'react';
 import { Example } from '../doc';
 
@@ -21,6 +22,7 @@ function FeedbackExamples() {
         )}
         <Notice
           tone="info"
+          icon={CalendarClock}
           title="Başvurular yarın kapanıyor"
           action={<Button size="sm">Formu aç</Button>}
         />
