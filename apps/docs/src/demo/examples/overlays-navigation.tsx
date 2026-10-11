@@ -505,7 +505,7 @@ function PageHeaderTabsExample() {
   return (
     <Example
       title="Sekmeli ayrıntı sayfası"
-      description="Üst sayfaya dönen bağlantı, kapak, başlık ve ayırıcının yerinde sayfanın sekmeleri."
+      description="Üst sayfaya dönen bağlantı (Breadcrumbs ile birlikte değil, onun yerine), kapak, başlık ve ayırıcının yerinde sayfanın sekmeleri. Kapak telefonda gizlenir, başlığa yer kalır."
       align="start"
     >
       <DemoRoutes onNavigate={setRoute}>

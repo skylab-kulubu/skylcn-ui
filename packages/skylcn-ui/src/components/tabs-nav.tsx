@@ -2,7 +2,7 @@
 
 import type { LucideIcon } from 'lucide-react';
 import { LayoutGroup, m } from 'motion/react';
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
@@ -19,7 +19,10 @@ export type TabsNavProps = {
   /** Names the navigation, such as "Etkinlik" or "Ayarlar". */
   'aria-label': string;
   items: readonly TabsNavItem[];
-  /** The href of the open route; that tab is the current page. */
+  /**
+   * The href of the tab that is open, matched exactly; not necessarily the
+   * pathname, so a deeper route can still pick its tab.
+   */
   activeHref?: string;
   /** Links or buttons at the end of the row, outside the tabs: "Kapı", "Önizle". */
   actions?: ReactNode;
@@ -28,6 +31,9 @@ export type TabsNavProps = {
 
 /** Room left beside a tab scrolled into view, so the next one peeks in. */
 const SCROLL_EDGE = 24;
+
+// Scrolls before the first paint in the browser, so the row never jumps; no layout on the server
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 /** Where a sideways-scrolling row should stand so a tab inside it shows whole. */
 export function scrollLeftToShow(
@@ -57,8 +63,10 @@ export function TabsNav({
   const { Link } = useSkylcn();
   const group = useId();
   const listRef = useRef<HTMLUListElement>(null);
+  // The tabs that are shown, so permissions arriving late still bring the open tab into view
+  const hrefs = items.map((item) => item.href).join('\n');
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const list = listRef.current;
     const tab = list?.querySelector<HTMLElement>('[aria-current="page"]');
     if (!list || !tab) return;
@@ -66,7 +74,7 @@ export function TabsNav({
       { scrollLeft: list.scrollLeft, width: list.clientWidth },
       { left: tab.offsetLeft, width: tab.offsetWidth },
     );
-  }, [activeHref]);
+  }, [activeHref, hrefs]);
 
   return (
     <nav

@@ -6,6 +6,7 @@ import { useId, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
+import type { BreadcrumbItem } from './breadcrumbs.js';
 import { AnimatedNumber } from './motion.js';
 
 export type PageHeaderProps = {
@@ -17,9 +18,15 @@ export type PageHeaderProps = {
   actions?: ReactNode;
   /** Chips or stats under the description. */
   meta?: ReactNode;
-  /** A link up to the parent page above the title, such as "← Etkinlikler". */
-  back?: PageHeaderBackLink;
-  /** A picture before the title, such as an event's cover; an img fills it. */
+  /**
+   * A link up to the parent page above the title, named after it: "← Etkinlikler".
+   * Use it or Breadcrumbs, not both.
+   */
+  back?: BreadcrumbItem;
+  /**
+   * A small 16:9 picture before the title from the sm breakpoint, such as an
+   * event's cover; an img fills it. Hidden on phones, where the title needs the room.
+   */
   cover?: ReactNode;
   /** The page's TabsNav; it takes the divider's place. */
   tabs?: ReactNode;
@@ -27,8 +34,6 @@ export type PageHeaderProps = {
   /** A toolbar row under the divider: search, filters, view switches. */
   children?: ReactNode;
 };
-
-export type PageHeaderBackLink = { href: string; label: string };
 
 /**
  * The top of a page: an optional way back, title, description, actions, the
@@ -52,7 +57,7 @@ export function PageHeader({
       {back ? (
         <Link
           href={back.href}
-          className="-mb-1 inline-flex w-fit max-w-full items-center gap-1 rounded-md py-1 text-xs text-muted-foreground outline-hidden transition-colors duration-(--motion-duration-fast) hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          className="-mb-1 inline-flex min-h-6 w-fit max-w-full items-center gap-1 rounded-md py-1 text-xs text-muted-foreground outline-hidden transition-colors duration-(--motion-duration-fast) hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring pointer-coarse:min-h-11"
         >
           <ArrowLeft aria-hidden className="size-3.5 shrink-0" />
           <span className="truncate">{back.label}</span>
@@ -62,7 +67,7 @@ export function PageHeader({
         {cover ? (
           <div
             data-slot="page-header-cover"
-            className="aspect-video h-10 shrink-0 overflow-hidden rounded-md border border-border bg-muted sm:h-14 [&_img]:size-full [&_img]:object-cover"
+            className="relative hidden aspect-video h-14 shrink-0 overflow-hidden rounded-md border border-border bg-muted sm:block [&_img]:size-full [&_img]:object-cover"
           >
             {cover}
           </div>

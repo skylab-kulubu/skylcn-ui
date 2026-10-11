@@ -273,7 +273,6 @@ export {
   Stat,
   type FilterPillOption,
   type FilterPillsProps,
-  type PageHeaderBackLink,
   type PageHeaderProps,
   type SearchInputProps,
 } from './components/page-header.js';

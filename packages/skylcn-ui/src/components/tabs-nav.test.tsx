@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Users } from 'lucide-react';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { SkylcnProvider, type LinkComponentProps } from '../lib/provider.js';
 import { axeViolations } from '../test/axe.js';
 import { TabsNav, scrollLeftToShow } from './tabs-nav.js';
@@ -20,6 +20,39 @@ function layOut(list: HTMLElement, width: number, tabWidth: number) {
     Object.defineProperty(link, 'offsetWidth', { configurable: true, value: tabWidth });
   });
 }
+
+/** Lays out every list and its links side by side, even links rendered later. */
+function layOutAll(width: number, tabWidth: number) {
+  const restore = [
+    [HTMLUListElement.prototype, 'clientWidth'],
+    [HTMLAnchorElement.prototype, 'offsetLeft'],
+    [HTMLAnchorElement.prototype, 'offsetWidth'],
+  ] as const;
+  Object.defineProperty(HTMLUListElement.prototype, 'clientWidth', {
+    configurable: true,
+    get: () => width,
+  });
+  Object.defineProperty(HTMLAnchorElement.prototype, 'offsetLeft', {
+    configurable: true,
+    get(this: HTMLAnchorElement) {
+      const links = [...(this.closest('ul')?.querySelectorAll('a') ?? [])];
+      return links.indexOf(this) * tabWidth;
+    },
+  });
+  Object.defineProperty(HTMLAnchorElement.prototype, 'offsetWidth', {
+    configurable: true,
+    get: () => tabWidth,
+  });
+  return () => {
+    for (const [proto, key] of restore) delete (proto as unknown as Record<string, unknown>)[key];
+  };
+}
+
+let undoLayout: (() => void) | null = null;
+afterEach(() => {
+  undoLayout?.();
+  undoLayout = null;
+});
 
 describe('scrollLeftToShow', () => {
   it('leaves the row where it is when the tab is already in view', () => {
@@ -107,6 +140,18 @@ describe('TabsNav', () => {
     const list = screen.getByRole('list');
     layOut(list, 150, 100);
     rerender(<TabsNav aria-label="Etkinlik" items={items} activeHref="/events/e1/program" />);
+    expect(list.scrollLeft).toBe(174);
+  });
+
+  it('scrolls the open tab into view again when the tabs change around it', () => {
+    undoLayout = layOutAll(150, 100);
+    const program = items[2]!;
+    const { rerender } = render(
+      <TabsNav aria-label="Etkinlik" items={[program]} activeHref={program.href} />,
+    );
+    const list = screen.getByRole('list');
+    expect(list.scrollLeft).toBe(0);
+    rerender(<TabsNav aria-label="Etkinlik" items={items} activeHref={program.href} />);
     expect(list.scrollLeft).toBe(174);
   });
 

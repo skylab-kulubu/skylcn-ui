@@ -41,15 +41,18 @@ describe('PageHeader', () => {
     const back = screen.getByRole('link', { name: 'Etkinlikler' });
     expect(back).toHaveAttribute('href', '/events');
     expect(back).toHaveAttribute('data-router');
+    // At least 24px to aim at, as large as a tab on touch screens
+    expect(back).toHaveClass('min-h-6', 'pointer-coarse:min-h-11');
     expect(back.compareDocumentPosition(screen.getByRole('heading'))).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
   });
 
-  it('shows a cover beside the title', () => {
+  it('shows a cover beside the title from the sm breakpoint, leaving a phone the title', () => {
     render(<PageHeader title="Gece Kodu 2026" cover={<img src="/cover.webp" alt="" />} />);
     const cover = document.querySelector('[data-slot="page-header-cover"]');
     expect(cover?.querySelector('img')).toHaveAttribute('src', '/cover.webp');
+    expect(cover).toHaveClass('hidden', 'sm:block');
   });
 
   it('puts the tabs in place of the divider, above the toolbar', () => {
