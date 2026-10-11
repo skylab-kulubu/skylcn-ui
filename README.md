@@ -17,6 +17,18 @@ Apps on Tailwind 4 import the theme right after Tailwind:
 @import '@skylab-kulubu/skylcn-ui/theme.css';
 ```
 
+`theme.css` has Tailwind scan every component, about 17 KB of CSS after gzip. An app that uses a few components can take the theme without any component and add one stylesheet per component it renders; each brings the files that component imports, so nothing is missed:
+
+```css
+@import 'tailwindcss';
+@import '@skylab-kulubu/skylcn-ui/theme-base.css';
+@import '@skylab-kulubu/skylcn-ui/sources/button.css';
+@import '@skylab-kulubu/skylcn-ui/sources/navigation-menu.css';
+@import '@skylab-kulubu/skylcn-ui/sources/drawer.css';
+```
+
+With those three the CSS is about 8 KB. The stylesheets are named after the component files (`sources/state-card.css`, `sources/charts.css`, `sources/data-table.css`).
+
 ```tsx
 import { Button, SkylcnProvider, ThemeScript } from '@skylab-kulubu/skylcn-ui';
 
@@ -46,6 +58,7 @@ export default function RootLayout({ children }) {
 - `@skylab-kulubu/skylcn-ui/charts`: charts on Recharts (area, line, bar, donut). An app without charts never loads Recharts.
 - `@skylab-kulubu/skylcn-ui/data-table`: the admin table on TanStack Table.
 - `@skylab-kulubu/skylcn-ui/theme.css` and `/tokens.css`: the Tailwind theme and plain CSS tokens.
+- `@skylab-kulubu/skylcn-ui/theme-base.css` and `/sources/<component>.css`: the theme without components, and one stylesheet per component for apps that use only some.
 
 ## Components
 
