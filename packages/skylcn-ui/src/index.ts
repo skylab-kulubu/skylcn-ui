@@ -75,6 +75,7 @@ export {
 } from './components/feedback.js';
 export { Radio, RadioGroup, type RadioProps } from './components/radio-group.js';
 export { Tab, Tabs, TabsList, TabsPanel } from './components/tabs.js';
+export { TabsNav, type TabsNavItem, type TabsNavProps } from './components/tabs-nav.js';
 export { Tree, type TreeNode, type TreeProps } from './components/tree.js';
 export { ToastProvider, useToast } from './components/toast.js';
 export { Avatar, avatarTone, initialsOf, type AvatarProps } from './components/avatar.js';
