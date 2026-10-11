@@ -113,6 +113,24 @@ describe('TaskPage', () => {
     expect(task()).not.toHaveClass('sm:border');
   });
 
+  it('lets a long unbroken title or description wrap instead of widening the page', () => {
+    // jsdom has no layout; the docs e2e measures it at 375px
+    render(
+      <TaskPage
+        title="ÇokUzunTekKelimelikEtkinlikAdıÖrneği"
+        description="koordinator.bilgisayar.bilimleri@std.yildiz.edu.tr"
+      />,
+    );
+    expect(screen.getByRole('heading', { level: 1 })).toHaveClass('wrap-anywhere');
+    expect(screen.getByText(/koordinator/)).toHaveClass('wrap-anywhere');
+  });
+
+  it('gives the footer links a 24px target', () => {
+    render(<TaskPage title="Giriş" footer={<a href="/gizlilik">Gizlilik</a>} />);
+    const footer = screen.getByRole('link', { name: 'Gizlilik' }).closest('footer');
+    expect(footer).toHaveClass('[&_a]:min-h-6');
+  });
+
   it('has no accessibility violations with every slot filled', async () => {
     const { container } = render(
       <TaskPage

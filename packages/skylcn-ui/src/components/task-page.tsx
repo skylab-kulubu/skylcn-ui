@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
 import { useId, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
-import { SkylabMark } from './app-shell.js';
+import { SkylabMark } from './skylab-mark.js';
 import { SkylabLoader } from './skylab-loader.js';
 
 // No 'use client': a server page can render it and pass a Lucide icon straight in.
@@ -28,12 +28,13 @@ export type TaskPageProps = {
   eyebrow?: ReactNode;
   /** Above the title; the tone colours it. Replaced by the loader while `loading`. */
   icon?: LucideIcon;
+  /** StateCard's tones plus `success`. */
   tone?: keyof typeof TONE_ICON;
   /** Shows the SKY LAB loader and marks the heading busy until the result is in. */
   loading?: boolean;
   /** The row above the task. Defaults to the SKY LAB mark and name; `null` leaves it out. */
   brand?: ReactNode;
-  /** The form, details or notices of the task. */
+  /** The task's body: a form, details, notices. Unlike StateCard, not its buttons. */
   children?: ReactNode;
   /** Buttons under the body: stacked on phones, in a row from `sm` up. */
   actions?: ReactNode;
@@ -56,10 +57,19 @@ export type TaskPageProps = {
  * title, description, body and actions, and small links under it. Centred on
  * larger screens, full width on phones.
  *
+ * Unlike StateCard, `children` is the task's body; its buttons go in `actions`.
+ *
  * Focus is left alone: a full page load starts at the top and the title is the
  * first heading. When the page swaps a loading state for its result in place,
  * the heading is a polite live region that stays quiet while `loading` is set,
- * so the new title and description are read once, without moving focus.
+ * so the new title and description are read once, without moving focus. That
+ * works only while the same TaskPage stays mounted and its props change: a
+ * Suspense fallback replaced by another TaskPage builds a new live region, which
+ * is not announced. Put no `aria-live` of your own around it, or it is read twice.
+ *
+ * The page paints `bg-background`; over a decorated background of its own, pass
+ * `className="bg-transparent"`. A body that already sits on a Card (a door
+ * check-in form) takes `framed={false}`, so there is no card in a card.
  */
 export function TaskPage({
   title,
@@ -122,7 +132,10 @@ export function TaskPage({
             data-slot="task-page-header"
             aria-live="polite"
             aria-busy={loading || undefined}
-            className={cn('flex flex-col', center ? 'items-center text-center' : 'items-start')}
+            className={cn(
+              'flex min-w-0 flex-col',
+              center ? 'items-center text-center' : 'items-start',
+            )}
           >
             {loading ? (
               <SkylabLoader size={64} className="mb-5" />
@@ -136,14 +149,16 @@ export function TaskPage({
             ) : null}
             <h1
               id={titleId}
-              className="text-2xl leading-tight font-semibold text-balance text-foreground-strong"
+              // An admin-typed session title or an e-mail can be one long word: break it
+              // anywhere rather than push the page sideways on a phone
+              className="max-w-full text-2xl leading-tight font-semibold text-balance wrap-anywhere text-foreground-strong"
             >
               {title}
             </h1>
             {description ? (
               <p
                 id={descriptionId}
-                className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground"
+                className="mt-2 max-w-full text-sm leading-relaxed text-pretty wrap-anywhere text-muted-foreground"
               >
                 {description}
               </p>
@@ -174,8 +189,8 @@ export function TaskPage({
             data-slot="task-page-footer"
             className={cn(
               'flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground',
-              // Plain anchors and router links alike get the hover and focus ring
-              '[&_a]:rounded-sm [&_a]:outline-hidden [&_a]:transition-colors [&_a]:duration-(--motion-duration-fast) [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-ring [&_a:hover]:text-foreground',
+              // Plain anchors and router links alike get a 24px target, the hover and the focus ring
+              '[&_a]:inline-flex [&_a]:min-h-6 [&_a]:items-center [&_a]:rounded-sm [&_a]:outline-hidden [&_a]:transition-colors [&_a]:duration-(--motion-duration-fast) [&_a:focus-visible]:ring-2 [&_a:focus-visible]:ring-ring [&_a:hover]:text-foreground',
               center && 'justify-center',
             )}
           >
