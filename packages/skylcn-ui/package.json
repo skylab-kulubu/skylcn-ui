@@ -26,6 +26,8 @@
       "default": "./dist/data-table/index.js"
     },
     "./theme.css": "./dist/styles/theme.css",
+    "./theme-base.css": "./dist/styles/theme-base.css",
+    "./sources/*": "./dist/styles/sources/*",
     "./tokens.css": "./dist/styles/tokens.css",
     "./package.json": "./package.json"
   },
