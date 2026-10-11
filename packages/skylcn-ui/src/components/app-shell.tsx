@@ -24,11 +24,11 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { LayoutGroup, m } from 'motion/react';
-import { SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from '../assets/skylab-mark.js';
 import { cn } from '../lib/cn.js';
 import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
 import { Avatar } from './avatar.js';
+import { SkylabMark } from './skylab-mark.js';
 import { IconSwap } from './icon-swap.js';
 import { AnimatedNumber } from './motion.js';
 import {
@@ -40,6 +40,9 @@ import {
   MenuLinkItem,
 } from './menu.js';
 import { Tooltip } from './tooltip.js';
+
+// Kept here too, where it was first exported
+export { SkylabMark };
 
 type ShellContextValue = {
   collapsed: boolean;
@@ -286,26 +289,6 @@ export function AppShellActions({ children }: { children: ReactNode }) {
   const desktop = useIsDesktop();
   const target = desktop ? desktopSlot : mobileSlot;
   return target ? createPortal(children, target) : null;
-}
-
-/** The SKY LAB mark as a still image, for brand slots. */
-export function SkylabMark({ size = 24, className }: { size?: number; className?: string }) {
-  return (
-    <svg
-      viewBox={SKYLAB_MARK_VIEWBOX}
-      width={size}
-      height={size}
-      fill="currentColor"
-      aria-hidden
-      className={cn('shrink-0', className)}
-    >
-      <g fillRule="evenodd">
-        {SKYLAB_MARK_PATHS.map((d, i) => (
-          <path key={i} d={d} />
-        ))}
-      </g>
-    </svg>
-  );
 }
 
 export type ClubConsole = {
