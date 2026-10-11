@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import {
   Area,
   AreaChart as AreaPrimitive,
@@ -17,6 +17,7 @@ import {
   YAxis,
 } from 'recharts';
 import { AnimatedNumber } from '../components/motion.js';
+import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
 import { useReducedMotion } from '../lib/use-reduced-motion.js';
 import { ChartFrame, type ChartTable, type LegendItem } from './chart-frame.js';
@@ -34,15 +35,16 @@ export type ChartSeries = Record<string, { label: string; color?: string }>;
 type Resolved = LegendItem;
 
 /**
- * A lone series has nothing to be told apart from, so it takes the brand
- * accent; two or more take the validated chart colours in order.
+ * A lone series has nothing to be told apart from, so it takes the brand lilac;
+ * two or more take the validated chart colours in order.
  */
 function resolve(series: ChartSeries): Resolved[] {
   const entries = Object.entries(series);
   return entries.map(([key, value], i) => ({
     key,
     label: value.label,
-    color: value.color ?? (entries.length === 1 ? 'var(--primary)' : `var(--chart-${(i % 8) + 1})`),
+    color:
+      value.color ?? (entries.length === 1 ? 'var(--chart-tone-1)' : `var(--chart-${(i % 8) + 1})`),
   }));
 }
 
@@ -346,10 +348,13 @@ export function BarChart({ stacked = false, orientation = 'vertical', ...props }
   const motion = useMotion();
   const sideways = orientation === 'horizontal';
   const compact = props.compact ?? false;
+  const [pointed, setPointed] = useState<number | null>(null);
   return (
     <ChartFrame {...frameProps(props, resolved, format.value)} height={height} legendShape="rect">
       {(hidden) => {
         const shown = resolved.filter((s) => !hidden.has(s.key));
+        // With one series the pointed bar comes forward and the rest step back.
+        const spotlight = shown.length === 1 && !stacked;
         const categoryAxis = {
           dataKey: props.x,
           type: 'category' as const,
@@ -375,6 +380,12 @@ export function BarChart({ stacked = false, orientation = 'vertical', ...props }
             barGap={2}
             barCategoryGap="24%"
             title={chartTitle(props.title)}
+            onMouseMove={(state) =>
+              setPointed(
+                typeof state.activeTooltipIndex === 'number' ? state.activeTooltipIndex : null,
+              )
+            }
+            onMouseLeave={() => setPointed(null)}
           >
             {compact ? null : (
               <CartesianGrid
@@ -427,14 +438,25 @@ export function BarChart({ stacked = false, orientation = 'vertical', ...props }
                   dataKey={s.key}
                   name={s.label}
                   fill={s.color}
-                  maxBarSize={24}
+                  maxBarSize={compact ? 40 : 28}
                   radius={radius}
                   stackId={stacked ? 'stack' : undefined}
                   stroke={stacked ? 'var(--chart-surface)' : undefined}
                   strokeWidth={stacked ? 2 : 0}
-                  activeBar={{ fillOpacity: 0.85 }}
+                  activeBar={spotlight ? false : { fillOpacity: 0.85 }}
                   {...motion}
-                />
+                >
+                  {spotlight
+                    ? props.data.map((_, index) => (
+                        <Cell
+                          key={index}
+                          fill={s.color}
+                          fillOpacity={pointed === null || pointed === index ? 1 : 0.35}
+                          className="transition-[fill-opacity] duration-(--motion-duration-fast)"
+                        />
+                      ))
+                    : null}
+                </Bar>
               );
             })}
           </BarPrimitive>
@@ -454,7 +476,13 @@ export type DonutChartProps = {
   actions?: ReactNode;
   /** The figure in the hole; the total by default. */
   centerLabel?: ReactNode;
+  /** The ring's size; the list sits beside it, or below when there is no room. */
   height?: number;
+  /**
+   * `tones`, the default, draws the slices in one lilac family, for the parts of a single
+   * answer; `categorical` uses the eight distinct chart colours, for unrelated groups.
+   */
+  palette?: 'tones' | 'categorical';
   formatValue?: (value: number) => string;
   loading?: boolean;
   /** What the empty state says, shown when every slice is zero; "No data to show" by default. */
@@ -466,18 +494,26 @@ export type DonutChartProps = {
 
 const MAX_SLICES = 6;
 
-/** Part of a whole at a glance, for up to six parts; compare close values with bars instead. */
-export function DonutChart({ height = 220, ...props }: DonutChartProps) {
-  const { messages } = useSkylcn();
+/**
+ * Part of a whole at a glance, for up to six parts; compare close values with bars instead.
+ * The list beside the ring carries every value, hides a slice when pressed, and pointing at
+ * a slice or a row brings that part forward and writes its share in the hole.
+ */
+export function DonutChart({ height = 200, palette = 'tones', ...props }: DonutChartProps) {
+  const { messages, locale } = useSkylcn();
   const format = useFormats(props.formatValue);
   const motion = useMotion();
+  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
+  const [focus, setFocus] = useState<string | null>(null);
 
   const kept = props.data.slice(0, MAX_SLICES - (props.data.length > MAX_SLICES ? 1 : 0));
   const rest = props.data.slice(kept.length);
+  const colour = (i: number) =>
+    palette === 'categorical' ? `var(--chart-${i + 1})` : `var(--chart-tone-${(i % 5) + 1})`;
   const slices: Resolved[] = kept.map((slice, i) => ({
     key: slice.key,
     label: slice.label,
-    color: `var(--chart-${i + 1})`,
+    color: colour(i),
   }));
   const values = new Map(kept.map((slice) => [slice.key, slice.value]));
   if (rest.length) {
@@ -487,10 +523,23 @@ export function DonutChart({ height = 220, ...props }: DonutChartProps) {
       rest.reduce((sum, slice) => sum + slice.value, 0),
     );
   }
-  const total = [...values.values()].reduce((sum, value) => sum + value, 0);
-  const percent = (value: number) => (total ? `${Math.round((value / total) * 100)}%` : '0%');
-  // Direct labels: each legend entry carries its share.
-  for (const slice of slices) slice.detail = percent(values.get(slice.key) ?? 0);
+  const value = (key: string) => values.get(key) ?? 0;
+  const tag = locale === 'tr' ? 'tr-TR' : 'en-US';
+  const share = (part: number, whole: number) => {
+    const pct = whole ? (part / whole) * 100 : 0;
+    const text = pct.toLocaleString(tag, { maximumFractionDigits: 1 });
+    return locale === 'tr' ? `%${text}` : `${text}%`;
+  };
+  const total = [...values.values()].reduce((sum, v) => sum + v, 0);
+
+  const toggle = (key: string) =>
+    setHidden((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      // At least one slice stays on, so the ring never goes blank.
+      else if (slices.length - prev.size > 1) next.add(key);
+      return next;
+    });
 
   return (
     <ChartFrame
@@ -498,14 +547,14 @@ export function DonutChart({ height = 220, ...props }: DonutChartProps) {
       description={props.description}
       actions={props.actions}
       height={height}
-      legend={slices}
+      legend={[]}
       legendShape="rect"
       table={{
         head: ['', messages.total, '%'],
         rows: slices.map((slice) => [
           slice.label,
-          format.value(values.get(slice.key) ?? 0),
-          percent(values.get(slice.key) ?? 0),
+          format.value(value(slice.key)),
+          share(value(slice.key), total),
         ]),
       }}
       loading={props.loading}
@@ -514,55 +563,105 @@ export function DonutChart({ height = 220, ...props }: DonutChartProps) {
       framed={props.framed}
       className={props.className}
     >
-      {(hidden) => {
+      {() => {
         const shown = slices.filter((slice) => !hidden.has(slice.key));
-        const shownTotal = shown.reduce((sum, slice) => sum + (values.get(slice.key) ?? 0), 0);
+        const shownTotal = shown.reduce((sum, slice) => sum + value(slice.key), 0);
+        const focused = focus && !hidden.has(focus) ? focus : null;
+        const lit = (key: string) => focused === null || focused === key;
         return (
-          <div className="relative" style={{ height }}>
-            <PiePrimitive
-              responsive
-              style={{ width: '100%', height }}
-              title={chartTitle(props.title)}
-            >
-              <Tooltip
-                isAnimationActive={false}
-                content={(tooltip) => (
-                  <TooltipCard
-                    active={tooltip.active}
-                    payload={tooltip.payload}
-                    label={tooltip.label}
-                    resolved={slices}
-                    format={format.value}
-                  />
-                )}
-              />
-              <Pie
-                data={shown.map((slice) => ({ ...slice, value: values.get(slice.key) ?? 0 }))}
-                dataKey="value"
-                nameKey="key"
-                innerRadius="62%"
-                outerRadius="88%"
-                stroke="var(--chart-surface)"
-                strokeWidth={2}
-                startAngle={90}
-                endAngle={-270}
-                {...motion}
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 py-2">
+            <div className="relative shrink-0" style={{ width: height, height }}>
+              <PiePrimitive
+                responsive
+                style={{ width: height, height }}
+                title={chartTitle(props.title)}
               >
-                {shown.map((slice) => (
-                  <Cell key={slice.key} fill={slice.color} />
-                ))}
-              </Pie>
-            </PiePrimitive>
-            <div className="pointer-events-none absolute inset-0 grid place-items-center">
-              <div className="text-center">
-                <p className="text-xl font-semibold text-foreground">
-                  {props.centerLabel ?? <AnimatedNumber value={shownTotal} format={format.value} />}
-                </p>
-                <p className="text-3xs tracking-label text-subtle-foreground uppercase">
-                  {messages.total}
-                </p>
+                <Pie
+                  data={shown.map((slice) => ({ ...slice, value: value(slice.key) }))}
+                  dataKey="value"
+                  nameKey="key"
+                  innerRadius="62%"
+                  outerRadius="92%"
+                  paddingAngle={shown.length > 1 ? 2 : 0}
+                  cornerRadius={3}
+                  stroke="none"
+                  startAngle={90}
+                  endAngle={-270}
+                  onMouseEnter={(_, index) => setFocus(shown[index]?.key ?? null)}
+                  onMouseLeave={() => setFocus(null)}
+                  {...motion}
+                >
+                  {shown.map((slice) => (
+                    <Cell
+                      key={slice.key}
+                      fill={slice.color}
+                      fillOpacity={lit(slice.key) ? 1 : 0.3}
+                      className="transition-[fill-opacity] duration-(--motion-duration-fast)"
+                    />
+                  ))}
+                </Pie>
+              </PiePrimitive>
+              <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                <div className="max-w-[56%] text-center">
+                  <p className="text-xl font-semibold text-foreground tabular-nums">
+                    {focused
+                      ? share(value(focused), shownTotal)
+                      : (props.centerLabel ?? (
+                          <AnimatedNumber value={shownTotal} format={format.value} />
+                        ))}
+                  </p>
+                  <p className="truncate text-3xs tracking-label text-subtle-foreground uppercase">
+                    {focused
+                      ? slices.find((slice) => slice.key === focused)?.label
+                      : messages.total}
+                  </p>
+                </div>
               </div>
             </div>
+            <ul className="flex w-full max-w-72 min-w-44 flex-1 flex-col gap-0.5">
+              {slices.map((slice) => {
+                const off = hidden.has(slice.key);
+                return (
+                  <li key={slice.key}>
+                    <button
+                      type="button"
+                      aria-pressed={!off}
+                      title={messages.toggleSeries(slice.label)}
+                      onClick={() => toggle(slice.key)}
+                      onMouseEnter={() => setFocus(slice.key)}
+                      onMouseLeave={() => setFocus(null)}
+                      onFocus={() => setFocus(slice.key)}
+                      onBlur={() => setFocus(null)}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-md px-1.5 py-1 text-left text-xs outline-hidden',
+                        'transition-[background-color,opacity] duration-(--motion-duration-fast)',
+                        'hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring',
+                        off ? 'opacity-45' : lit(slice.key) ? 'opacity-100' : 'opacity-55',
+                      )}
+                    >
+                      <span
+                        aria-hidden
+                        className="size-2.5 shrink-0 rounded-xs"
+                        style={{ background: slice.color }}
+                      />
+                      <span
+                        className={cn(
+                          'min-w-0 flex-1 truncate text-secondary-foreground',
+                          off && 'line-through decoration-subtle-foreground/60',
+                        )}
+                      >
+                        {slice.label}
+                      </span>
+                      <span className="shrink-0 text-2xs text-subtle-foreground tabular-nums">
+                        <span className="text-foreground">{format.value(value(slice.key))}</span>
+                        {' · '}
+                        {share(value(slice.key), total)}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         );
       }}
