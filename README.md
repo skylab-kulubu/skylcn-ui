@@ -62,7 +62,7 @@ export default function RootLayout({ children }) {
 
 ## Components
 
-Every component has live examples in the docs app's playground (`/playground/components`):
+Every component has live examples in the docs app's playground (`/playground/components`). The playground is served from the admin panel's preview builds, from a pinned skylcn-ui release; it is not published on GitHub Pages. The components:
 
 - **Actions:** Button, IconButton, IconSwap, CopyButton, SegmentedControl
 - **Forms:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, DateTimePicker, Calendar, Dropzone, OTPField
