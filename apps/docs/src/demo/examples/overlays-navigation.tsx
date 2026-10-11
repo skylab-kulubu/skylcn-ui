@@ -1,8 +1,10 @@
 'use client';
 
 import {
+  Badge,
   Breadcrumbs,
   Button,
+  buttonVariants,
   ContextMenu,
   ContextMenuContent,
   ContextMenuTrigger,
@@ -40,13 +42,17 @@ import {
   SearchInput,
   SegmentedControl,
   SideNav,
+  SkylcnProvider,
   Stat,
+  TabsNav,
   ToggleRow,
   Tooltip,
+  type LinkComponentProps,
 } from '@skylab-kulubu/skylcn-ui';
 import {
   ArrowDownUp,
   Copy,
+  DoorOpen,
   ExternalLink,
   Filter,
   MoreHorizontal,
@@ -55,8 +61,10 @@ import {
   Send,
   Share2,
   Trash2,
+  Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useDemoLocale } from '../../app/providers';
 import { Example } from '../doc';
 
 function TooltipExamples() {
@@ -350,7 +358,97 @@ function PaginationExamples() {
   );
 }
 
-function PageHeaderExamples() {
+const DemoNavigate = createContext<(href: string) => void>(() => undefined);
+
+/** A link that opens its route in the example instead of leaving the page. */
+function DemoLink({ href, onClick, ...props }: LinkComponentProps) {
+  const navigate = useContext(DemoNavigate);
+  return (
+    <a
+      href={href}
+      {...props}
+      onClick={(event) => {
+        onClick?.(event);
+        event.preventDefault();
+        navigate(href);
+      }}
+    />
+  );
+}
+
+/** Stands in for an app's router: the examples' links change the open route here. */
+function DemoRoutes({
+  onNavigate,
+  children,
+}: {
+  onNavigate: (href: string) => void;
+  children: ReactNode;
+}) {
+  const { locale } = useDemoLocale();
+  return (
+    <DemoNavigate.Provider value={onNavigate}>
+      <SkylcnProvider locale={locale} linkComponent={DemoLink}>
+        {children}
+      </SkylcnProvider>
+    </DemoNavigate.Provider>
+  );
+}
+
+const EVENT_TABS = [
+  { href: '/events/42', label: 'Genel bakış' },
+  { href: '/events/42/participants', label: 'Katılımcılar', icon: Users, badge: 128 },
+  { href: '/events/42/program', label: 'Program' },
+  { href: '/events/42/certificates', label: 'Sertifikalar' },
+  { href: '/events/42/content', label: 'İçerik' },
+  { href: '/events/42/competition', label: 'Yarışma' },
+];
+
+function TabsNavExamples() {
+  const [route, setRoute] = useState('/events/42');
+  return (
+    <>
+      <Example
+        title="Etkinlik sekmeleri"
+        description="Her sekme kendi adresine giden bir bağlantı; açık olan aria-current taşır. Dar ekranda satır yana kayar ve açık sekme görünür alana gelir."
+        align="start"
+      >
+        <DemoRoutes onNavigate={setRoute}>
+          <TabsNav
+            aria-label="Etkinlik"
+            className="w-full"
+            items={EVENT_TABS}
+            activeHref={route}
+            actions={
+              <a href="#kapi" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+                <DoorOpen aria-hidden /> Kapı
+              </a>
+            }
+          />
+        </DemoRoutes>
+        <p className="text-2xs text-subtle-foreground">
+          Açık adres: <code className="font-mono">{route}</code>
+        </p>
+      </Example>
+      <Example
+        title="Dar alanda"
+        description="Sekmeler sığmayınca satır kayar; son sekme açıkken görünür alana kaydırılmış gelir."
+        align="start"
+      >
+        <div className="max-w-64">
+          <DemoRoutes onNavigate={() => undefined}>
+            <TabsNav
+              aria-label="Dar etkinlik"
+              items={EVENT_TABS}
+              activeHref="/events/42/competition"
+            />
+          </DemoRoutes>
+        </div>
+      </Example>
+    </>
+  );
+}
+
+function PageHeaderListExample() {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'all' | 'open' | 'closed'>('all');
   return (
@@ -393,6 +491,56 @@ function PageHeaderExamples() {
   );
 }
 
+function PageHeaderExamples() {
+  return (
+    <>
+      <PageHeaderListExample />
+      <PageHeaderTabsExample />
+    </>
+  );
+}
+
+function PageHeaderTabsExample() {
+  const [route, setRoute] = useState('/events/42');
+  return (
+    <Example
+      title="Sekmeli ayrıntı sayfası"
+      description="Üst sayfaya dönen bağlantı (Breadcrumbs ile birlikte değil, onun yerine), kapak, başlık ve ayırıcının yerinde sayfanın sekmeleri. Kapak telefonda gizlenir, başlığa yer kalır."
+      align="start"
+    >
+      <DemoRoutes onNavigate={setRoute}>
+        <PageHeader
+          className="w-full"
+          back={{ href: '/events', label: 'Etkinlikler' }}
+          cover={
+            <div
+              aria-hidden
+              className="size-full bg-linear-to-br from-skylab-400 via-skylab-600 to-skylab-900"
+            />
+          }
+          title="Gece Kodu 2026"
+          description="12 Ekim, 19.00 · Davutpaşa Kongre Merkezi"
+          meta={
+            <>
+              <Badge tone="success">Kayıt açık</Badge>
+              <Badge>128 kayıt</Badge>
+            </>
+          }
+          actions={
+            <>
+              <IconButton icon={Send} label="Katılımcılara mail" variant="ghost" />
+              <Button variant="primary">
+                <PencilLine /> Düzenle
+              </Button>
+            </>
+          }
+          tabs={<TabsNav aria-label="Etkinlik" items={EVENT_TABS.slice(0, 4)} activeHref={route} />}
+        />
+      </DemoRoutes>
+    </Example>
+  );
+}
+
 export const OVERLAY_NAVIGATION_EXAMPLES = {
   tooltip: TooltipExamples,
   popover: PopoverExamples,
@@ -403,5 +551,6 @@ export const OVERLAY_NAVIGATION_EXAMPLES = {
   'side-nav': SideNavExamples,
   breadcrumbs: BreadcrumbsExamples,
   pagination: PaginationExamples,
+  'tabs-nav': TabsNavExamples,
   'page-header': PageHeaderExamples,
 };

@@ -508,6 +508,18 @@ const MINIS: Record<string, () => ReactNode> = {
     </div>
   ),
   tabs: TabsMini,
+  'tabs-nav': () => (
+    <span className="flex flex-col gap-1 text-2xs">
+      <span className="text-muted-foreground">/events/42/program</span>
+      <span className="flex gap-3 border-b border-border">
+        <span className="pb-1 text-muted-foreground">Genel</span>
+        <span className="relative pb-1 text-foreground">
+          Program
+          <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-skylab-400" />
+        </span>
+      </span>
+    </span>
+  ),
   accordion: AccordionMini,
   breadcrumbs: () => (
     <span className="flex items-center gap-1 text-2xs text-muted-foreground">

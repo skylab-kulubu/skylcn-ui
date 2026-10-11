@@ -16,6 +16,8 @@ const TONE_ICON = {
 export type StateCardProps = {
   /** Defaults to the "loading" label while `loading` is set. */
   title?: ReactNode;
+  /** The title's heading level; 2 under a page title, 3 inside a section that has its own. */
+  level?: 2 | 3 | 4;
   description?: ReactNode;
   icon?: LucideIcon;
   loading?: boolean;
@@ -32,6 +34,7 @@ export type StateCardProps = {
 /** A centred loading, empty, error or permission state for a page or a panel. */
 export function StateCard({
   title,
+  level = 2,
   description,
   icon: Icon,
   loading = false,
@@ -42,6 +45,8 @@ export function StateCard({
   children,
 }: StateCardProps) {
   const { messages } = useSkylcn();
+  const heading = title ?? (loading ? messages.loading : null);
+  const Heading = `h${level}` as const;
   return (
     <div
       data-slot="state-card"
@@ -60,14 +65,16 @@ export function StateCard({
           />
         ) : null}
         <div className={cn('flex flex-col gap-2 text-balance', loading ? 'mt-5' : 'mt-4')}>
-          <p
-            className={cn(
-              'text-sm font-semibold',
-              loading ? 'shimmer-text text-muted-foreground' : 'text-foreground',
-            )}
-          >
-            {title ?? (loading ? messages.loading : null)}
-          </p>
+          {heading ? (
+            <Heading
+              className={cn(
+                'text-sm font-semibold',
+                loading ? 'shimmer-text text-muted-foreground' : 'text-foreground',
+              )}
+            >
+              {heading}
+            </Heading>
+          ) : null}
           {description ? (
             <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
           ) : null}
