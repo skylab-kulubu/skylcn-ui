@@ -86,3 +86,21 @@ test('the page builder moves a block into another column', async ({ page }) => {
   await page.getByRole('button', { name: 'Sağdaki sütuna taşı' }).click();
   await expect(page.getByRole('button', { name: 'Soldaki sütuna taşı' })).toBeEnabled();
 });
+
+test('a TaskPage wraps a long unbroken title and description on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/playground/components/task-page');
+  const task = page.getByRole('region', { name: 'Web atölyesi' });
+  await expect(task).toBeVisible();
+  // A session title comes from core as an admin typed it; an e-mail can be one long word
+  const widths = await task.evaluate((section) => {
+    section.querySelector('h1')!.textContent =
+      'ÇokUzunTekKelimelikEtkinlikAdıÖrneğiBilgisayarBilimleriKulübüAtölyesi';
+    section.querySelector('h1 + p')!.textContent =
+      'bilgisayar.bilimleri.kulubu.etkinlik.koordinatoru@std.yildiz.edu.tr';
+    const heading = section.querySelector('h1')!.getBoundingClientRect().width;
+    return { heading, scroll: section.scrollWidth, client: section.clientWidth };
+  });
+  expect(widths.heading).toBeLessThanOrEqual(widths.client);
+  expect(widths.scroll).toBeLessThanOrEqual(widths.client);
+});

@@ -364,6 +364,23 @@ export const ENTRIES: Entry[] = [
     motion: ['Alt çizgi seçilen sekmeye kayar, içerik solarak gelir.'],
   },
   {
+    slug: 'tabs-nav',
+    name: 'TabsNav',
+    category: 'navigation',
+    description:
+      'Alt sayfalara giden bağlantı sekmeler: her sekme kendi adresini açar, geri tuşu ve derin bağlantı çalışır.',
+    imports: ['TabsNav'],
+    a11y: [
+      'Sekme listesi değil gezinme: bağlantı listesi, açık sayfa aria-current="page" taşır.',
+      'Tab tuşu sekmeleri sırayla gezer; odak halkası satır kaysa da kesilmez.',
+      'Bağlantılar SkylcnProvider’ın link bileşeniyle çizilir (Next’te next/link).',
+    ],
+    motion: [
+      'Alt çizgi açılan sayfanın sekmesine kayar; hareketi azaltınca yerinde belirir.',
+      'Satır sığmayınca yana kayar; açık sekme görünür alana kaydırılır.',
+    ],
+  },
+  {
     slug: 'accordion',
     name: 'Accordion',
     category: 'navigation',
@@ -405,7 +422,8 @@ export const ENTRIES: Entry[] = [
     slug: 'page-header',
     name: 'PageHeader',
     category: 'navigation',
-    description: 'Başlık, açıklama, eylemler ve arama, filtre hapları gibi araçlar.',
+    description:
+      'Başlık, açıklama, eylemler ve arama, filtre hapları gibi araçlar; ayrıntı sayfalarında geri bağlantısı, kapak ve sekmeler.',
     imports: ['PageHeader', 'SearchInput', 'FilterPills', 'Stat'],
     motion: ['Filtre hapının dolgusu seçime doğru kayar, sayılar akar.'],
   },
@@ -537,6 +555,23 @@ export const ENTRIES: Entry[] = [
     a11y: ['Yönlendirme sürerken durum ekran okuyucuya bildirilir.'],
   },
   {
+    slug: 'task-page',
+    name: 'TaskPage',
+    category: 'data',
+    description:
+      'Tek görevli sayfa: giriş, kapıda giriş, sertifika doğrulama, hesap silme durumu. Üstte SKY LAB işareti, ortada görev, altta bağlantılar.',
+    imports: ['TaskPage'],
+    a11y: [
+      'Sayfanın tek h1’i başlıktır; görev bölgesi başlıkla adlandırılır, açıklamayla tanımlanır.',
+      'Odak taşınmaz. Yükleme yerinde sonuca dönerse başlık bir kez okunur: başlık kibar bir canlı bölge, yüklenirken meşgul.',
+      'Bu duyuru yalnız aynı TaskPage yerinde kalıp prop’ları değişirse olur. Suspense yedeğinin yerine başka bir TaskPage gelirse yeni canlı bölge okunmaz; çevresine ikinci bir aria-live konmaz, yoksa iki kez okunur.',
+      'Kendi main’i olan bir sayfanın içinde as="div" ile çizilir.',
+      'Uzun, bölünmeyen bir başlık ya da e-posta telefonda satır içinde kırılır, sayfayı yana taşırmaz. Alt bağlantıların hedefi en az 24px.',
+      'Kullanım: children gövdedir (StateCard’dan farklı), düğmeler actions’a. Formu zaten bir Card’daysa (kapı) framed={false}; kendi arka plan süsü olan sayfada (hesap silme) className="bg-transparent".',
+    ],
+    motion: ['Görev aşağıdan yükselerek gelir; hareketi azaltınca yalnız belirir.'],
+  },
+  {
     slug: 'kanban',
     name: 'Kanban',
     category: 'data',
@@ -579,6 +614,9 @@ export const ENTRIES: Entry[] = [
     category: 'data',
     description: 'Yükleniyor, boş, hata ve yetki yok ekranları; içerik yerine iskelet.',
     imports: ['StateCard', 'Skeleton'],
+    a11y: [
+      'StateCard başlığı bir başlık etiketidir: varsayılan h2, kendi başlığı olan bir bölümün içinde level={3}.',
+    ],
     motion: ['Hareketi azaltınca iskeletin parıltısı durur.'],
   },
   {
@@ -589,7 +627,7 @@ export const ENTRIES: Entry[] = [
       'Sayfa içi uyarılar, bir işin ilerlemesi ve sınırları belli bir düzey; kısayollar için Kbd.',
     imports: ['Notice', 'Progress', 'Meter', 'Kbd', 'Separator'],
     a11y: [
-      'Notice tonunu ikonla da söyler; tehlike tonu ekran okuyucuya hemen duyurulur.',
+      'Notice tonunu ikonla da söyler; tehlike tonu ekran okuyucuya hemen duyurulur. icon ile verilen ikon da tonun rengini alır, ikon hiç kalkmaz. Özel ikon verilince ton artık ikonun şekliyle anlatılmaz; tonu metin söylemeli.',
       'Meter değerini her zaman yazar; eşik renkleri tek başına anlam taşımaz.',
     ],
     motion: ['Dolgular yeni değerlerine uzar.'],

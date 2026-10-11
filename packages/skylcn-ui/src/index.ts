@@ -75,6 +75,7 @@ export {
 } from './components/feedback.js';
 export { Radio, RadioGroup, type RadioProps } from './components/radio-group.js';
 export { Tab, Tabs, TabsList, TabsPanel } from './components/tabs.js';
+export { TabsNav, type TabsNavItem, type TabsNavProps } from './components/tabs-nav.js';
 export { Tree, type TreeNode, type TreeProps } from './components/tree.js';
 export { ToastProvider, useToast } from './components/toast.js';
 export { Avatar, avatarTone, initialsOf, type AvatarProps } from './components/avatar.js';
@@ -220,6 +221,7 @@ export { Skeleton } from './components/skeleton.js';
 export { Sparkline, type SparklineProps } from './components/sparkline.js';
 export { SkylabLoader, type SkylabLoaderProps } from './components/skylab-loader.js';
 export { StateCard, type StateCardProps } from './components/state-card.js';
+export { TaskPage, type TaskPageProps } from './components/task-page.js';
 export { Switch, ToggleRow, type SwitchProps, type ToggleRowProps } from './components/switch.js';
 export { Tooltip, TooltipProvider, type TooltipProps } from './components/tooltip.js';
 export {

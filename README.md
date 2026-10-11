@@ -62,20 +62,20 @@ export default function RootLayout({ children }) {
 
 ## Components
 
-Every component has live examples in the docs app's playground (`/playground/components`):
+Every component has live examples in the docs app's playground (`/playground/components`). The playground is served from the admin panel's preview builds, from a pinned skylcn-ui release; it is not published on GitHub Pages. The components:
 
 - **Actions:** Button, IconButton, IconSwap, CopyButton, SegmentedControl
 - **Forms:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, DateTimePicker, Calendar, Dropzone, OTPField
 - **Overlays:** Dialog, ConfirmDialog, Drawer (right, left, bottom; closes with a swipe), Popover, PreviewCard, Tooltip, Menu, ContextMenu, Toast, CommandPalette
-- **Navigation:** AppShell, SideNav, NavigationMenu, Tabs, Accordion, Stepper, Breadcrumbs, Pagination, PageHeader
-- **Data:** DataList, DataTable, ListPanel, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, Skeleton
+- **Navigation:** AppShell, SideNav, NavigationMenu, Tabs, TabsNav, Accordion, Stepper, Breadcrumbs, Pagination, PageHeader
+- **Data:** DataList, DataTable, ListPanel, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, Skeleton
 - **Motion:** Reveal, Collapse, Swap, AnimatedNumber
 
 The playground also has scenarios, whole pages built from these components, and a page builder for composing a page from blocks and copying its code.
 
 ## Principles
 
-- **Accessibility:** Every text meant to be read keeps at least 4.5:1 contrast on every surface; the `faint` tone is only for decoration and disabled states. The focus ring shows at once and is drawn in Windows high contrast mode too. For readers who ask for more contrast, muted text and lines get one step stronger.
+- **Accessibility:** Every text meant to be read keeps at least 4.5:1 contrast on every surface; the `faint` tone is only for decoration and disabled states. The focus ring reads at 3:1 or more on every surface in both themes, shows at once and is drawn in Windows high contrast mode too. For readers who ask for more contrast, muted text and lines get one step stronger.
 - **Motion:** Durations, easings and distances are tokens. With reduced motion, short fades stay and slides and growth go. Animation is used only when it tells where something came from and went, or that its state changed.
 - **Mobile:** On touch screens controls grow and text fields are 16px, so iOS does not zoom into them.
 
