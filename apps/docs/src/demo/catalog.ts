@@ -579,6 +579,9 @@ export const ENTRIES: Entry[] = [
     category: 'data',
     description: 'Yükleniyor, boş, hata ve yetki yok ekranları; içerik yerine iskelet.',
     imports: ['StateCard', 'Skeleton'],
+    a11y: [
+      'StateCard başlığı bir başlık etiketidir: varsayılan h2, kendi başlığı olan bir bölümün içinde level={3}.',
+    ],
     motion: ['Hareketi azaltınca iskeletin parıltısı durur.'],
   },
   {
