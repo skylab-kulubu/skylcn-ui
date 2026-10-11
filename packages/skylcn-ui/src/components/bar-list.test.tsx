@@ -18,8 +18,8 @@ describe('BarList', () => {
     const bars = container.querySelectorAll<HTMLElement>('[aria-hidden] > span');
     expect(bars[0]!.style.width).toBe('75%');
     expect(bars[1]!.style.width).toBe('25%');
-    expect(bars[0]!.style.background).toContain('--chart-tone-4');
-    expect(bars[1]!.style.background).toContain('--chart-tone-1');
+    expect(bars[0]!.style.background).toContain('--chart-4');
+    expect(bars[1]!.style.background).toContain('--chart-1');
     expect(screen.getByText(/%75/)).toBeInTheDocument();
   });
 });

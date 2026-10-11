@@ -56,31 +56,40 @@
   --info: #93c5fd;
 
   /*
-   * Charts. Eight series colours in a fixed order, assigned in sequence and
-   * never cycled: brand lilac first, then orange, aqua, yellow, magenta, green,
-   * blue, red. Validated as a set for each theme (lightness band, chroma floor,
-   * neighbours told apart under protanopia and deuteranopia at ΔE 8.4 or more
-   * and under normal vision at 19.3 or more, 3:1 against the card). Change a
-   * value only by re-running that validation.
+   * Charts. One lilac family, light and deep in turn so neighbouring series and slices stay
+   * apart: forms-frontend's answer colours first, then three more of the same family.
+   * Values are always written beside a chart (legend, list, table view), so the shade is
+   * never the only cue.
    */
-  --chart-1: #a875b8;
-  --chart-2: #d95926;
-  --chart-3: #199e70;
-  --chart-4: #c98500;
-  --chart-5: #d55181;
-  --chart-6: #008300;
-  --chart-7: #3987e5;
-  --chart-8: #e66767;
+  --chart-1: #d8b4fe;
+  --chart-2: #6366f1;
+  --chart-3: #c084fc;
+  --chart-4: #7c3aed;
+  --chart-5: #9d84f0;
+  --chart-6: #a5b4fc;
+  --chart-7: #a855f7;
+  --chart-8: #f0abfc;
   /*
-   * One family for the parts of a single whole (a donut's slices, a bar list): the lilacs of
-   * forms-frontend's answer charts, light and deep in turn so neighbours stay apart. Values
-   * are always written beside them, so the shade is never the only cue.
+   * Eight distinct colours for groups that must be told apart by hue alone
+   * (palette="categorical"): brand lilac, orange, aqua, yellow, magenta, green, blue, red.
+   * Validated as a set for each theme (lightness band, chroma floor, neighbours told apart
+   * under protanopia and deuteranopia at ΔE 8.4 or more and under normal vision at 19.3 or
+   * more, 3:1 against the card). Change a value only by re-running that validation.
    */
-  --chart-tone-1: #d8b4fe;
-  --chart-tone-2: #6366f1;
-  --chart-tone-3: #c084fc;
-  --chart-tone-4: #7c3aed;
-  --chart-tone-5: #9d84f0;
+  --chart-categorical-1: #a875b8;
+  --chart-categorical-2: #d95926;
+  --chart-categorical-3: #199e70;
+  --chart-categorical-4: #c98500;
+  --chart-categorical-5: #d55181;
+  --chart-categorical-6: #008300;
+  --chart-categorical-7: #3987e5;
+  --chart-categorical-8: #e66767;
+  /* 0.1.7's names for the first five, kept so nothing that used them breaks */
+  --chart-tone-1: var(--chart-1);
+  --chart-tone-2: var(--chart-2);
+  --chart-tone-3: var(--chart-3);
+  --chart-tone-4: var(--chart-4);
+  --chart-tone-5: var(--chart-5);
   --chart-grid: rgb(255 255 255 / 7%);
   --chart-axis: rgb(255 255 255 / 16%);
   /* The chart card, opaque: gaps between bars and rings around dots are drawn in it */
@@ -138,20 +147,23 @@
   --warning: #a44a07;
   --info: #1d4ed8;
 
+  --chart-1: #8b5cf6;
+  --chart-2: #4338ca;
+  --chart-3: #a855f7;
+  --chart-4: #5b21b6;
+  --chart-5: #7c6be0;
+  --chart-6: #6366f1;
+  --chart-7: #9333ea;
+  --chart-8: #c026d3;
   /* Four of these sit under 3:1 on the light card, so every chart carries a legend and a table view */
-  --chart-1: #8f5e98;
-  --chart-2: #eb6834;
-  --chart-3: #1baf7a;
-  --chart-4: #eda100;
-  --chart-5: #e87ba4;
-  --chart-6: #008300;
-  --chart-7: #2a78d6;
-  --chart-8: #e34948;
-  --chart-tone-1: #8b5cf6;
-  --chart-tone-2: #4338ca;
-  --chart-tone-3: #a855f7;
-  --chart-tone-4: #5b21b6;
-  --chart-tone-5: #7c6be0;
+  --chart-categorical-1: #8f5e98;
+  --chart-categorical-2: #eb6834;
+  --chart-categorical-3: #1baf7a;
+  --chart-categorical-4: #eda100;
+  --chart-categorical-5: #e87ba4;
+  --chart-categorical-6: #008300;
+  --chart-categorical-7: #2a78d6;
+  --chart-categorical-8: #e34948;
   --chart-grid: rgb(0 0 0 / 8%);
   --chart-axis: rgb(0 0 0 / 20%);
   --chart-surface: #f8f7f5;
