@@ -62,7 +62,7 @@ export default function RootLayout({ children }) {
 
 ## Components
 
-Every component has live examples in the docs app's playground (`/playground/components`). The playground is published inside the admin panel, core-frontend, at `/playground`; there is no GitHub Pages site. The components:
+Every component has live examples in the docs app's playground (`/playground/components`). The playground is built into the admin panel's (core-frontend) preview image at `/playground` with `NEXT_PUBLIC_INCLUDE_PLAYGROUND`, from a pinned skylcn-ui commit rather than `main`; the production image leaves it out. It is not published on GitHub Pages. The components:
 
 - **Actions:** Button, IconButton, IconSwap, CopyButton, SegmentedControl
 - **Forms:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, DateTimePicker, Calendar, Dropzone, OTPField
@@ -102,7 +102,7 @@ pnpm --filter docs exec playwright install chromium   # or point PLAYWRIGHT_CHRO
 pnpm --filter docs e2e
 ```
 
-The playground can also be built as static files; `DOCS_BASE_PATH` serves it under a sub-path, and `NEXT_PUBLIC_DOCS_HOST=admin` builds it for the admin panel, which serves `out/playground*` from its public folder:
+The playground can also be built as static files; `DOCS_BASE_PATH` serves it under a sub-path, and `NEXT_PUBLIC_DOCS_HOST=admin` builds it for the admin panel, which serves `out/playground*` from its public folder and `out/_next` under `/playground-assets`:
 
 ```sh
 DOCS_EXPORT=1 DOCS_BASE_PATH=/playground pnpm --filter docs build   # output: apps/docs/out
