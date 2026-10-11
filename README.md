@@ -75,7 +75,7 @@ The playground also has scenarios, whole pages built from these components, and 
 
 ## Principles
 
-- **Accessibility:** Every text meant to be read keeps at least 4.5:1 contrast on every surface; the `faint` tone is only for decoration and disabled states. The focus ring shows at once and is drawn in Windows high contrast mode too. For readers who ask for more contrast, muted text and lines get one step stronger.
+- **Accessibility:** Every text meant to be read keeps at least 4.5:1 contrast on every surface; the `faint` tone is only for decoration and disabled states. The focus ring reads at 3:1 or more on every surface in both themes, shows at once and is drawn in Windows high contrast mode too. For readers who ask for more contrast, muted text and lines get one step stronger.
 - **Motion:** Durations, easings and distances are tokens. With reduced motion, short fades stay and slides and growth go. Animation is used only when it tells where something came from and went, or that its state changed.
 - **Mobile:** On touch screens controls grow and text fields are 16px, so iOS does not zoom into them.
 

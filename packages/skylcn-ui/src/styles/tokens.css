@@ -46,7 +46,7 @@
   /* Brand roles */
   --primary: var(--skylab-500);
   --primary-foreground: #0a0a0a;
-  --ring: rgb(235 213 238 / 40%);
+  --ring: rgb(235 213 238 / 60%);
 
   /* Status */
   --destructive: #f87171;
@@ -120,7 +120,7 @@
 
   --primary: #8f5e98;
   --primary-foreground: #ffffff;
-  --ring: rgb(143 94 152 / 40%);
+  --ring: rgb(117 68 127);
 
   --destructive: #b91c1c;
   --destructive-foreground: #7f1d1d;
