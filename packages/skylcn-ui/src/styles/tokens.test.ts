@@ -46,11 +46,17 @@ const THEMES = {
   light: block("[data-theme='light']"),
 };
 
+/** A token's colour, following a var() to another token of the same theme. */
+function resolve(values: Record<string, string>, name: string): Rgba {
+  const ref = /^var\((--[\w-]+)\)$/.exec(values[name]);
+  return ref ? resolve(values, ref[1]) : parse(values[name]);
+}
+
 describe('focus ring', () => {
-  // WCAG 1.4.11 and 2.4.11: the ring against the surface it is drawn on, 3:1 or more
+  // WCAG 1.4.11 (and 2.4.13): the ring against the surface it is drawn on, 3:1 or more
   for (const [theme, values] of Object.entries(THEMES)) {
     it(`reads at 3:1 or more on every surface in the ${theme} theme`, () => {
-      const color = (name: string) => parse(values[name]);
+      const color = (name: string) => resolve(values, name);
       const opaque = ['--background', '--sheet', '--popover', '--sidebar'].map(
         (name) => [name, color(name)] as const,
       );
@@ -72,6 +78,24 @@ describe('focus ring', () => {
       for (const [name, surface] of surfaces) {
         const ratio = contrast(over(color('--ring'), surface), surface);
         expect(ratio, `${theme} ring on ${name}`).toBeGreaterThanOrEqual(3);
+      }
+    });
+  }
+
+  // The ring hugs the control, so on a primary button or a selected day it sits
+  // right against the primary fill and must not melt into it. 3:1 against both
+  // the page and the fill has no room in the dark theme, so the fill is kept apart
+  // by a step of the brand scale instead.
+  for (const [theme, values] of Object.entries(THEMES)) {
+    it(`stays apart from the primary fill in the ${theme} theme`, () => {
+      const ring = resolve(values, '--ring');
+      const fill = resolve(values, '--primary');
+      for (const name of ['--background', '--sheet', '--popover', '--sidebar']) {
+        const shown = over(ring, resolve(values, name));
+        expect(
+          contrast(shown, fill),
+          `${theme} ring by the fill on ${name}`,
+        ).toBeGreaterThanOrEqual(1.4);
       }
     });
   }
