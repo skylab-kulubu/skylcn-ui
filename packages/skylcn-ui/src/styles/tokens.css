@@ -71,6 +71,16 @@
   --chart-6: #008300;
   --chart-7: #3987e5;
   --chart-8: #e66767;
+  /*
+   * One family for the parts of a single whole (a donut's slices, a bar list): the lilacs of
+   * forms-frontend's answer charts, light and deep in turn so neighbours stay apart. Values
+   * are always written beside them, so the shade is never the only cue.
+   */
+  --chart-tone-1: #d8b4fe;
+  --chart-tone-2: #6366f1;
+  --chart-tone-3: #c084fc;
+  --chart-tone-4: #7c3aed;
+  --chart-tone-5: #9d84f0;
   --chart-grid: rgb(255 255 255 / 7%);
   --chart-axis: rgb(255 255 255 / 16%);
   /* The chart card, opaque: gaps between bars and rings around dots are drawn in it */
@@ -137,6 +147,11 @@
   --chart-6: #008300;
   --chart-7: #2a78d6;
   --chart-8: #e34948;
+  --chart-tone-1: #8b5cf6;
+  --chart-tone-2: #4338ca;
+  --chart-tone-3: #a855f7;
+  --chart-tone-4: #5b21b6;
+  --chart-tone-5: #7c6be0;
   --chart-grid: rgb(0 0 0 / 8%);
   --chart-axis: rgb(0 0 0 / 20%);
   --chart-surface: #f8f7f5;

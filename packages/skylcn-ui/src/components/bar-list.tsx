@@ -48,6 +48,9 @@ export function BarList({
   const { locale } = useSkylcn();
   const tag = locale === 'tr' ? 'tr-TR' : 'en-US';
   const total = max ?? items.reduce((sum, item) => sum + item.value, 0);
+  const top = Math.max(0, ...items.filter((item) => !item.disabled).map((item) => item.value));
+  const leader =
+    top > 0 ? items.find((item) => !item.disabled && item.value === top)?.key : undefined;
   const number = formatValue ?? ((value: number) => value.toLocaleString(tag));
   const percent = (value: number) => {
     const share = total ? (value / total) * 100 : 0;
@@ -85,17 +88,20 @@ export function BarList({
                 )}
               </span>
             </span>
-            <span aria-hidden className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-muted">
+            <span aria-hidden className="mt-1.5 block h-2 overflow-hidden rounded-full bg-muted">
               <span
                 className={cn(
                   'block h-full rounded-full transition-[width,background-color] duration-(--motion-duration-slow) ease-enter',
-                  item.disabled
-                    ? 'bg-faint-foreground'
-                    : chosen
-                      ? 'bg-skylab-400'
-                      : 'bg-skylab-500',
+                  item.disabled && 'bg-faint-foreground',
                 )}
-                style={{ width: `${share}%` }}
+                style={{
+                  width: `${share}%`,
+                  background: item.disabled
+                    ? undefined
+                    : chosen || item.key === leader
+                      ? 'var(--chart-tone-4)'
+                      : 'var(--chart-tone-1)',
+                }}
               />
             </span>
           </>
