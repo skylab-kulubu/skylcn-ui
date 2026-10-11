@@ -34,17 +34,23 @@ export type ChartSeries = Record<string, { label: string; color?: string }>;
 
 type Resolved = LegendItem;
 
+export type ChartPalette = 'tones' | 'categorical';
+
 /**
- * A lone series has nothing to be told apart from, so it takes the brand lilac;
- * two or more take the validated chart colours in order.
+ * Series take the chart colours in order, the club's lilac family; `categorical` gives
+ * them the eight validated distinct colours instead, for groups that need telling apart
+ * by hue alone.
  */
-function resolve(series: ChartSeries): Resolved[] {
+function resolve(series: ChartSeries, palette: ChartPalette = 'tones'): Resolved[] {
   const entries = Object.entries(series);
   return entries.map(([key, value], i) => ({
     key,
     label: value.label,
     color:
-      value.color ?? (entries.length === 1 ? 'var(--chart-tone-1)' : `var(--chart-${(i % 8) + 1})`),
+      value.color ??
+      (palette === 'categorical' && entries.length > 1
+        ? `var(--chart-categorical-${(i % 8) + 1})`
+        : `var(--chart-${(i % 8) + 1})`),
   }));
 }
 
@@ -73,6 +79,8 @@ type CartesianProps = {
   actions?: ReactNode;
   /** Draws the card; turn off to set the chart straight into a section or another card. */
   framed?: boolean;
+  /** `tones`, the default, or `categorical` for the eight distinct colours. */
+  palette?: ChartPalette;
   /** Plot height with its axes; 240 by default. */
   height?: number;
   formatValue?: (value: number) => string;
@@ -240,7 +248,7 @@ export type AreaChartProps = SharedProps & {
  */
 export function AreaChart({ stacked = false, markers = false, ...props }: AreaChartProps) {
   const height = props.height ?? (props.compact ? 120 : 240);
-  const resolved = resolve(props.series);
+  const resolved = resolve(props.series, props.palette);
   const format = useFormats(props.formatValue);
   const motion = useMotion();
   const gradient = useId().replace(/:/g, '');
@@ -296,7 +304,7 @@ export type LineChartProps = SharedProps & {
 /** Trends of several series over the same time, as 2px lines. */
 export function LineChart({ markers = false, ...props }: LineChartProps) {
   const height = props.height ?? (props.compact ? 120 : 240);
-  const resolved = resolve(props.series);
+  const resolved = resolve(props.series, props.palette);
   const format = useFormats(props.formatValue);
   const motion = useMotion();
   return (
@@ -343,7 +351,7 @@ export type BarChartProps = SharedProps & {
 /** Magnitudes side by side: columns by default, bars sideways for long names. */
 export function BarChart({ stacked = false, orientation = 'vertical', ...props }: BarChartProps) {
   const height = props.height ?? (props.compact ? 120 : 240);
-  const resolved = resolve(props.series);
+  const resolved = resolve(props.series, props.palette);
   const format = useFormats(props.formatValue);
   const motion = useMotion();
   const sideways = orientation === 'horizontal';
@@ -479,8 +487,8 @@ export type DonutChartProps = {
   /** The ring's size; the list sits beside it, or below when there is no room. */
   height?: number;
   /**
-   * `tones`, the default, draws the slices in one lilac family, for the parts of a single
-   * answer; `categorical` uses the eight distinct chart colours, for unrelated groups.
+   * `tones`, the default, draws the slices in the chart colours, one lilac family;
+   * `categorical` uses the eight distinct colours, for unrelated groups.
    */
   palette?: 'tones' | 'categorical';
   formatValue?: (value: number) => string;
@@ -509,7 +517,7 @@ export function DonutChart({ height = 200, palette = 'tones', ...props }: DonutC
   const kept = props.data.slice(0, MAX_SLICES - (props.data.length > MAX_SLICES ? 1 : 0));
   const rest = props.data.slice(kept.length);
   const colour = (i: number) =>
-    palette === 'categorical' ? `var(--chart-${i + 1})` : `var(--chart-tone-${(i % 5) + 1})`;
+    palette === 'categorical' ? `var(--chart-categorical-${i + 1})` : `var(--chart-${i + 1})`;
   const slices: Resolved[] = kept.map((slice, i) => ({
     key: slice.key,
     label: slice.label,

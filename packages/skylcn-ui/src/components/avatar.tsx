@@ -19,9 +19,10 @@ export function initialsOf(name?: string | null, email?: string | null): string 
 }
 
 /*
- * Initials sit on one of the chart hues, faint, so people in a list tell apart
- * at a glance. Spelled out in full for Tailwind; the text stays in the
- * foreground colour, so the tint never decides the contrast.
+ * Initials sit on one of the chart colours, the lilac family, faint, so people in a
+ * list tell apart at a glance while the list stays in the club's colours. Spelled out
+ * in full for Tailwind; the text stays in the foreground colour, so the tint never
+ * decides the contrast.
  */
 const TONES = [
   'border-chart-1/30 bg-chart-1/20',

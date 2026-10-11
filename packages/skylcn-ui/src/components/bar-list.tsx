@@ -99,8 +99,8 @@ export function BarList({
                   background: item.disabled
                     ? undefined
                     : chosen || item.key === leader
-                      ? 'var(--chart-tone-4)'
-                      : 'var(--chart-tone-1)',
+                      ? 'var(--chart-4)'
+                      : 'var(--chart-1)',
                 }}
               />
             </span>
