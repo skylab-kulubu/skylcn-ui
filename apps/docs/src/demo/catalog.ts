@@ -537,6 +537,20 @@ export const ENTRIES: Entry[] = [
     a11y: ['Yönlendirme sürerken durum ekran okuyucuya bildirilir.'],
   },
   {
+    slug: 'task-page',
+    name: 'TaskPage',
+    category: 'data',
+    description:
+      'Tek görevli sayfa: giriş, kapıda giriş, sertifika doğrulama, hesap silme durumu. Üstte SKY LAB işareti, ortada görev, altta bağlantılar.',
+    imports: ['TaskPage'],
+    a11y: [
+      'Sayfanın tek h1’i başlıktır; görev bölgesi başlıkla adlandırılır, açıklamayla tanımlanır.',
+      'Odak taşınmaz. Yükleme yerinde sonuca dönerse başlık bir kez okunur: başlık kibar bir canlı bölge, yüklenirken meşgul.',
+      'Kendi main’i olan bir sayfanın içinde as="div" ile çizilir.',
+    ],
+    motion: ['Görev aşağıdan yükselerek gelir; hareketi azaltınca yalnız belirir.'],
+  },
+  {
     slug: 'kanban',
     name: 'Kanban',
     category: 'data',

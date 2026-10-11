@@ -55,7 +55,7 @@ Every component has live examples in the docs app's playground (`/playground/com
 - **Forms:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, DateTimePicker, Calendar, Dropzone, OTPField
 - **Overlays:** Dialog, ConfirmDialog, Drawer (right, left, bottom; closes with a swipe), Popover, PreviewCard, Tooltip, Menu, ContextMenu, Toast, CommandPalette
 - **Navigation:** AppShell, SideNav, NavigationMenu, Tabs, Accordion, Stepper, Breadcrumbs, Pagination, PageHeader
-- **Data:** DataList, DataTable, ListPanel, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, Skeleton
+- **Data:** DataList, DataTable, ListPanel, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, Skeleton
 - **Motion:** Reveal, Collapse, Swap, AnimatedNumber
 
 The playground also has scenarios, whole pages built from these components, and a page builder for composing a page from blocks and copying its code.

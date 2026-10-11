@@ -220,6 +220,7 @@ export { Skeleton } from './components/skeleton.js';
 export { Sparkline, type SparklineProps } from './components/sparkline.js';
 export { SkylabLoader, type SkylabLoaderProps } from './components/skylab-loader.js';
 export { StateCard, type StateCardProps } from './components/state-card.js';
+export { TaskPage, type TaskPageProps } from './components/task-page.js';
 export { Switch, ToggleRow, type SwitchProps, type ToggleRowProps } from './components/switch.js';
 export { Tooltip, TooltipProvider, type TooltipProps } from './components/tooltip.js';
 export {

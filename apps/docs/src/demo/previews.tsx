@@ -685,6 +685,14 @@ const MINIS: Record<string, () => ReactNode> = {
   'status-page': () => (
     <span className="font-mono text-4xl font-bold text-muted-foreground">404</span>
   ),
+  'task-page': () => (
+    <span className="flex w-32 flex-col items-center gap-1.5 rounded-md border border-border bg-background p-2">
+      <SkylabMark size={12} />
+      <span className="h-1.5 w-16 rounded bg-foreground/60" />
+      <span className="h-1 w-20 rounded bg-muted-foreground/40" />
+      <span className="mt-1 h-3 w-full rounded bg-skylab-500/20" />
+    </span>
+  ),
   kanban: () => (
     <span className="flex gap-2 text-3xs">
       {['Yapılacak', 'Bitti'].map((t, i) => (

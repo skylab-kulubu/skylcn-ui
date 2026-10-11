@@ -7,6 +7,7 @@ import { FORM_EXTRA_EXAMPLES } from './form-extra';
 import { FOUNDATION_EXAMPLES } from './foundations';
 import { INTERACTION_EXAMPLES } from './interaction';
 import { OVERLAY_NAVIGATION_EXAMPLES } from './overlays-navigation';
+import { TASK_PAGE_EXAMPLES } from './task-page';
 
 /** The live examples of each library page, by slug. */
 export const EXAMPLES: Record<string, ComponentType> = {
@@ -18,4 +19,5 @@ export const EXAMPLES: Record<string, ComponentType> = {
   ...FEEDBACK_EXAMPLES,
   ...FORM_EXTRA_EXAMPLES,
   ...DISPLAY_EXTRA_EXAMPLES,
+  ...TASK_PAGE_EXAMPLES,
 };
