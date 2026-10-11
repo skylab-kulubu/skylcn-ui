@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
+import { ArrowLeft, Search, X } from 'lucide-react';
 import { AnimatePresence, LayoutGroup, m } from 'motion/react';
 import { useId, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
@@ -17,24 +17,56 @@ export type PageHeaderProps = {
   actions?: ReactNode;
   /** Chips or stats under the description. */
   meta?: ReactNode;
+  /** A link up to the parent page above the title, such as "← Etkinlikler". */
+  back?: PageHeaderBackLink;
+  /** A picture before the title, such as an event's cover; an img fills it. */
+  cover?: ReactNode;
+  /** The page's TabsNav; it takes the divider's place. */
+  tabs?: ReactNode;
   className?: string;
   /** A toolbar row under the divider: search, filters, view switches. */
   children?: ReactNode;
 };
 
-/** The top of a page: title, description, actions and an optional toolbar row. */
+export type PageHeaderBackLink = { href: string; label: string };
+
+/**
+ * The top of a page: an optional way back, title, description, actions, the
+ * page's tabs and an optional toolbar row.
+ */
 export function PageHeader({
   title,
   description,
   badge,
   actions,
   meta,
+  back,
+  cover,
+  tabs,
   className,
   children,
 }: PageHeaderProps) {
+  const { Link } = useSkylcn();
   return (
     <header data-slot="page-header" className={cn('flex flex-col gap-3', className)}>
+      {back ? (
+        <Link
+          href={back.href}
+          className="-mb-1 inline-flex w-fit max-w-full items-center gap-1 rounded-md py-1 text-xs text-muted-foreground outline-hidden transition-colors duration-(--motion-duration-fast) hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ArrowLeft aria-hidden className="size-3.5 shrink-0" />
+          <span className="truncate">{back.label}</span>
+        </Link>
+      ) : null}
       <div className="flex min-w-0 items-center gap-3">
+        {cover ? (
+          <div
+            data-slot="page-header-cover"
+            className="aspect-video h-10 shrink-0 overflow-hidden rounded-md border border-border bg-muted sm:h-14 [&_img]:size-full [&_img]:object-cover"
+          >
+            {cover}
+          </div>
+        ) : null}
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2.5">
             <h1 className="truncate text-lg font-semibold text-foreground">{title}</h1>
@@ -47,7 +79,7 @@ export function PageHeader({
         </div>
         {actions ? <div className="flex shrink-0 items-center gap-1.5">{actions}</div> : null}
       </div>
-      <div className="h-px bg-border" />
+      {tabs ? tabs : <div data-slot="page-header-divider" className="h-px bg-border" />}
       {children ? (
         <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">{children}</div>
       ) : null}
