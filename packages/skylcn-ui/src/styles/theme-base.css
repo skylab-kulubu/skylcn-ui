@@ -263,6 +263,17 @@
 }
 
 /*
+ * On a phone the full-width toasts would cover a bottom sheet's or dialog's buttons, so
+ * while one is open the toasts step under it; they come back when it closes.
+ */
+@media (width < 40rem) {
+  body:has([data-slot='dialog-content'], [data-slot='confirm-dialog'], [data-slot='drawer-content'])
+    [data-slot='toast-viewport'] {
+    z-index: 40;
+  }
+}
+
+/*
  * SkylabLoader: the mark lights up group by group from its centre (each path's delay comes
  * from the component), never fading below a floor, with a shimmer band and a soft halo from
  * 32px and a diagonal glint along a steel outline from 64px. Still under reduced motion.
@@ -282,6 +293,24 @@
   .skylcn-loader .skylcn-loader-mark path,
   .skylcn-loader .skylcn-loader-metal path {
     animation: skylcn-loader-reveal var(--skylcn-loader-cycle) ease-in-out infinite both;
+  }
+  .skylcn-loader [data-group='1'] {
+    animation-delay: 80ms;
+  }
+  .skylcn-loader [data-group='2'] {
+    animation-delay: 160ms;
+  }
+  .skylcn-loader [data-group='3'] {
+    animation-delay: 240ms;
+  }
+  .skylcn-loader [data-group='4'] {
+    animation-delay: 320ms;
+  }
+  .skylcn-loader [data-group='5'] {
+    animation-delay: 400ms;
+  }
+  .skylcn-loader [data-group='6'] {
+    animation-delay: 480ms;
   }
   .skylcn-loader-rich .skylcn-loader-mark {
     /* a 200-unit bright band crossing the 586-unit mark; the mask is four times as wide */

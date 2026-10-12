@@ -12,7 +12,8 @@ const buttonVariants = cva(
   [
     'group/button relative inline-flex shrink-0 items-center justify-center gap-2 border font-medium whitespace-nowrap select-none',
     'transition-[color,background-color,border-color,translate] duration-(--motion-duration-fast) ease-enter',
-    'outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
+    // The offset keeps the ring off a filled button's edge, so it reads against the page
+    'outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'active:not-aria-[haspopup]:translate-y-px',
     'disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-wait aria-busy:opacity-100',
     "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",

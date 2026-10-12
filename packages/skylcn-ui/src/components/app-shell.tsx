@@ -678,7 +678,15 @@ export function SidebarUser({ name, email, subtitle, avatarSrc, action, menu }: 
     <span className="min-w-0 flex-1 text-left">
       <span className="block truncate text-sm font-medium text-foreground">{name}</span>
       {subtitle ? (
-        <span className="block truncate text-3xs tracking-label text-subtle-foreground uppercase">
+        <span
+          className={cn(
+            'block truncate text-3xs text-subtle-foreground',
+            // A role line reads as a label; an e-mail address keeps its own case
+            typeof subtitle === 'string' && subtitle.includes('@')
+              ? null
+              : 'tracking-label uppercase',
+          )}
+        >
           {subtitle}
         </span>
       ) : null}

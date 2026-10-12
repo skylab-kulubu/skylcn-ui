@@ -3,9 +3,9 @@ import { SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from '../assets/skylab-mark.js
 import { cn } from '../lib/cn.js';
 
 // Fatih Naz's loader from forms-frontend lights the mark in seven groups from the centre out.
-// Each path's group, in SKYLAB_MARK_PATHS order.
+// Each path's group, in SKYLAB_MARK_PATHS order; the stylesheet delays each group, so the
+// loader carries no inline style and runs under a strict Content-Security-Policy.
 const GROUPS = [4, 2, 0, 3, 4, 2, 5, 6, 3, 1, 4, 2, 3, 4, 2, 5, 6, 3, 1];
-const STAGGER_MS = 80;
 // Below these sizes the shimmer, halo and steel outline only muddy the mark.
 const RICH_FROM = 32;
 const METAL_FROM = 64;
@@ -26,11 +26,7 @@ export function SkylabLoader({ size = 80, state = 'loading', className }: Skylab
   const rich = animate && size >= RICH_FROM;
   const metal = animate && size >= METAL_FROM;
   const paths = SKYLAB_MARK_PATHS.map((d, i) => (
-    <path
-      key={i}
-      d={d}
-      style={animate ? { animationDelay: `${GROUPS[i]! * STAGGER_MS}ms` } : undefined}
-    />
+    <path key={i} d={d} data-group={animate ? GROUPS[i] : undefined} />
   ));
 
   return (
@@ -38,18 +34,19 @@ export function SkylabLoader({ size = 80, state = 'loading', className }: Skylab
       data-slot="skylab-loader"
       aria-hidden
       className={cn(
-        'relative inline-block shrink-0 text-secondary-foreground',
+        'relative inline-grid shrink-0 text-secondary-foreground',
         animate && 'skylcn-loader',
         rich && 'skylcn-loader-rich',
         className,
       )}
-      style={{ width: size, height: size }}
     >
       {rich ? <span className="skylcn-loader-halo absolute inset-0 rounded-full" /> : null}
       <svg
         viewBox={SKYLAB_MARK_VIEWBOX}
+        width={size}
+        height={size}
         fill="currentColor"
-        className="skylcn-loader-mark relative block size-full"
+        className="skylcn-loader-mark relative block"
       >
         <g fillRule="evenodd">{paths}</g>
       </svg>

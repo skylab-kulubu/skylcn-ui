@@ -2,7 +2,7 @@
 
 import { Toast as ToastPrimitive } from '@base-ui/react/toast';
 import { CircleAlert, CircleCheck, Info, X } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
 
@@ -14,12 +14,30 @@ const ICON = {
   info: <Info className="size-4 text-info" aria-hidden />,
 } as const;
 
+const ACTION_TIMEOUT = 10_000;
+
 /**
  * Adds a toast from anywhere under ToastProvider:
- * `toast.add({ title, description, type: 'success' })`. Errors and toasts
- * with an action stay until closed; pass `actionProps` for an undo.
+ * `toast.add({ title, description, type: 'success' })`. A plain toast leaves after the
+ * provider's timeout, one with an action (an undo through `actionProps`) after ten
+ * seconds, and an error stays until closed; pass `timeout` to choose otherwise.
  */
-export const useToast = ToastPrimitive.useToastManager;
+export function useToast() {
+  const manager = ToastPrimitive.useToastManager();
+  return useMemo(
+    () => ({
+      ...manager,
+      add: (options: Parameters<typeof manager.add>[0]) =>
+        manager.add({
+          ...options,
+          timeout:
+            options.timeout ??
+            (options.type === 'error' ? 0 : options.actionProps ? ACTION_TIMEOUT : undefined),
+        }),
+    }),
+    [manager],
+  );
+}
 
 function Toasts() {
   const { toasts } = ToastPrimitive.useToastManager();
@@ -65,6 +83,7 @@ function Toasts() {
 /**
  * Hosts the toasts of an app, stacked at the bottom right (full width on
  * phones). Plain toasts leave after five seconds, paused while hovered or focused.
+ * On a phone an open dialog or drawer sits above them, so they never cover its buttons.
  */
 export function ToastProvider({
   children,
@@ -77,7 +96,10 @@ export function ToastProvider({
     <ToastPrimitive.Provider timeout={timeout}>
       {children}
       <ToastPrimitive.Portal>
-        <ToastPrimitive.Viewport className="fixed right-4 bottom-4 z-[60] mx-auto w-[calc(100vw-2rem)] sm:right-6 sm:bottom-6 sm:w-90">
+        <ToastPrimitive.Viewport
+          data-slot="toast-viewport"
+          className="fixed right-4 bottom-4 z-[60] mx-auto w-[calc(100vw-2rem)] sm:right-6 sm:bottom-6 sm:w-90"
+        >
           <Toasts />
         </ToastPrimitive.Viewport>
       </ToastPrimitive.Portal>

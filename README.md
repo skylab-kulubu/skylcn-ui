@@ -20,14 +20,15 @@ Apps on Tailwind 4 import the theme right after Tailwind:
 `theme.css` has Tailwind scan every component, about 17 KB of CSS after gzip. An app that uses a few components can take the theme without any component and add one stylesheet per component it renders; each brings the files that component imports, so nothing is missed:
 
 ```css
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+@source '../';
 @import '@skylab-kulubu/skylcn-ui/theme-base.css';
 @import '@skylab-kulubu/skylcn-ui/sources/button.css';
 @import '@skylab-kulubu/skylcn-ui/sources/navigation-menu.css';
 @import '@skylab-kulubu/skylcn-ui/sources/drawer.css';
 ```
 
-With those three the CSS is about 8 KB. The stylesheets are named after the component files (`sources/state-card.css`, `sources/charts.css`, `sources/data-table.css`).
+`source(none)` matters: with Tailwind's automatic detection on, the package in `node_modules` is scanned whole and the per-component stylesheets save nothing. Turn it off and point `@source` at the app's own code (`'../'` from `src/app/globals.css` covers `src`). With those three the CSS is about 8 KB. The stylesheets are named after the component files (`sources/state-card.css`, `sources/charts.css`, `sources/data-table.css`).
 
 ```tsx
 import { Button, SkylcnProvider, ThemeScript } from '@skylab-kulubu/skylcn-ui';
@@ -78,6 +79,8 @@ The playground also has scenarios, whole pages built from these components, and 
 - **Accessibility:** Every text meant to be read keeps at least 4.5:1 contrast on every surface; the `faint` tone is only for decoration and disabled states. The focus ring reads at 3:1 or more on every surface in both themes, shows at once and is drawn in Windows high contrast mode too. For readers who ask for more contrast, muted text and lines get one step stronger.
 - **Motion:** Durations, easings and distances are tokens. With reduced motion, short fades stay and slides and growth go. Animation is used only when it tells where something came from and went, or that its state changed.
 - **Mobile:** On touch screens controls grow and text fields are 16px, so iOS does not zoom into them.
+- **Feedback:** A finished write says so in a toast (with "Geri al" when the server can undo it); an error stays where the work happened, as an alert in the form, drawer or dialog; a result the reader has to read (a code, a count) stays on the page as status text. A copy action shows its tick in place (`CopyButton`), not a toast. Errors and toasts with an action stay until closed or for ten seconds; plain toasts leave after five.
+- **Disabled buttons:** Base UI leaves `tabindex="0"` on a disabled `Button`, but the native `disabled` attribute still keeps it out of the tab order. Set `focusableWhenDisabled` when a reader should reach it and hear why it is off; it then uses `aria-disabled` instead.
 
 ## Browser support
 
