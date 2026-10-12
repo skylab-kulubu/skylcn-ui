@@ -46,16 +46,21 @@ export function Input({ className, icon: Icon, inputSize = 'md', ...props }: Inp
   );
 }
 
+/** A multi-line box; inside a Field it takes the field's label, hint and error like Input. */
 export function Textarea({ className, ...props }: ComponentProps<'textarea'>) {
   return (
-    <textarea
-      data-slot="textarea"
-      className={cn(
-        controlClass,
-        'field-sizing-content min-h-16 resize-y px-2.5 py-2 leading-relaxed',
-        className,
-      )}
-      {...props}
+    <FieldPrimitive.Control
+      render={
+        <textarea
+          data-slot="textarea"
+          className={cn(
+            controlClass,
+            'field-sizing-content min-h-16 resize-y px-2.5 py-2 leading-relaxed',
+            className,
+          )}
+          {...props}
+        />
+      }
     />
   );
 }

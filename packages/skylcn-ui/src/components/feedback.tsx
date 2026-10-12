@@ -161,6 +161,8 @@ export type NoticeProps = Omit<ComponentProps<'div'>, 'title'> & {
   action?: ReactNode;
   /** Shows a close button; the parent removes the notice. */
   onDismiss?: () => void;
+  /** The close button's accessible name, such as "Duyuruyu kapat"; the locale's "Kapat" by default. */
+  dismissLabel?: string;
 };
 
 /**
@@ -173,6 +175,7 @@ export function Notice({
   title,
   action,
   onDismiss,
+  dismissLabel,
   className,
   children,
   ...props
@@ -184,7 +187,12 @@ export function Notice({
     <div
       data-slot="notice"
       role={tone === 'danger' ? 'alert' : 'status'}
-      className={cn('relative flex gap-3 rounded-lg border p-3 pr-10', style.box, className)}
+      className={cn(
+        'relative flex gap-3 rounded-lg border p-3',
+        onDismiss && 'pr-10',
+        style.box,
+        className,
+      )}
       {...props}
     >
       <Icon className={cn('mt-0.5 size-4 shrink-0', style.icon_)} aria-hidden />
@@ -199,7 +207,7 @@ export function Notice({
         <button
           type="button"
           onClick={onDismiss}
-          aria-label={messages.close}
+          aria-label={dismissLabel ?? messages.close}
           className="absolute top-2.5 right-2.5 grid size-6 place-items-center rounded-md text-subtle-foreground outline-hidden hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         >
           <X className="size-3.5" />

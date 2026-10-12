@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { useId, type ReactNode } from 'react';
+import { useId, type HTMLAttributes, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { SkylabMark } from './skylab-mark.js';
 import { SkylabLoader } from './skylab-loader.js';
@@ -49,7 +49,7 @@ export type TaskPageProps = {
   /** `div` when shown inside a page that already has its main landmark. */
   as?: 'main' | 'div';
   className?: string;
-};
+} & Omit<HTMLAttributes<HTMLElement>, 'title' | 'children' | 'className'>;
 
 /**
  * A page with one job: sign in, check in at the door, verify a certificate,
@@ -87,6 +87,7 @@ export function TaskPage({
   framed = true,
   as: Root = 'main',
   className,
+  ...rest
 }: TaskPageProps) {
   const id = useId();
   const titleId = `${id}-title`;
@@ -95,6 +96,7 @@ export function TaskPage({
 
   return (
     <Root
+      {...rest}
       data-slot="task-page"
       className={cn(
         'flex min-h-dvh flex-col bg-background px-5 pt-10 pb-12 sm:items-center sm:justify-center sm:px-6',
