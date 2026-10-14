@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SkylcnProvider } from '../lib/provider.js';
 import { CoverImage } from './cover-image.js';
@@ -154,6 +154,63 @@ describe('ConfirmDialog reopened by its parent', () => {
     fireEvent.click(action());
     await act(async () => work.reject('500'));
     expect(cancelButton()).toHaveFocus();
+  });
+});
+
+describe('ConfirmDialog finalFocus', () => {
+  function opened(props: Partial<Parameters<typeof ConfirmDialog>[0]> = {}) {
+    render(
+      <SkylcnProvider locale="tr">
+        <button type="button">Sezon ekle</button>
+        <ConfirmDialog
+          trigger={<button type="button">Düzenle</button>}
+          title="Sezon silinsin mi?"
+          actionLabel="Oturumu sil"
+          onAction={() => undefined}
+          {...props}
+        />
+      </SkylcnProvider>,
+    );
+    const trigger = screen.getByRole('button', { name: 'Düzenle' });
+    const other = screen.getByRole('button', { name: 'Sezon ekle' });
+    trigger.focus();
+    fireEvent.click(trigger);
+    return { trigger, other };
+  }
+
+  async function closeWithCancel() {
+    await waitFor(() => expect(cancelButton()).toHaveFocus());
+    fireEvent.click(cancelButton());
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+  }
+
+  it('returns focus to the trigger by default', async () => {
+    const { trigger } = opened();
+    await closeWithCancel();
+    await waitFor(() => expect(trigger).toHaveFocus());
+  });
+
+  it('leaves focus alone with finalFocus={false}', async () => {
+    const { trigger } = opened({ finalFocus: false });
+    await closeWithCancel();
+    expect(trigger).not.toHaveFocus();
+  });
+
+  it('asks a function where focus goes on close', async () => {
+    const finalFocus = vi.fn(() => false);
+    const { trigger } = opened({ finalFocus });
+    await closeWithCancel();
+    expect(finalFocus).toHaveBeenCalled();
+    expect(trigger).not.toHaveFocus();
+  });
+
+  it('moves focus to the element a ref points at', async () => {
+    const target = { current: null as HTMLElement | null };
+    const { trigger, other } = opened({ finalFocus: target });
+    target.current = other;
+    await closeWithCancel();
+    await waitFor(() => expect(target.current).toHaveFocus());
+    expect(trigger).not.toHaveFocus();
   });
 });
 
