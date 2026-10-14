@@ -1,5 +1,12 @@
 # @skylab-kulubu/skylcn-ui
 
+## 0.1.10
+
+### Patch Changes
+
+- 4dd6cbf: ConfirmDialog takes an async `onAction`: the dialog stays open with the action pending and Cancel locked until it settles, closes on success and says why inside on a throw (`failureMessage`). If nothing answers within `stallAfter` (25 seconds) it says so and lets the reader leave; a refusal that arrives later goes to `onLateFailure`, for an error toast. A double click runs the action once. New `CoverImage` shows a poster or cover whole in a 16:9 (or square, wide, portrait) frame over a blurred copy of itself, so square and tall posters never leave a grey band; it carries no inline style.
+- cfbb8b1: ConfirmDialog starts clean on every opening, also when a parent sets `open` again, so an earlier failure no longer shows; an answer that arrives after the reader left a stalled dialog no longer leaves the action pending on the next opening. A parent's `pending` now stalls like an async action, so Cancel never stays locked for good. New `stallMessage` gives the stall line per dialog, and a failure moves the keyboard to Cancel.
+
 ## 0.1.9
 
 ### Patch Changes
