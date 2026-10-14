@@ -89,6 +89,74 @@ describe('ConfirmDialog with an async action', () => {
   });
 });
 
+describe('ConfirmDialog reopened by its parent', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  function controlled(props: Partial<Parameters<typeof ConfirmDialog>[0]>) {
+    const view = (open: boolean) => (
+      <SkylcnProvider locale="tr">
+        <ConfirmDialog
+          open={open}
+          onOpenChange={() => undefined}
+          title="Oturum silinsin mi?"
+          actionLabel="Oturumu sil"
+          onAction={() => undefined}
+          {...props}
+        />
+      </SkylcnProvider>
+    );
+    const { rerender } = render(view(true));
+    return (open: boolean) => rerender(view(open));
+  }
+
+  it('starts clean when the parent opens it again after a failure', async () => {
+    const work = deferred();
+    const setOpen = controlled({ onAction: () => work.promise });
+    fireEvent.click(action());
+    await act(async () => work.reject('409'));
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    setOpen(false);
+    setOpen(true);
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('is not left pending by a late answer after the reader left a stalled dialog', async () => {
+    const work = deferred();
+    const setOpen = controlled({ onAction: () => work.promise, stallAfter: 1000 });
+    fireEvent.click(action());
+    await act(async () => vi.advanceTimersByTime(1000));
+    fireEvent.click(cancelButton());
+    setOpen(false);
+    await act(async () => work.resolve());
+    setOpen(true);
+    await act(async () => vi.advanceTimersByTime(500));
+    expect(action()).toBeEnabled();
+    expect(action()).not.toHaveAttribute('aria-busy');
+    expect(cancelButton()).toBeEnabled();
+  });
+
+  it('stalls a parent-run pending too, with the page’s own wording', async () => {
+    controlled({
+      pending: true,
+      stallAfter: 1000,
+      stallMessage: 'Yanıt gecikti; birazdan tekrar bak.',
+    });
+    expect(cancelButton()).toBeDisabled();
+    await act(async () => vi.advanceTimersByTime(1000));
+    expect(screen.getByRole('status')).toHaveTextContent('Yanıt gecikti');
+    expect(cancelButton()).toBeEnabled();
+  });
+
+  it('puts the keyboard on Cancel when the action fails', async () => {
+    const work = deferred();
+    controlled({ onAction: () => work.promise });
+    fireEvent.click(action());
+    await act(async () => work.reject('500'));
+    expect(cancelButton()).toHaveFocus();
+  });
+});
+
 describe('CoverImage', () => {
   it('shows the whole image over a blurred copy, in a frame with no inline style', () => {
     const { container } = render(

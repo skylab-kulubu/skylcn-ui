@@ -121,8 +121,14 @@ export type ConfirmDialogProps = {
   onLateFailure?: (error: unknown) => void;
   /** How long to hold the reader before Cancel lets them leave a request that has not answered. */
   stallAfter?: number;
+  /** What to say once it stalls; the locale's "Sunucu yanıt vermedi; sonucu listeden denetle." by default. */
+  stallMessage?: ReactNode;
   /** Colours the action for removals and other things that cannot be undone. */
   destructive?: boolean;
+  /**
+   * Work the parent runs itself: the action shows as pending and Cancel is locked, with the
+   * same stall as an async `onAction`, so the reader is never trapped.
+   */
   pending?: boolean;
   cancelLabel?: string;
 };
@@ -150,6 +156,7 @@ export function ConfirmDialog({
   failureMessage,
   onLateFailure,
   stallAfter = STALL_AFTER,
+  stallMessage,
   destructive = false,
   pending = false,
   cancelLabel,
@@ -160,37 +167,48 @@ export function ConfirmDialog({
   const [running, setRunning] = useState(false);
   const [stalled, setStalled] = useState(false);
   const [failure, setFailure] = useState<ReactNode>(null);
-  // Answers for an earlier opening are ignored; a click in the same batch runs once
+  // Each opening is a run; an answer for an earlier one is late. A click in the same batch runs once.
   const run = useRef(0);
   const busy = useRef(false);
   const isOpen = open ?? innerOpen;
-  const locked = (running || pending) && !stalled;
+  const waiting = running || pending;
+  const locked = waiting && !stalled;
 
-  const setOpen = (next: boolean) => {
-    if (open === undefined) setInnerOpen(next);
-    onOpenChange?.(next);
-    if (next) {
+  // Every opening starts clean, whoever opens it: a trigger, or a parent setting `open`
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (isOpen && !wasOpen.current) {
       run.current += 1;
       busy.current = false;
       setRunning(false);
       setStalled(false);
       setFailure(null);
     }
+    wasOpen.current = isOpen;
+  }, [isOpen]);
+
+  const setOpen = (next: boolean) => {
+    if (open === undefined) setInnerOpen(next);
+    onOpenChange?.(next);
   };
 
+  // An async action and a parent's `pending` stall alike, so the reader can always leave
   useEffect(() => {
-    if (!running) return;
+    if (!waiting) {
+      setStalled(false);
+      return;
+    }
     const timer = setTimeout(() => setStalled(true), stallAfter);
     return () => clearTimeout(timer);
-  }, [running, stallAfter]);
+  }, [waiting, stallAfter]);
 
-  // Once the wait runs out, Cancel is the way out: put the keyboard on it
+  // Once the wait runs out or the action fails, Cancel is the way out: put the keyboard on it
   useEffect(() => {
-    if (stalled) cancel.current?.focus();
-  }, [stalled]);
+    if (stalled || failure) cancel.current?.focus();
+  }, [stalled, failure]);
 
   const act = () => {
-    if (busy.current) return;
+    if (busy.current || pending) return;
     const result = onAction();
     if (!result || typeof (result as Promise<void>).then !== 'function') return;
     const mine = run.current;
@@ -199,19 +217,18 @@ export function ConfirmDialog({
     setFailure(null);
     (result as Promise<void>).then(
       () => {
-        busy.current = false;
         if (run.current !== mine) return;
+        busy.current = false;
         setRunning(false);
         setOpen(false);
       },
       (error: unknown) => {
-        busy.current = false;
         if (run.current !== mine) {
           onLateFailure?.(error);
           return;
         }
+        busy.current = false;
         setRunning(false);
-        setStalled(false);
         setFailure(
           typeof failureMessage === 'function'
             ? failureMessage(error)
@@ -227,6 +244,7 @@ export function ConfirmDialog({
       onOpenChange={(next) => {
         // The reader cannot leave while the action runs, until it stalls
         if (!next && locked) return;
+        // Leaving ends the run, so an answer that comes later counts as late
         if (!next) run.current += 1;
         setOpen(next);
       }}
@@ -250,7 +268,7 @@ export function ConfirmDialog({
               </p>
             ) : stalled ? (
               <p role="status" className="mt-2 text-xs text-muted-foreground">
-                {messages.actionStalled}
+                {stallMessage ?? messages.actionStalled}
               </p>
             ) : null}
           </div>
@@ -260,7 +278,7 @@ export function ConfirmDialog({
             </AlertPrimitive.Close>
             <Button
               variant={destructive ? 'destructive' : 'primary'}
-              pending={running || pending}
+              pending={waiting}
               onClick={act}
             >
               {actionLabel}
