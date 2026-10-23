@@ -145,8 +145,7 @@ export function MenuRadioItem({ className, children, ...props }: MenuPrimitive.R
   );
 }
 
-const labelClass =
-  'px-2 pt-2 pb-1 text-3xs font-medium tracking-label text-subtle-foreground uppercase';
+const labelClass = 'px-2 pt-2 pb-1 text-2xs font-medium text-subtle-foreground';
 
 /** A run of related items; `label` names the group for assistive tech too. */
 export function MenuGroup({
@@ -164,7 +163,7 @@ export function MenuGroup({
   );
 }
 
-/** A small uppercase heading anywhere in a menu, such as the signed-in e-mail. */
+/** A small heading anywhere in a menu, such as the signed-in e-mail. */
 export function MenuLabel({ className, ...props }: ComponentProps<'div'>) {
   return (
     <div

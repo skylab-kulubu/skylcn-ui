@@ -1,6 +1,5 @@
 'use client';
 
-import { Collapsible } from '@base-ui/react/collapsible';
 import { Drawer as DrawerPrimitive } from '@base-ui/react/drawer';
 import {
   Check,
@@ -18,9 +17,15 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
   useState,
   useSyncExternalStore,
+  type ReactElement,
   type ReactNode,
+  type RefObject,
 } from 'react';
 import { createPortal } from 'react-dom';
 import { LayoutGroup, m } from 'motion/react';
@@ -35,7 +40,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
-  MenuGroup,
   MenuItem,
   MenuLinkItem,
 } from './menu.js';
@@ -45,18 +49,18 @@ import { Tooltip } from './tooltip.js';
 export { SkylabMark };
 
 type ShellContextValue = {
-  collapsed: boolean;
   setCollapsed: (next: boolean) => void;
-  mobileOpen: boolean;
+  // Read when a rail tooltip is about to open, so items need not re-render on every toggle
+  collapsedRef: RefObject<boolean>;
   setMobileOpen: (next: boolean) => void;
   desktopSlot: HTMLElement | null;
   mobileSlot: HTMLElement | null;
 };
 
 const ShellContext = createContext<ShellContextValue | null>(null);
-
-type SidebarScope = { collapsed: boolean; inDrawer: boolean };
-const SidebarScopeContext = createContext<SidebarScope>({ collapsed: false, inDrawer: false });
+/** True on the desktop icon rail, false in the drawer. Only parts that change with it read it. */
+const CollapsedContext = createContext(false);
+const DrawerContext = createContext(false);
 const NestedContext = createContext(false);
 
 function useShell() {
@@ -68,12 +72,29 @@ function useShell() {
 /** Whether the sidebar is drawn as an icon rail, and whether it sits in the mobile drawer. */
 export function useSidebar() {
   const shell = useShell();
-  const scope = useContext(SidebarScopeContext);
   return {
-    ...scope,
+    collapsed: useContext(CollapsedContext),
+    inDrawer: useContext(DrawerContext),
     setCollapsed: shell.setCollapsed,
     closeDrawer: () => shell.setMobileOpen(false),
   };
+}
+
+/** Names an icon on the rail; while the sidebar shows its text there is nothing to add, so it stays shut. */
+function RailTooltip({ label, children }: { label: ReactNode; children: ReactElement }) {
+  const { collapsedRef } = useShell();
+  const inDrawer = useContext(DrawerContext);
+  return (
+    <Tooltip
+      label={label}
+      side="right"
+      onOpenChange={(open, details) => {
+        if (open && (inDrawer || !collapsedRef.current)) details.cancel();
+      }}
+    >
+      {children}
+    </Tooltip>
+  );
 }
 
 const DESKTOP_QUERY = '(min-width: 48rem)';
@@ -90,8 +111,43 @@ function useIsDesktop() {
   );
 }
 
+/*
+ * Collapsing to the rail and back changes no markup, so nothing remounts and
+ * nothing jumps: every icon sits on one column, the middle of the rail, and CSS
+ * moves the width and fades the text. Collapsing, the text fades before the
+ * width moves; expanding, the width moves first and the text fades in as it lands.
+ */
+const FULL_ONLY = [
+  'transition-opacity duration-(--motion-duration-fast) ease-enter delay-100',
+  'group-data-collapsed/sidebar:opacity-0 group-data-collapsed/sidebar:duration-(--motion-duration-instant) group-data-collapsed/sidebar:delay-0',
+].join(' ');
+
+/*
+ * Groups fold in CSS alone, through grid rows going 0fr ↔ 1fr, so nothing is
+ * measured from script mid-animation. FOLD is the reader opening or closing a
+ * group; RAIL_FOLD, nested inside it, folds every group away with the rail and
+ * unfolds it as the labels fade in.
+ */
+const FOLD =
+  'grid transition-[grid-template-rows,opacity,visibility] duration-(--motion-duration-base) ease-enter motion-reduce:transition-[opacity,visibility]';
+const RAIL_FOLD = [
+  // Visibility only moves on the way into the rail: otherwise the outer fold's
+  // visibility, inherited here, would run through this delay a second time
+  'grid grid-rows-[1fr] transition-[grid-template-rows,opacity] duration-(--motion-duration-base) ease-enter delay-100 motion-reduce:transition-opacity',
+  'group-data-collapsed/sidebar:invisible group-data-collapsed/sidebar:grid-rows-[0fr] group-data-collapsed/sidebar:opacity-0 group-data-collapsed/sidebar:delay-0 group-data-collapsed/sidebar:transition-[grid-template-rows,opacity,visibility] motion-reduce:group-data-collapsed/sidebar:transition-[opacity,visibility]',
+].join(' ');
+
+/** Marks only the rail shows, such as the rule standing for a section's name; in once it settles. */
+const RAIL_ONLY = [
+  'opacity-0 transition-opacity duration-(--motion-duration-instant)',
+  'group-data-collapsed/sidebar:opacity-100 group-data-collapsed/sidebar:duration-(--motion-duration-fast) group-data-collapsed/sidebar:delay-150',
+].join(' ');
+
+/** Width and the content panel's edge move together, the same way, after FULL_ONLY's fade when collapsing. */
+const SLIDE = 'duration-(--motion-duration-base) ease-enter motion-reduce:transition-none';
+
 export type AppShellProps = {
-  /** The sidebar content: brand, sections, items, footer. Drawn on desktop and in the mobile drawer. */
+  /** The sidebar content: account, sections, items, footer. Drawn on desktop and in the mobile drawer. */
   sidebar: ReactNode;
   /** The header row content, usually breadcrumbs. */
   header?: ReactNode;
@@ -115,12 +171,18 @@ export function AppShell({
 }: AppShellProps) {
   const { messages } = useSkylcn();
   const [collapsed, setCollapsedState] = useState(defaultCollapsed);
+  // Only the reader's own toggles animate; restoring the remembered choice on load snaps
+  const [animated, setAnimated] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   // The drawer is hidden from md up; closing it there keeps a widened window usable
   const desktop = useIsDesktop();
   if (desktop && mobileOpen) setMobileOpen(false);
   const [desktopSlot, setDesktopSlot] = useState<HTMLElement | null>(null);
   const [mobileSlot, setMobileSlot] = useState<HTMLElement | null>(null);
+  const collapsedRef = useRef(collapsed);
+  useLayoutEffect(() => {
+    collapsedRef.current = collapsed;
+  }, [collapsed]);
 
   useEffect(() => {
     if (!storageKey) return;
@@ -134,6 +196,7 @@ export function AppShell({
 
   const setCollapsed = useCallback(
     (next: boolean) => {
+      setAnimated(true);
       setCollapsedState(next);
       if (!storageKey) return;
       try {
@@ -162,18 +225,22 @@ export function AppShell({
     return () => window.removeEventListener('keydown', onKey);
   }, [collapsed, setCollapsed]);
 
+  // Stays the same object across toggles, so the parts that do not draw the rail differently skip the render
+  const shell = useMemo(
+    () => ({ setCollapsed, collapsedRef, setMobileOpen, desktopSlot, mobileSlot }),
+    [setCollapsed, desktopSlot, mobileSlot],
+  );
+
   return (
-    <ShellContext.Provider
-      value={{ collapsed, setCollapsed, mobileOpen, setMobileOpen, desktopSlot, mobileSlot }}
-    >
+    <ShellContext.Provider value={shell}>
       <div
         data-slot="app-shell"
         data-collapsed={collapsed || undefined}
         className={cn(
           // Sticky parts inside the page (list headers) stick below the phone's top bar
           'min-h-dvh bg-background [--skylcn-sticky-top:3.5rem] md:h-dvh md:bg-sidebar md:py-2 md:pr-2 md:[--skylcn-sticky-top:0px]',
-          'transition-[padding] duration-(--motion-duration-base) ease-enter',
-          collapsed ? 'md:pl-18' : 'md:pl-66',
+          animated && ['transition-[padding]', SLIDE],
+          collapsed ? 'delay-50 md:pl-18' : 'md:pl-66',
         )}
       >
         <a
@@ -185,15 +252,16 @@ export function AppShell({
 
         <aside
           aria-label={messages.navigation}
+          data-collapsed={collapsed || undefined}
           className={cn(
-            'fixed inset-y-0 left-0 z-30 hidden overflow-hidden bg-sidebar md:flex',
-            'transition-[width] duration-(--motion-duration-base) ease-enter',
-            collapsed ? 'w-16' : 'w-64',
+            'group/sidebar fixed inset-y-0 left-0 z-30 hidden overflow-hidden bg-sidebar md:flex',
+            animated && ['transition-[width]', SLIDE],
+            collapsed ? 'w-16 delay-50' : 'w-64',
           )}
         >
-          <SidebarScopeContext.Provider value={{ collapsed, inDrawer: false }}>
+          <CollapsedContext.Provider value={collapsed}>
             <SidebarFrame>{sidebar}</SidebarFrame>
-          </SidebarScopeContext.Provider>
+          </CollapsedContext.Provider>
         </aside>
 
         <div className="sticky top-0 z-40 border-b border-border-subtle bg-sidebar/70 backdrop-blur md:hidden">
@@ -225,9 +293,9 @@ export function AppShell({
                 )}
               >
                 <div className="flex h-full w-72 border-r border-border bg-sidebar pb-[env(safe-area-inset-bottom)] shadow-overlay">
-                  <SidebarScopeContext.Provider value={{ collapsed: false, inDrawer: true }}>
+                  <DrawerContext.Provider value>
                     <SidebarFrame>{sidebar}</SidebarFrame>
-                  </SidebarScopeContext.Provider>
+                  </DrawerContext.Provider>
                 </div>
                 <DrawerPrimitive.Close
                   aria-label={messages.close}
@@ -267,18 +335,11 @@ export function AppShell({
 }
 
 function SidebarFrame({ children }: { children: ReactNode }) {
-  const { collapsed, inDrawer } = useContext(SidebarScopeContext);
+  const inDrawer = useContext(DrawerContext);
   return (
     // The drawer and the desktop sidebar each keep their own sliding highlight
     <LayoutGroup id={inDrawer ? 'skylcn-sidebar-drawer' : 'skylcn-sidebar'}>
-      <div
-        className={cn(
-          'flex h-full w-full min-w-0 flex-col py-5',
-          collapsed ? 'gap-3 px-2' : 'gap-4 px-4',
-        )}
-      >
-        {children}
-      </div>
+      <div className="flex h-full w-full min-w-0 flex-col gap-4 px-3 py-3">{children}</div>
     </LayoutGroup>
   );
 }
@@ -289,6 +350,68 @@ export function AppShellActions({ children }: { children: ReactNode }) {
   const desktop = useIsDesktop();
   const target = desktop ? desktopSlot : mobileSlot;
   return target ? createPortal(children, target) : null;
+}
+
+/*
+ * The account row and the console switcher: a 28px tile on the icon column and
+ * two short lines, the same size and corners as the items between them.
+ */
+const ROW =
+  'flex w-full items-center gap-2.5 overflow-hidden rounded-md px-1.5 py-1 text-left outline-hidden focus-visible:ring-2 focus-visible:ring-ring';
+const PRESSABLE_ROW =
+  'transition-colors duration-(--motion-duration-fast) hover:bg-accent data-popup-open:bg-accent';
+
+function RowText({
+  title,
+  subtitle,
+  strong = false,
+}: {
+  title: ReactNode;
+  subtitle?: ReactNode;
+  strong?: boolean;
+}) {
+  return (
+    <span className={cn('min-w-0 flex-1', FULL_ONLY)}>
+      <span
+        className={cn(
+          'block truncate text-sm leading-5 text-foreground',
+          strong ? 'font-semibold' : 'font-medium',
+        )}
+      >
+        {title}
+      </span>
+      {subtitle ? (
+        <span className="block truncate text-2xs text-subtle-foreground">{subtitle}</span>
+      ) : null}
+    </span>
+  );
+}
+
+/**
+ * A row's menu: it opens away from the sidebar edge the row sits on, or beside
+ * the rail. The only part of the row that reads the collapsed state.
+ */
+function RowMenuContent({
+  edge,
+  label,
+  children,
+}: {
+  edge: 'top' | 'bottom';
+  label?: string;
+  children: ReactNode;
+}) {
+  const collapsed = useContext(CollapsedContext);
+  return (
+    <DropdownMenuContent
+      aria-label={label}
+      side={collapsed ? 'right' : edge === 'top' ? 'bottom' : 'top'}
+      align={collapsed && edge === 'bottom' ? 'end' : 'start'}
+      sideOffset={collapsed ? 8 : 4}
+      className={collapsed ? 'w-56' : 'w-(--anchor-width) min-w-56'}
+    >
+      {children}
+    </DropdownMenuContent>
+  );
 }
 
 export type ClubConsole = {
@@ -348,101 +471,69 @@ export type SidebarBrandProps = {
   current?: string;
 };
 
+/** The console's name with the SKY LAB mark, at the head of the sidebar; a switcher when given `consoles`. */
 export function SidebarBrand({ name, subtitle, href, consoles, current }: SidebarBrandProps) {
-  const { collapsed } = useSidebar();
   const { Link, messages } = useSkylcn();
   const body = (
     <>
-      <span className="grid size-8 shrink-0 place-items-center text-foreground-strong">
-        <SkylabMark size={24} />
+      <span className="grid size-7 shrink-0 place-items-center text-foreground-strong">
+        <SkylabMark size={20} />
       </span>
-      {collapsed ? null : (
-        <span className="min-w-0 flex-1 text-left">
-          <span className="block truncate text-sm font-semibold text-foreground">{name}</span>
-          {subtitle ? (
-            <span className="block truncate text-3xs text-subtle-foreground">{subtitle}</span>
-          ) : null}
-        </span>
-      )}
+      <RowText title={name} subtitle={subtitle} strong />
     </>
   );
-  const base = cn(
-    'flex w-full items-center gap-2.5 rounded-lg outline-hidden focus-visible:ring-2 focus-visible:ring-ring',
-    collapsed ? 'justify-center p-1' : 'p-1.5',
-  );
 
-  if (consoles?.length) {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          aria-label={messages.consoles}
-          className={cn(
-            base,
-            'transition-colors duration-(--motion-duration-fast) hover:bg-accent data-popup-open:bg-accent',
-          )}
-        >
+  return consoles?.length ? (
+    <DropdownMenu>
+      <RailTooltip label={name}>
+        <DropdownMenuTrigger aria-label={messages.consoles} className={cn(ROW, PRESSABLE_ROW)}>
           {body}
-          {collapsed ? null : <ChevronsUpDown className="size-4 shrink-0 text-subtle-foreground" />}
+          <ChevronsUpDown className={cn('size-4 shrink-0 text-subtle-foreground', FULL_ONLY)} />
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          side={collapsed ? 'right' : 'bottom'}
-          align="start"
-          sideOffset={6}
-          className={collapsed ? 'w-56' : 'w-(--anchor-width) min-w-56'}
-        >
-          <MenuGroup label={messages.consoles}>
-            {consoles.map((app) =>
-              app.id === current ? (
-                <MenuItem key={app.id} className="gap-2.5 py-1.5">
-                  <ConsoleRow app={app} current />
-                </MenuItem>
-              ) : (
-                <MenuLinkItem key={app.id} href={app.href} className="gap-2.5 py-1.5">
-                  <ConsoleRow app={app} current={false} />
-                </MenuLinkItem>
-              ),
-            )}
-          </MenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-
-  return href ? (
-    <Link href={href} className={base}>
+      </RailTooltip>
+      {/* The console tiles speak for themselves; the list keeps its name for screen readers */}
+      <RowMenuContent edge="top" label={messages.consoles}>
+        {consoles.map((app) =>
+          app.id === current ? (
+            <MenuItem key={app.id} className="gap-2.5 py-1.5">
+              <ConsoleRow app={app} current />
+            </MenuItem>
+          ) : (
+            <MenuLinkItem key={app.id} href={app.href} className="gap-2.5 py-1.5">
+              <ConsoleRow app={app} current={false} />
+            </MenuLinkItem>
+          ),
+        )}
+      </RowMenuContent>
+    </DropdownMenu>
+  ) : href ? (
+    <Link href={href} className={cn(ROW, PRESSABLE_ROW)}>
       {body}
     </Link>
   ) : (
-    <div className={base}>{body}</div>
+    <div className={ROW}>{body}</div>
   );
 }
 
 export function SidebarContent({ children }: { children: ReactNode }) {
-  const { collapsed } = useSidebar();
   return (
-    <nav
-      className={cn(
-        'scrollbar-hidden flex min-h-0 flex-1 flex-col overflow-y-auto',
-        collapsed ? 'gap-3' : 'gap-5',
-      )}
-    >
+    // The margin and padding cancel out; they keep focus rings clear of the scroll clip
+    <nav className="-m-1 scrollbar-hidden flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-1">
       {children}
     </nav>
   );
 }
 
 export function SidebarSection({ label, children }: { label?: ReactNode; children: ReactNode }) {
-  const { collapsed } = useSidebar();
   return (
     <div className="flex flex-col gap-1">
       {label ? (
-        collapsed ? (
-          <div className="mx-auto my-2 h-px w-6 bg-border" aria-hidden />
-        ) : (
-          <div className="px-2 pb-1 text-xs font-medium tracking-wide text-muted-foreground select-none">
+        <div className="relative flex h-6 items-center px-2.5 select-none">
+          <span className={cn('truncate text-xs font-medium text-muted-foreground', FULL_ONLY)}>
             {label}
-          </div>
-        )
+          </span>
+          <span aria-hidden className={cn('absolute left-2.5 h-px w-5 bg-border', RAIL_ONLY)} />
+        </div>
       ) : null}
       {children}
     </div>
@@ -458,6 +549,11 @@ export type SidebarItemProps = {
   badge?: ReactNode;
   /** Opens outside the app (another console); renders a plain anchor. */
   external?: boolean;
+  /**
+   * Items one level down, drawn under this one, such as an open form's pages
+   * under the form inside a group. Hidden on the icon rail.
+   */
+  children?: ReactNode;
 };
 
 export function SidebarItem({
@@ -467,18 +563,19 @@ export function SidebarItem({
   active = false,
   badge,
   external = false,
+  children,
 }: SidebarItemProps) {
-  const { collapsed, inDrawer, closeDrawer } = useSidebar();
+  const { setMobileOpen } = useShell();
+  const inDrawer = useContext(DrawerContext);
   const nested = useContext(NestedContext);
   const { Link } = useSkylcn();
 
   const className = cn(
-    'group/item relative isolate flex items-center rounded-md outline-hidden',
+    'group/item relative isolate flex items-center overflow-hidden rounded-md outline-hidden',
     'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
     nested
       ? 'gap-2 px-2 py-1 text-xs pointer-coarse:py-1.5'
-      : 'gap-3 px-3 py-2 text-sm pointer-coarse:py-2.5',
-    collapsed && !nested && 'justify-center px-0',
+      : 'gap-3 px-2.5 py-2 text-sm pointer-coarse:py-2.5',
     active ? 'text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
   );
 
@@ -494,44 +591,49 @@ export function SidebarItem({
         />
       ) : null}
       {Icon ? (
-        <span className="relative">
+        <span className="relative shrink-0">
           <Icon
-            className={cn(nested ? 'size-4' : 'size-5', 'shrink-0', active && 'text-skylab-300')}
+            className={cn(nested ? 'size-4' : 'size-5', active && 'text-skylab-300')}
             strokeWidth={1.75}
           />
-          {collapsed && badge ? (
-            <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-skylab-400 ring-2 ring-sidebar" />
+          {badge && !nested ? (
+            <span
+              aria-hidden
+              className={cn(
+                'absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-skylab-400 ring-2 ring-sidebar',
+                RAIL_ONLY,
+              )}
+            />
           ) : null}
         </span>
       ) : null}
-      {collapsed && !nested ? null : (
-        <>
-          <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
-          {badge ? (
-            <span className="shrink-0 rounded-md bg-muted px-1.5 text-3xs text-muted-foreground tabular-nums">
-              {typeof badge === 'number' ? <AnimatedNumber value={badge} tabular /> : badge}
-            </span>
-          ) : nested ? null : (
-            <ChevronRight
-              className={cn(
-                'size-4 shrink-0 transition-[opacity,transform] duration-(--motion-duration-fast) group-hover/item:translate-x-0.5',
-                active ? 'opacity-60' : 'opacity-0 group-hover/item:opacity-60',
-              )}
-            />
-          )}
-        </>
-      )}
+      <span
+        className={cn(
+          'flex min-w-0 flex-1 items-center',
+          // Nested items fade with the fold around them; one fade each would only add work
+          nested ? 'gap-2' : ['gap-3', FULL_ONLY],
+        )}
+      >
+        <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
+        {badge ? (
+          <span className="shrink-0 rounded-md bg-muted px-1.5 text-3xs text-muted-foreground tabular-nums">
+            {typeof badge === 'number' ? <AnimatedNumber value={badge} tabular /> : badge}
+          </span>
+        ) : nested ? null : (
+          <ChevronRight
+            className={cn(
+              'size-4 shrink-0 transition-[opacity,transform] duration-(--motion-duration-fast) group-hover/item:translate-x-0.5',
+              active ? 'opacity-60' : 'opacity-0 group-hover/item:opacity-60',
+            )}
+          />
+        )}
+      </span>
     </>
   );
 
-  const onClick = inDrawer ? closeDrawer : undefined;
+  const onClick = inDrawer ? () => setMobileOpen(false) : undefined;
   const link = external ? (
-    <a
-      href={href}
-      className={className}
-      aria-label={collapsed ? label : undefined}
-      onClick={onClick}
-    >
+    <a href={href} className={className} onClick={onClick}>
       {content}
     </a>
   ) : (
@@ -542,16 +644,26 @@ export function SidebarItem({
       onClick={onClick}
     >
       {content}
-      {collapsed && !nested ? <span className="sr-only">{label}</span> : null}
     </Link>
   );
 
-  return collapsed && !nested ? (
-    <Tooltip label={label} side="right">
-      {link}
-    </Tooltip>
-  ) : (
-    link
+  const item = nested ? link : <RailTooltip label={label}>{link}</RailTooltip>;
+  if (!children) return item;
+  return (
+    <div className="flex flex-col gap-1">
+      {item}
+      <NestedContext.Provider value>
+        <div
+          className={cn(
+            'flex flex-col gap-1 border-l border-border',
+            // Under a nested item the line starts below its icon; under a top-level one, below the group's line
+            nested ? 'ml-4 pl-2.5' : 'ml-5 pl-3 group-data-collapsed/sidebar:hidden',
+          )}
+        >
+          {children}
+        </div>
+      </NestedContext.Provider>
+    </div>
   );
 }
 
@@ -575,7 +687,9 @@ export function SidebarGroup({
   storageKey,
   children,
 }: SidebarGroupProps) {
-  const { collapsed, setCollapsed } = useSidebar();
+  const collapsed = useContext(CollapsedContext);
+  const { setCollapsed } = useShell();
+  const panelId = useId();
   const [open, setOpenState] = useState(defaultOpen ?? active);
 
   useEffect(() => {
@@ -605,140 +719,124 @@ export function SidebarGroup({
     if (active) setOpenState(true);
   }
 
-  const rowClass = cn(
-    'group/group flex w-full items-center rounded-md text-sm outline-hidden',
-    'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
-    active ? 'text-foreground' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-    collapsed ? 'justify-center py-2' : 'gap-3 px-3 py-2 pointer-coarse:py-2.5',
-  );
-
-  if (collapsed) {
-    return (
-      <Tooltip label={label} side="right">
+  return (
+    <div>
+      <RailTooltip label={label}>
         <button
           type="button"
-          className={rowClass}
-          aria-label={label}
+          aria-expanded={open && !collapsed}
+          aria-controls={panelId}
           onClick={() => {
-            setOpen(true);
-            setCollapsed(false);
+            // Pressed on the rail, it opens the sidebar and itself
+            if (collapsed) {
+              setCollapsed(false);
+              setOpen(true);
+            } else {
+              setOpen(!open);
+            }
           }}
+          className={cn(
+            'flex w-full items-center gap-3 overflow-hidden rounded-md px-2.5 py-2 text-sm outline-hidden pointer-coarse:py-2.5',
+            'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
+            active
+              ? 'text-foreground'
+              : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+          )}
         >
           <Icon className={cn('size-5 shrink-0', active && 'text-skylab-300')} strokeWidth={1.75} />
+          <span className={cn('flex min-w-0 flex-1 items-center gap-3', FULL_ONLY)}>
+            <span className="min-w-0 flex-1 truncate text-left font-medium">{label}</span>
+            <ChevronDown
+              className={cn(
+                'size-4 shrink-0 transition-transform duration-(--motion-duration-base) ease-enter',
+                open ? 'rotate-180' : 'rotate-0',
+              )}
+            />
+          </span>
         </button>
-      </Tooltip>
-    );
-  }
-
-  return (
-    <Collapsible.Root open={open} onOpenChange={setOpen}>
-      <Collapsible.Trigger className={rowClass}>
-        <Icon className={cn('size-5 shrink-0', active && 'text-skylab-300')} strokeWidth={1.75} />
-        <span className="min-w-0 flex-1 truncate text-left font-medium">{label}</span>
-        <ChevronDown
-          className={cn(
-            'size-4 shrink-0 transition-transform duration-(--motion-duration-base) ease-enter',
-            open ? 'rotate-180' : 'rotate-0',
-          )}
-        />
-      </Collapsible.Trigger>
-      <Collapsible.Panel className="h-(--collapsible-panel-height) overflow-hidden transition-[height,opacity] duration-(--motion-duration-base) ease-enter data-ending-style:h-0 data-ending-style:opacity-0 data-starting-style:h-0 data-starting-style:opacity-0">
-        <NestedContext.Provider value>
-          <div className="mt-1 ml-5 flex flex-col gap-1 border-l border-border pl-3">
-            {children}
+      </RailTooltip>
+      <div
+        id={panelId}
+        className={cn(FOLD, open ? 'grid-rows-[1fr]' : 'invisible grid-rows-[0fr] opacity-0')}
+      >
+        {/* The margin and padding cancel out; they keep the nested items' focus rings unclipped */}
+        <div className="-mx-1 min-h-0 overflow-hidden px-1">
+          <div className={RAIL_FOLD}>
+            <div className="min-h-0 overflow-hidden">
+              <NestedContext.Provider value>
+                <div className="mt-1 ml-5 flex flex-col gap-1 border-l border-border pb-0.5 pl-3">
+                  {children}
+                </div>
+              </NestedContext.Provider>
+            </div>
           </div>
-        </NestedContext.Provider>
-      </Collapsible.Panel>
-    </Collapsible.Root>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export function SidebarFooter({ children }: { children: ReactNode }) {
-  return <div className="mt-auto flex flex-col gap-2">{children}</div>;
+  return <div className="mt-auto flex flex-col gap-1">{children}</div>;
 }
 
 export type SidebarUserProps = {
   name: string;
   email?: string | null;
-  /** A second line under the name, such as the role. */
+  /** A second line under the name, such as the e-mail address or the role. */
   subtitle?: ReactNode;
   avatarSrc?: string | null;
-  /** A button at the end of the row, such as sign-out. Ignored when `menu` is set. */
+  /** A button at the end of the row, such as sign-out; out of reach on the icon rail. Ignored when `menu` is set. */
   action?: ReactNode;
   /** Menu items (MenuItem, MenuLinkItem, …); the row becomes the trigger of a profile menu. */
   menu?: ReactNode;
 };
 
+/** The signed-in person at the foot of the sidebar, usually the trigger of a profile menu. */
 export function SidebarUser({ name, email, subtitle, avatarSrc, action, menu }: SidebarUserProps) {
-  const { collapsed } = useSidebar();
   const avatar = (
-    <Avatar name={name} email={email} src={avatarSrc} size={collapsed ? 'md' : 'lg'} />
-  );
-  const text = (
-    <span className="min-w-0 flex-1 text-left">
-      <span className="block truncate text-sm font-medium text-foreground">{name}</span>
-      {subtitle ? (
-        <span
-          className={cn(
-            'block truncate text-3xs text-subtle-foreground',
-            // A role line reads as a label; an e-mail address keeps its own case
-            typeof subtitle === 'string' && subtitle.includes('@')
-              ? null
-              : 'tracking-label uppercase',
-          )}
-        >
-          {subtitle}
-        </span>
-      ) : null}
-    </span>
+    <Avatar
+      name={name}
+      email={email}
+      src={avatarSrc}
+      size="sm"
+      shape="square"
+      className="rounded-md"
+    />
   );
 
   if (menu) {
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger
-          aria-label={name}
-          className={cn(
-            'flex w-full items-center rounded-lg outline-hidden',
-            'transition-colors duration-(--motion-duration-fast) hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-accent',
-            collapsed ? 'justify-center p-1' : 'gap-3 p-2',
-          )}
-        >
-          {avatar}
-          {collapsed ? null : (
-            <>
-              {text}
-              <ChevronsUpDown className="size-4 shrink-0 text-subtle-foreground" />
-            </>
-          )}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          side={collapsed ? 'right' : 'top'}
-          align={collapsed ? 'end' : 'start'}
-          sideOffset={8}
-          className={collapsed ? 'w-56' : 'w-(--anchor-width) min-w-56'}
-        >
-          {menu}
-        </DropdownMenuContent>
+        <RailTooltip label={name}>
+          <DropdownMenuTrigger aria-label={name} className={cn(ROW, PRESSABLE_ROW)}>
+            {avatar}
+            <RowText title={name} subtitle={subtitle} />
+            <ChevronsUpDown className={cn('size-4 shrink-0 text-subtle-foreground', FULL_ONLY)} />
+          </DropdownMenuTrigger>
+        </RailTooltip>
+        <RowMenuContent edge="bottom">{menu}</RowMenuContent>
       </DropdownMenu>
     );
   }
 
-  if (collapsed) {
-    return (
-      <div className="flex flex-col items-center gap-1">
-        <Tooltip label={name}>
-          <span className="inline-flex">{avatar}</span>
-        </Tooltip>
-        {action}
-      </div>
-    );
-  }
   return (
-    <div className="flex items-center gap-3 px-2">
-      {avatar}
-      {text}
-      {action ? <div className="shrink-0">{action}</div> : null}
+    <div className={ROW}>
+      <RailTooltip label={name}>
+        <span className="inline-flex shrink-0">{avatar}</span>
+      </RailTooltip>
+      <RowText title={name} subtitle={subtitle} />
+      {action ? (
+        <div
+          className={cn(
+            'shrink-0',
+            FULL_ONLY,
+            'transition-[opacity,visibility] group-data-collapsed/sidebar:invisible',
+          )}
+        >
+          {action}
+        </div>
+      ) : null}
     </div>
   );
 }

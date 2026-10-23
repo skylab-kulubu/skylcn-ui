@@ -21,12 +21,20 @@ export type TooltipProps = {
   /** The element the tooltip describes; it must accept a ref. */
   children: ReactElement;
   side?: 'top' | 'bottom' | 'left' | 'right';
+  /** Called as it is about to open or close; `details.cancel()` keeps it as it is. */
+  onOpenChange?: TooltipPrimitive.Root.Props['onOpenChange'];
   className?: string;
 };
 
-export function Tooltip({ label, children, side = 'bottom', className }: TooltipProps) {
+export function Tooltip({
+  label,
+  children,
+  side = 'bottom',
+  onOpenChange,
+  className,
+}: TooltipProps) {
   return (
-    <TooltipPrimitive.Root>
+    <TooltipPrimitive.Root onOpenChange={onOpenChange}>
       <TooltipPrimitive.Trigger render={children} />
       <TooltipPrimitive.Portal>
         <TooltipPrimitive.Positioner side={side} sideOffset={6} className="z-50">
