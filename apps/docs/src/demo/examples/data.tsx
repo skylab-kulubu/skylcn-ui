@@ -276,8 +276,9 @@ function AvatarExamples() {
       <Avatar name="İlayda Şahin" />
       <Avatar email="ozan@example.com" size="lg" />
       <Avatar />
-      <Avatar name="WebLab" shape="square" />
-      <Avatar name="Sky Sec" shape="square" size="lg" />
+      <Avatar name="WebLab" />
+      <Avatar name="Sky Sec" size="lg" />
+      <Avatar name="Mira Tunç" shape="circle" />
     </Example>
   );
 }

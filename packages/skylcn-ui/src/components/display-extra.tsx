@@ -227,7 +227,7 @@ export function AvatarGroup({
         <span
           title={messages.morePeople(rest)}
           className={cn(
-            '-ml-2 grid shrink-0 place-items-center rounded-full border border-border bg-muted text-3xs font-semibold text-muted-foreground tabular-nums ring-2 ring-background',
+            '-ml-2 grid shrink-0 place-items-center rounded-lg border border-border bg-muted text-3xs font-semibold text-muted-foreground tabular-nums ring-2 ring-background',
             size === 'sm' ? 'size-7' : 'size-9',
           )}
         >
