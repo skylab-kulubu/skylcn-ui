@@ -163,7 +163,8 @@ export function ChartFrame({
 
       <Swap id={asTable ? 'table' : 'chart'} className={cn('min-w-0 pt-2', framed && 'px-2 pb-3')}>
         {empty && loading ? (
-          <Skeleton className="mx-2 rounded-lg" style={{ height: height - 8 }} />
+          // As tall as the plot, so nothing below moves when the data arrives
+          <Skeleton className="mx-2 my-1 rounded-lg" style={{ height: height - 8 }} />
         ) : empty ? (
           <p className="grid place-items-center text-xs text-muted-foreground" style={{ height }}>
             {emptyMessage ?? messages.noData}
