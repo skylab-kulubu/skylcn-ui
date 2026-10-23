@@ -622,7 +622,7 @@ export function SidebarItem({
         ) : nested ? null : (
           <ChevronRight
             className={cn(
-              'size-4 shrink-0 transition-[opacity,transform] duration-(--motion-duration-fast) group-hover/item:translate-x-0.5',
+              'size-4 shrink-0 transition-[opacity,translate] duration-(--motion-duration-fast) group-hover/item:translate-x-0.5',
               active ? 'opacity-60' : 'opacity-0 group-hover/item:opacity-60',
             )}
           />
