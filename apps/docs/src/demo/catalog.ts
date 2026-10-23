@@ -436,7 +436,7 @@ export const ENTRIES: Entry[] = [
     name: 'DataList',
     category: 'data',
     description:
-      'Sütunları ekran genişliğine göre gizlenen, sıralanabilir başlıklı, satırları bağlantı olabilen liste.',
+      'Sütunları ekran genişliğine göre gizlenen, sıralanabilir başlıklı, satırları bağlantı olabilen ya da altında panel açan liste. Kolon tanımlarından çizilir ya da parçalarından kurulur.',
     imports: [
       'DataList',
       'DataListHeader',
@@ -444,14 +444,22 @@ export const ENTRIES: Entry[] = [
       'DataListBody',
       'DataListRow',
       'DataListCell',
+      'DataListTitle',
+      'DataListActions',
+      'DataListExpander',
+      'DataListFooter',
     ],
     a11y: [
-      'Tablo rolleriyle okunur; satır bağlantısı ilk görünür hücrenin içindedir.',
+      'Tablo rolleriyle okunur; satır bağlantısı, kaldırılmış (interactive) olmayan ilk görünür hücrenin içindedir.',
       'Yalnız ikonlu sütun başlıkları label ile adlandırılır.',
+      'Panel açan satırın düğmesi aria-expanded taşır ve açık paneli aria-controls ile gösterir; panel kendi satırındadır.',
+      'Hızlı işlemler klavyeyle satıra gelince de belirir; dokunmatik ekranda hep görünür.',
     ],
     motion: [
-      'Liste ilk dolduğunda satırlar sırayla gelir; sonraki arama ve sayfa değişimleri yerinde olur.',
+      'Liste ilk dolduğunda satırlar tek, eşit aralıklı kısa bir dalgayla gelir: satır sayısı ne olursa olsun yukarıdan aşağı 150ms içinde; sonraki arama ve sayfa değişimleri yerinde olur.',
       'Sıralama değişince satırlar yeni yerlerine kayar.',
+      'Panel kendi yüksekliğine açılır, ok döner; hızlı işlemler kendi genişliklerine açılır.',
+      'Panel açılırken içeriği kendi katmanında durur, her karede yeniden boyanmaz; grafik gibi ağır içerik useDataListPanelOpened ile açılış bitince çizilir.',
     ],
   },
   {

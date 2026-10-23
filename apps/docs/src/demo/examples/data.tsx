@@ -15,11 +15,14 @@ import {
   CardTitle,
   Collapse,
   DataList,
+  DataListActions,
   DataListBody,
   DataListCell,
   DataListColumnHeader,
+  DataListFooter,
   DataListHeader,
   DataListRow,
+  DataListTitle,
   IconButton,
   ListItem,
   ListPanel,
@@ -38,10 +41,10 @@ import {
   type DataListSort,
 } from '@skylab-kulubu/skylcn-ui';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@skylab-kulubu/skylcn-ui/charts';
-import { CalendarDays, ChevronDown, Inbox, MoreHorizontal, Users } from 'lucide-react';
+import { CalendarDays, ChevronDown, Inbox, Mail, MoreHorizontal, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Example } from '../doc';
-import { MEMBERS, STATUS_LABEL } from '../members';
+import { MEMBERS, STATUS_LABEL, type Member } from '../members';
 import { monthly } from '../metrics';
 
 const COLUMNS: DataListColumn[] = [
@@ -52,6 +55,98 @@ const COLUMNS: DataListColumn[] = [
   { id: 'actions', width: '2rem', align: 'end' },
 ];
 const DOT = { active: 'success', inactive: 'neutral', alumni: 'info' } as const;
+
+const MEMBER_COLUMNS: DataListColumn<Member>[] = [
+  {
+    id: 'status',
+    width: '1.5rem',
+    align: 'center',
+    label: 'Durum',
+    cell: (member) => <StatusDot tone={DOT[member.status]} label={STATUS_LABEL[member.status]} />,
+  },
+  {
+    id: 'name',
+    width: 'minmax(0,2fr)',
+    header: 'Üye',
+    cell: (member) => (
+      <DataListTitle
+        leading={<Avatar name={member.name} size="sm" />}
+        title={member.name}
+        subtitle={member.email}
+      />
+    ),
+  },
+  {
+    id: 'team',
+    width: 'minmax(0,1fr)',
+    from: 'sm',
+    header: 'Ekip',
+    cell: (member) => <Badge>{member.team}</Badge>,
+  },
+  {
+    id: 'events',
+    width: '5rem',
+    from: 'md',
+    align: 'center',
+    header: 'Etkinlik',
+    className: 'text-xs text-muted-foreground tabular-nums',
+    cell: (member) => member.events,
+  },
+  {
+    id: 'actions',
+    width: '4rem',
+    align: 'end',
+    label: 'İşlemler',
+    interactive: true,
+    cell: (member) => (
+      <DataListActions>
+        <IconButton
+          icon={Mail}
+          label={`${member.name} kişisine e-posta gönder`}
+          variant="ghost"
+          size="icon-sm"
+        />
+        <IconButton icon={MoreHorizontal} label="İşlemler" variant="ghost" size="icon-sm" />
+      </DataListActions>
+    ),
+  },
+];
+
+function DataListRowsExample() {
+  const [showTeam, setShowTeam] = useState(true);
+  const rows = MEMBERS.slice(0, 5);
+  return (
+    <Example
+      title="Kolon tanımlarından"
+      description="rows ve columns ver: başlık, satırlar, yükleme ve boş durum tanımlardan çizilir. Bir kolonu diziden çıkarmak onu her yerden kaldırır. Satıra tıkla, altında paneli açılır; hızlı işlemler fareyle üstüne gelince belirir."
+      align="start"
+    >
+      <Button size="sm" className="self-start" onClick={() => setShowTeam((value) => !value)}>
+        {showTeam ? 'Ekip kolonunu gizle' : 'Ekip kolonunu göster'}
+      </Button>
+      <DataList
+        aria-label="Üyeler"
+        rows={rows}
+        columns={
+          showTeam ? MEMBER_COLUMNS : MEMBER_COLUMNS.filter((column) => column.id !== 'team')
+        }
+        getRowId={(member) => member.id}
+        rowLabel={(member) => member.name}
+        renderPanel={(member) => (
+          <p className="text-xs text-muted-foreground">
+            {member.name}, {new Date(member.joined).toLocaleDateString('tr-TR')} tarihinde katıldı
+            ve {member.events} etkinliğe geldi.
+          </p>
+        )}
+      />
+      <DataListFooter>
+        <span>
+          <span className="font-semibold text-foreground tabular-nums">{rows.length}</span> üye
+        </span>
+      </DataListFooter>
+    </Example>
+  );
+}
 
 function DataListExamples() {
   const [sort, setSort] = useState<DataListSort>({ field: 'events', direction: 'desc' });
@@ -69,54 +164,60 @@ function DataListExamples() {
         : { field, direction: 'asc' },
     );
   return (
-    <Example
-      title="Sıralanabilir liste"
-      description="Bir başlığa tıkla: satırlar yeni yerlerine kayar. Pencereyi daraltınca sütunlar gizlenir."
-      align="start"
-    >
-      <DataList columns={COLUMNS} sort={sort} onSortChange={toggle}>
-        <DataListHeader>
-          <DataListColumnHeader column="status" label="Durum" />
-          <DataListColumnHeader column="name" sortable>
-            Üye
-          </DataListColumnHeader>
-          <DataListColumnHeader column="team" sortable>
-            Ekip
-          </DataListColumnHeader>
-          <DataListColumnHeader column="events" sortable>
-            Etkinlik
-          </DataListColumnHeader>
-          <DataListColumnHeader column="actions" label="İşlemler" />
-        </DataListHeader>
-        <DataListBody>
-          {rows.map((member, index) => (
-            <DataListRow
-              key={member.id}
-              href="#member"
-              label={`${member.name} profilini aç`}
-              index={index}
-            >
-              <DataListCell column="status">
-                <StatusDot tone={DOT[member.status]} label={STATUS_LABEL[member.status]} />
-              </DataListCell>
-              <DataListCell column="name" className="gap-3">
-                <Avatar name={member.name} size="sm" />
-                <span className="truncate text-sm text-secondary-foreground">{member.name}</span>
-              </DataListCell>
-              <DataListCell column="team">
-                <Badge>{member.team}</Badge>
-              </DataListCell>
-              <DataListCell column="events" className="text-xs text-muted-foreground tabular-nums">
-                {member.events}
-              </DataListCell>
-              <DataListCell column="actions" interactive>
-                <IconButton icon={MoreHorizontal} label="İşlemler" variant="ghost" size="icon-sm" />
-              </DataListCell>
-            </DataListRow>
-          ))}
-        </DataListBody>
-      </DataList>
-    </Example>
+    <>
+      <Example
+        title="Sıralanabilir liste"
+        description="Bir başlığa tıkla: satırlar yeni yerlerine kayar. Pencereyi daraltınca sütunlar gizlenir."
+        align="start"
+      >
+        <DataList columns={COLUMNS} sort={sort} onSortChange={toggle}>
+          <DataListHeader>
+            <DataListColumnHeader column="status" label="Durum" />
+            <DataListColumnHeader column="name" sortable>
+              Üye
+            </DataListColumnHeader>
+            <DataListColumnHeader column="team" sortable>
+              Ekip
+            </DataListColumnHeader>
+            <DataListColumnHeader column="events" sortable>
+              Etkinlik
+            </DataListColumnHeader>
+            <DataListColumnHeader column="actions" label="İşlemler" />
+          </DataListHeader>
+          <DataListBody>
+            {rows.map((member) => (
+              <DataListRow key={member.id} href="#member" label={`${member.name} profilini aç`}>
+                <DataListCell column="status">
+                  <StatusDot tone={DOT[member.status]} label={STATUS_LABEL[member.status]} />
+                </DataListCell>
+                <DataListCell column="name" className="gap-3">
+                  <Avatar name={member.name} size="sm" />
+                  <span className="truncate text-sm text-secondary-foreground">{member.name}</span>
+                </DataListCell>
+                <DataListCell column="team">
+                  <Badge>{member.team}</Badge>
+                </DataListCell>
+                <DataListCell
+                  column="events"
+                  className="text-xs text-muted-foreground tabular-nums"
+                >
+                  {member.events}
+                </DataListCell>
+                <DataListCell column="actions" interactive>
+                  <IconButton
+                    icon={MoreHorizontal}
+                    label="İşlemler"
+                    variant="ghost"
+                    size="icon-sm"
+                  />
+                </DataListCell>
+              </DataListRow>
+            ))}
+          </DataListBody>
+        </DataList>
+      </Example>
+      <DataListRowsExample />
+    </>
   );
 }
 
