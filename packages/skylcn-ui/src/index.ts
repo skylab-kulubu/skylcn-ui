@@ -228,6 +228,7 @@ export { Tooltip, TooltipProvider, type TooltipProps } from './components/toolti
 export {
   AppShell,
   AppShellActions,
+  AppShellFill,
   SidebarBrand,
   SidebarContent,
   SidebarFooter,
