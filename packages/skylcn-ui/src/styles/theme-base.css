@@ -200,6 +200,86 @@
 }
 
 /*
+ * For a popup's rows: they come in one after another from the side of the
+ * trigger and, closing, go back the same way, the farthest first. The popup's
+ * own exit has to outlast them, since Base UI waits only for the popup itself.
+ * Reduced motion zeroes the stagger and the shift, leaving one plain fade.
+ */
+@keyframes skylcn-stagger-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--skylcn-stagger-shift);
+  }
+}
+
+@keyframes skylcn-stagger-out {
+  to {
+    opacity: 0;
+    translate: 0 var(--skylcn-stagger-shift);
+  }
+}
+
+@utility stagger-items {
+  --skylcn-stagger-step: calc(var(--motion-stagger) / 2);
+
+  & > * {
+    --skylcn-i: 0;
+    --skylcn-r: 0;
+    --skylcn-in: var(--skylcn-i);
+    --skylcn-out: var(--skylcn-r);
+    --skylcn-stagger-shift: calc(var(--motion-shift) * -1);
+    animation: skylcn-stagger-in var(--motion-duration-fast) var(--motion-ease-enter) backwards;
+    animation-delay: calc(var(--skylcn-in) * var(--skylcn-stagger-step));
+  }
+  & > :nth-child(2) {
+    --skylcn-i: 1;
+  }
+  & > :nth-child(3) {
+    --skylcn-i: 2;
+  }
+  & > :nth-child(4) {
+    --skylcn-i: 3;
+  }
+  & > :nth-child(5) {
+    --skylcn-i: 4;
+  }
+  & > :nth-child(6) {
+    --skylcn-i: 5;
+  }
+  & > :nth-child(n + 7) {
+    --skylcn-i: 6;
+  }
+  & > :nth-last-child(2) {
+    --skylcn-r: 1;
+  }
+  & > :nth-last-child(3) {
+    --skylcn-r: 2;
+  }
+  & > :nth-last-child(4) {
+    --skylcn-r: 3;
+  }
+  & > :nth-last-child(5) {
+    --skylcn-r: 4;
+  }
+  & > :nth-last-child(6) {
+    --skylcn-r: 5;
+  }
+  & > :nth-last-child(n + 7) {
+    --skylcn-r: 6;
+  }
+  /* Opening upwards, the row nearest the trigger is the last one */
+  &[data-side='top'] > * {
+    --skylcn-in: var(--skylcn-r);
+    --skylcn-out: var(--skylcn-i);
+    --skylcn-stagger-shift: var(--motion-shift);
+  }
+  &[data-ending-style] > * {
+    animation: skylcn-stagger-out var(--motion-duration-instant) var(--motion-ease-exit) forwards;
+    animation-delay: calc(var(--skylcn-out) * var(--skylcn-stagger-step) / 2);
+  }
+}
+
+/*
  * useTheme swaps the theme inside a view transition: the page cross-fades as a
  * whole, and per-element colour transitions are held off so nothing lags behind.
  */

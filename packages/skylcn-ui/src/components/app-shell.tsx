@@ -407,7 +407,13 @@ function RowMenuContent({
       side={collapsed ? 'right' : edge === 'top' ? 'bottom' : 'top'}
       align={collapsed && edge === 'bottom' ? 'end' : 'start'}
       sideOffset={collapsed ? 8 : 4}
-      className={collapsed ? 'w-56' : 'w-(--anchor-width) min-w-56'}
+      className={cn(
+        // The rows step in from the trigger and back out to it; the card then shrinks into
+        // the trigger's corner (Base UI's transform origin), five times the usual popup
+        // scale so it reads as closing there rather than as a fade
+        'stagger-items data-ending-style:scale-[calc(1-(1-var(--motion-scale-from))*5)] data-ending-style:delay-(--motion-stagger)',
+        collapsed ? 'w-56' : 'w-(--anchor-width) min-w-56',
+      )}
     >
       {children}
     </DropdownMenuContent>
