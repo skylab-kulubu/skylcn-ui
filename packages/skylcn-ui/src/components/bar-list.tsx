@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { numberFormat } from '../lib/number-format.js';
 import { useSkylcn } from '../lib/provider.js';
 
 export type BarListItem = {
@@ -51,10 +52,10 @@ export function BarList({
   const top = Math.max(0, ...items.filter((item) => !item.disabled).map((item) => item.value));
   const leader =
     top > 0 ? items.find((item) => !item.disabled && item.value === top)?.key : undefined;
-  const number = formatValue ?? ((value: number) => value.toLocaleString(tag));
+  const number = formatValue ?? ((value: number) => numberFormat(tag).format(value));
   const percent = (value: number) => {
     const share = total ? (value / total) * 100 : 0;
-    const text = share.toLocaleString(tag, { maximumFractionDigits: share % 1 ? 1 : 0 });
+    const text = numberFormat(tag, share % 1 ? 1 : 0).format(share);
     return locale === 'tr' ? `%${text}` : `${text}%`;
   };
 
