@@ -469,7 +469,7 @@ export function DataTable<T extends RowData>({
                   aria-selected={selectable ? row.getIsSelected() : undefined}
                   className={cn(
                     'transition-colors duration-(--motion-duration-instant)',
-                    renderDetail && 'cursor-pointer hover:bg-card',
+                    renderDetail && 'cursor-pointer hover:bg-row-highlight',
                     row.getIsSelected() && 'bg-skylab-500/5',
                     row.id === openId && 'bg-accent',
                   )}

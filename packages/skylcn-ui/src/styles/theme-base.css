@@ -113,6 +113,7 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-row-highlight: var(--row-highlight);
   --color-accent-foreground: var(--foreground-strong);
   --color-secondary: var(--muted);
   --color-border: var(--border);

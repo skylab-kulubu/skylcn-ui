@@ -37,6 +37,9 @@
   --muted: rgb(255 255 255 / 5%);
   --accent: rgb(255 255 255 / 5%);
   --accent-strong: rgb(255 255 255 / 10%);
+  /* Under a hovered or open row of a list or table. Light takes a deeper wash than
+     its card for the row to stand out as far as it does in dark. */
+  --row-highlight: rgb(255 255 255 / 3%);
   --border: rgb(255 255 255 / 10%);
   --border-subtle: rgb(255 255 255 / 5%);
   --border-strong: rgb(255 255 255 / 20%);
@@ -131,6 +134,7 @@
   --muted: rgb(0 0 0 / 4%);
   --accent: rgb(0 0 0 / 5%);
   --accent-strong: rgb(0 0 0 / 8%);
+  --row-highlight: rgb(0 0 0 / 4%);
   --border: rgb(0 0 0 / 10%);
   --border-subtle: rgb(0 0 0 / 6%);
   --border-strong: rgb(0 0 0 / 18%);

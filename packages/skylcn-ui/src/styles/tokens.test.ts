@@ -60,12 +60,13 @@ describe('focus ring', () => {
       const opaque = ['--background', '--sheet', '--popover', '--sidebar'].map(
         (name) => [name, color(name)] as const,
       );
-      // The card is a wash, so it is measured on each surface it sits on, and a
-      // hovered control, focused with the keyboard, adds the strong accent on top
+      // The card and a highlighted row are washes, so they are measured on each surface
+      // they sit on, and a hovered control, focused with the keyboard, adds the strong
+      // accent on top
       const plain = [
         ...opaque,
-        ...opaque.map(
-          ([name, under]) => [`--card on ${name}`, over(color('--card'), under)] as const,
+        ...['--card', '--row-highlight'].flatMap((wash) =>
+          opaque.map(([name, under]) => [`${wash} on ${name}`, over(color(wash), under)] as const),
         ),
       ];
       const surfaces = [

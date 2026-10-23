@@ -737,7 +737,7 @@ export function DataListRow({
           animate={{ opacity: 1 }}
           className={cn(
             'group/row transition-colors duration-(--motion-duration-fast)',
-            open && 'bg-card',
+            open && 'bg-row-highlight',
             firstFill && 'enter-rise',
             className,
           )}
@@ -759,7 +759,7 @@ export function DataListRow({
             className={cn(
               ROW_GRID,
               'relative px-3 py-2.5 transition-colors duration-(--motion-duration-fast)',
-              target && !open && 'hover:bg-card',
+              target && !open && 'hover:bg-row-highlight',
               selected && 'bg-skylab-500/5',
             )}
           >
