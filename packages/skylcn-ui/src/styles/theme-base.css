@@ -96,6 +96,7 @@
   --color-skylab-900: var(--skylab-900);
 
   --color-sidebar: var(--sidebar);
+  --color-sidebar-active: var(--sidebar-active);
   --color-background: var(--background);
   --color-sheet: var(--sheet);
   --color-popover: var(--popover);
@@ -158,6 +159,7 @@
   --ease-spring: var(--motion-ease-spring);
 
   --shadow-overlay: var(--elevation-overlay);
+  --shadow-sidebar-active: var(--elevation-sidebar-active);
 }
 
 @keyframes skylcn-shimmer-block {

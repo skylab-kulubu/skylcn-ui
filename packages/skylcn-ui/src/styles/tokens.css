@@ -19,6 +19,9 @@
 
   /* Surfaces: the chrome behind the sidebar, the page panel, raised layers */
   --sidebar: #0a0a0a;
+  /* Under the sidebar's active item: a wash in dark; in light, where a deeper grey sits
+     too close to the hover wash, a raised piece of the page with a hairline edge */
+  --sidebar-active: var(--accent-strong);
   --background: #171717;
   --sheet: #121212;
   --popover: #1a1a1a;
@@ -101,6 +104,7 @@
   /* Shape */
   --radius: 0.5rem;
   --elevation-overlay: 0 20px 40px -12px rgb(0 0 0 / 60%);
+  --elevation-sidebar-active: none;
 
   /* Scrollbars */
   --scrollbar-thumb: #3f3f46;
@@ -119,6 +123,7 @@
   --skylab-900: #5b3363;
 
   --sidebar: #ece8e3;
+  --sidebar-active: var(--background);
   --background: #fdfcfa;
   --sheet: #fdfcfa;
   --popover: #ffffff;
@@ -173,6 +178,7 @@
   --chart-surface: #f8f7f5;
 
   --elevation-overlay: 0 20px 40px -16px rgb(28 26 24 / 25%);
+  --elevation-sidebar-active: 0 1px 2px rgb(28 26 24 / 8%), 0 0 0 1px rgb(28 26 24 / 6%);
 
   --scrollbar-thumb: #c9c3bc;
   --scrollbar-thumb-hover: #a8a19a;
