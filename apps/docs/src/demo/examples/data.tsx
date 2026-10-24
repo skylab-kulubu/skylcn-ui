@@ -645,6 +645,24 @@ function ChartExamples({ kind }: { kind: 'area' | 'line' | 'bar' | 'donut' }) {
             />
           </div>
         </Example>
+        <Example
+          title="Çerçevesiz"
+          description="framed={false}: kart kalkar, başlık bir Section başlığı gibi çizilir; panoda bölümlerin arasında durur."
+          align="start"
+        >
+          <div className="w-full max-w-sm">
+            <AreaChart
+              compact
+              markers
+              framed={false}
+              title="Haftalık yanıt"
+              badge={<TrendBadge value={8.4} />}
+              data={data.slice(-8)}
+              x="month"
+              series={{ geceKodu: { label: 'Yanıt' } }}
+            />
+          </div>
+        </Example>
       </>
     );
   if (kind === 'line')
