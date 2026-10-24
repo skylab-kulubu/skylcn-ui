@@ -547,6 +547,16 @@ const MINIS: Record<string, () => ReactNode> = {
     </span>
   ),
   'list-panel': () => <Skeleton className="h-10 w-44" />,
+  section: () => (
+    <div className="flex w-44 flex-col gap-1.5">
+      <span className="flex items-center gap-2 text-2xs text-muted-foreground">
+        Son formlar
+        <span className="h-px flex-1 bg-border-subtle" />
+        <ChevronRight className="size-3" />
+      </span>
+      <Skeleton className="h-6 w-full" />
+    </div>
+  ),
   card: () => (
     <div className="w-36 rounded-lg border border-border p-2">
       <p className="text-3xs tracking-label text-subtle-foreground uppercase">Aktif üye</p>

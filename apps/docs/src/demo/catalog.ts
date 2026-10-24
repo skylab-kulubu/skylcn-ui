@@ -484,6 +484,17 @@ export const ENTRIES: Entry[] = [
     motion: ['Yükleniyor, boş ve dolu durumları birbirine solar.'],
   },
   {
+    slug: 'section',
+    name: 'Section',
+    category: 'data',
+    description:
+      'Sayfayı çerçevesiz bölgelere ayırır: başlık, yanından satırın sonuna uzanan ince çizgi ve isteğe bağlı eylem, altında içerik. Panoda kartların yerine boşluk ve çizgiyle gruplar.',
+    imports: ['Section'],
+    a11y: [
+      'Başlık seviyesi level ile sayfanın düzenine göre seçilir; çizgi ekran okuyucudan gizlenir.',
+    ],
+  },
+  {
     slug: 'card',
     name: 'Card ve StatCard',
     category: 'data',

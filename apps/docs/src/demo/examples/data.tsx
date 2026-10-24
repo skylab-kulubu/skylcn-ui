@@ -28,6 +28,7 @@ import {
   ListPanel,
   ProportionBar,
   Reveal,
+  Section,
   SegmentedControl,
   Skeleton,
   Sparkline,
@@ -41,7 +42,16 @@ import {
   type DataListSort,
 } from '@skylab-kulubu/skylcn-ui';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@skylab-kulubu/skylcn-ui/charts';
-import { CalendarDays, ChevronDown, Inbox, Mail, MoreHorizontal, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  CalendarDays,
+  ChevronDown,
+  Inbox,
+  Mail,
+  MoreHorizontal,
+  RefreshCw,
+  Users,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Example } from '../doc';
 import { MEMBERS, STATUS_LABEL, type Member } from '../members';
@@ -266,6 +276,78 @@ function ListPanelExamples() {
         </ListPanel>
       </div>
     </Example>
+  );
+}
+
+const FIGURES = [
+  ['Toplam form', '128'],
+  ['Toplam cevap', '4.213'],
+  ['Bekleyen onay', '17'],
+  ['Şablon', '6'],
+] as const;
+
+function SectionExamples() {
+  return (
+    <>
+      <Example
+        title="Panoda bölgeler"
+        description="Kart yerine başlık ve yanından uzanan çizgi; eylem çizginin sonunda. Liste -mx-3 ile kenara taşar, satırların metni başlıkla aynı hizada durur."
+        align="start"
+      >
+        <div className="grid w-full gap-x-10 gap-y-8 md:grid-cols-[minmax(0,1fr)_14rem]">
+          <Section
+            title="Son güncellenen formlar"
+            description="Sahibi olduğun ya da seninle paylaşılan formlar."
+            action={
+              <Button variant="ghost" size="sm">
+                Tümünü gör <ArrowRight />
+              </Button>
+            }
+          >
+            <ListPanel status={{ kind: 'ready' }} framed={false} className="-mx-3">
+              <ListItem title="Gece Kodu 2026 başvuru" subtitle="412 yanıt" />
+              <ListItem title="Kulüp üyelik anketi" subtitle="903 yanıt" />
+              <ListItem title="Stant haftası geri bildirim" subtitle="211 yanıt" />
+            </ListPanel>
+          </Section>
+          <Section title="Genel">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
+              {FIGURES.map(([label, value]) => (
+                <div key={label}>
+                  <dt className="text-2xs text-subtle-foreground">{label}</dt>
+                  <dd className="mt-1 text-xl font-semibold text-foreground tabular-nums">
+                    {value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Section>
+        </div>
+      </Example>
+      <Example
+        title="Yükseklik verilince"
+        description="İçerik başlığın bıraktığı yeri alır; taşan satırlar kendi içinde kayar."
+        align="start"
+      >
+        <Section
+          title="Etkinlik günlüğü"
+          className="h-48 w-full max-w-md"
+          action={<IconButton icon={RefreshCw} label="Yenile" variant="ghost" size="icon-sm" />}
+        >
+          <ul
+            tabIndex={0}
+            aria-label="Etkinlik günlüğü"
+            className="scrollbar h-full overflow-y-auto rounded-md text-xs text-muted-foreground outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <li key={i} className="border-b border-border-subtle py-1.5">
+                {12 - i} Ekim · Kayıt formu güncellendi
+              </li>
+            ))}
+          </ul>
+        </Section>
+      </Example>
+    </>
   );
 }
 
@@ -707,6 +789,7 @@ function NumberExamples() {
 export const DATA_EXAMPLES = {
   'data-list': DataListExamples,
   'list-panel': ListPanelExamples,
+  section: SectionExamples,
   card: CardExamples,
   badge: BadgeExamples,
   avatar: AvatarExamples,

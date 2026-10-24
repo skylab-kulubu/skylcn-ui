@@ -289,6 +289,7 @@ export {
   type PageHeaderProps,
   type SearchInputProps,
 } from './components/page-header.js';
+export { Section, type SectionProps } from './components/section.js';
 export {
   ContextMenu,
   ContextMenuContent,
