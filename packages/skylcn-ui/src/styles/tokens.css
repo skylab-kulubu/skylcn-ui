@@ -63,11 +63,12 @@
 
   /*
    * Charts. One lilac family, light and deep in turn so neighbouring series and slices stay
-   * apart: forms-frontend's answer colours first, then three more of the same family.
+   * apart: forms-frontend's answer colours first, then three more of the same family. The
+   * first, which a single series takes, leans halfway to the brand's own lilac.
    * Values are always written beside a chart (legend, list, table view), so the shade is
    * never the only cue.
    */
-  --chart-1: #d8b4fe;
+  --chart-1: #dcbef2;
   --chart-2: #6366f1;
   --chart-3: #c084fc;
   --chart-4: #7c3aed;
@@ -156,7 +157,7 @@
   --warning: #a44a07;
   --info: #1d4ed8;
 
-  --chart-1: #8b5cf6;
+  --chart-1: #8c5fc7;
   --chart-2: #4338ca;
   --chart-3: #a855f7;
   --chart-4: #5b21b6;

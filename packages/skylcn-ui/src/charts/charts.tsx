@@ -198,6 +198,8 @@ function timeAxes(props: SharedProps, resolved: Resolved[], format: ReturnType<t
       tick={compact ? TICK_COMPACT : TICK}
       tickMargin={compact ? 4 : 8}
       minTickGap={16}
+      // The first and last dates always show, pulled in from the edges if they would spill
+      interval="preserveStartEnd"
       padding={{ left: 8, right: 8 }}
       tickFormatter={props.formatX}
     />,
@@ -228,12 +230,9 @@ function timeAxes(props: SharedProps, resolved: Resolved[], format: ReturnType<t
   ];
 }
 
-const dot = (color: string) => ({
-  r: 4,
-  fill: color,
-  stroke: 'var(--chart-surface)',
-  strokeWidth: 2,
-});
+// No outline: a ring in the card's colour shows as a halo once a chart sits outside its card
+const dot = (color: string) => ({ r: 3, fill: color, strokeWidth: 0 });
+const activeDot = (color: string) => ({ r: 4.5, fill: color, strokeWidth: 0 });
 
 export type AreaChartProps = SharedProps & {
   /** Stacks the areas so their tops show the running total. */
@@ -286,7 +285,7 @@ export function AreaChart({ stacked = false, markers = false, ...props }: AreaCh
                 fill={single ? `url(#${gradient})` : s.color}
                 fillOpacity={single ? 1 : 0.1}
                 dot={markers ? dot(s.color) : false}
-                activeDot={dot(s.color)}
+                activeDot={activeDot(s.color)}
                 {...motion}
               />
             ))}
@@ -331,7 +330,7 @@ export function LineChart({ markers = false, ...props }: LineChartProps) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 dot={markers ? dot(s.color) : false}
-                activeDot={dot(s.color)}
+                activeDot={activeDot(s.color)}
                 {...motion}
               />
             ))}
