@@ -327,8 +327,8 @@ export function AppShell({
             // scroll with the content instead of stretching the page into a second scroll
             className="relative scrollbar outline-hidden md:min-h-0 md:flex-1 md:scroll-pt-12 md:overflow-y-auto"
           >
-            {/* A filled page drops the reading width and, from md, takes the panel's height */}
-            <div className="mx-auto w-full max-w-400 p-4 has-data-[slot=app-shell-fill]:max-w-none sm:p-6 md:has-data-[slot=app-shell-fill]:h-full">
+            {/* Every page takes the panel's width; a filled one also its height, from md */}
+            <div className="w-full p-4 sm:p-6 md:has-data-[slot=app-shell-fill]:h-full">
               {children}
             </div>
           </main>
@@ -349,9 +349,9 @@ function SidebarFrame({ children }: { children: ReactNode }) {
 }
 
 /**
- * A page that takes the whole content panel: its full width, and from md its
- * full height as a flex column, so a list can scroll inside it with its paging
- * held at the foot. On phones the page scrolls as usual.
+ * A page that takes the content panel's full height from md, as a flex column,
+ * so a list can scroll inside it with its paging held at the foot. On phones the
+ * page scrolls as usual.
  */
 export function AppShellFill({ className, ...props }: ComponentProps<'div'>) {
   return (

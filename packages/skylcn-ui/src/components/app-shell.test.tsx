@@ -13,4 +13,15 @@ describe('AppShell', () => {
     expect(main).not.toBeNull();
     expect(main).toHaveClass('relative');
   });
+
+  it('gives a page the panel’s full width, with no reading width to centre it in', () => {
+    const { getByText } = render(
+      <AppShell sidebar={<nav />} header={<span />}>
+        <p>İçerik</p>
+      </AppShell>,
+    );
+    const page = getByText('İçerik').parentElement;
+    expect(page).toHaveClass('w-full');
+    expect(page?.className).not.toMatch(/max-w-|mx-auto/);
+  });
 });

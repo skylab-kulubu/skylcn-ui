@@ -324,7 +324,7 @@ export const ENTRIES: Entry[] = [
     name: 'AppShell',
     category: 'navigation',
     description:
-      'Konsolların ortak çerçevesi: daralan kenar çubuğu, konsol seçici, profil menüsü, telefonda çekmece. AppShellFill içine konan sayfa paneli boydan boya kaplar; liste kendi içinde kayar, sayfalama altta kalır.',
+      'Konsolların ortak çerçevesi: daralan kenar çubuğu, konsol seçici, profil menüsü, telefonda çekmece. Sayfalar panelin tüm genişliğini kullanır; AppShellFill içine konan sayfa yüksekliğini de kaplar, liste kendi içinde kayar, sayfalama altta kalır.',
     imports: ['AppShell', 'AppShellFill', 'SidebarBrand', 'SidebarItem', 'SidebarUser'],
     a11y: [
       '"İçeriğe geç" bağlantısı ilk Tab ile görünür.',
