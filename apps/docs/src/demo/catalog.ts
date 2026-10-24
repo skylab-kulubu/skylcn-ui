@@ -498,7 +498,8 @@ export const ENTRIES: Entry[] = [
     slug: 'card',
     name: 'Card ve StatCard',
     category: 'data',
-    description: 'İçerik kartı ve pano sayı kartı: etiket, değer, değişim ve trend çizgisi.',
+    description:
+      'İçerik kartı ve pano sayı kartı: etiket, değer, değişim ve trend çizgisi. Sayı kartı framed={false} ile çerçevesiz, bir Section’ın içinde durur.',
     imports: ['Card', 'CardHeader', 'CardTitle', 'CardContent', 'StatCard'],
     a11y: ['CardTitle başlık seviyesini sayfanın düzenine göre alır.'],
     motion: ['StatCard değeri değişince yeni değerine akar.'],

@@ -311,16 +311,11 @@ function SectionExamples() {
             </ListPanel>
           </Section>
           <Section title="Genel">
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-4">
+            <div className="grid grid-cols-2 gap-6">
               {FIGURES.map(([label, value]) => (
-                <div key={label}>
-                  <dt className="text-2xs text-subtle-foreground">{label}</dt>
-                  <dd className="mt-1 text-xl font-semibold text-foreground tabular-nums">
-                    {value}
-                  </dd>
-                </div>
+                <StatCard key={label} framed={false} label={label} value={value} />
               ))}
-            </dl>
+            </div>
           </Section>
         </div>
       </Example>
@@ -390,6 +385,39 @@ function CardExamples() {
             hint="Düşüş iyi haber"
           />
         </div>
+      </Example>
+      <Example
+        title="Çerçevesiz sayılar"
+        description="framed={false}: kart kalkar, sayılar bir Section’ın içinde durur; satırları birbirine yaklaşır, her sayı tek parça okunur."
+        align="start"
+      >
+        <Section title="Bu dönem" className="w-full">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
+            <StatCard
+              framed={false}
+              label="Aktif üye"
+              value={value}
+              icon={Users}
+              delta={<TrendBadge value={12.5} />}
+              hint="Geçen döneme göre"
+            />
+            <StatCard
+              framed={false}
+              label="Katılım"
+              value={1677}
+              icon={CalendarDays}
+              hint="Son 12 ay"
+              trend={monthly('12m').map((row) => row.attendance)}
+            />
+            <StatCard
+              framed={false}
+              label="Bekleyen onay"
+              value={13}
+              delta={<TrendBadge value={-9.7} riseIsGood={false} />}
+              hint="Düşüş iyi haber"
+            />
+          </div>
+        </Section>
       </Example>
       <Example title="İçerik kartı" align="start">
         <Card className="max-w-md">

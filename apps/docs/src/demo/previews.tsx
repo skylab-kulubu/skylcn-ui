@@ -559,7 +559,7 @@ const MINIS: Record<string, () => ReactNode> = {
   ),
   card: () => (
     <div className="w-36 rounded-lg border border-border p-2">
-      <p className="text-3xs tracking-label text-subtle-foreground uppercase">Aktif üye</p>
+      <p className="text-2xs text-subtle-foreground">Aktif üye</p>
       <p className="text-lg font-semibold">86</p>
     </div>
   ),

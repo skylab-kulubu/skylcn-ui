@@ -258,9 +258,7 @@ export function Stat({
 }) {
   return (
     <div data-slot="stat" className={cn('text-right', className)}>
-      <p className="text-3xs font-medium tracking-label text-subtle-foreground uppercase">
-        {label}
-      </p>
+      <p className="text-2xs text-subtle-foreground">{label}</p>
       <p className="text-sm font-semibold text-foreground tabular-nums">{value ?? '--'}</p>
     </div>
   );
