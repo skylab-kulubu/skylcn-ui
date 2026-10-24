@@ -29,6 +29,25 @@ describe('PageHeader', () => {
     expect(container.querySelector('[data-slot="page-header-cover"]')).toBeNull();
   });
 
+  it('runs the divider beside the title, between it and the actions', () => {
+    const { container } = render(
+      <PageHeader
+        title="Formlar"
+        description="Paylaşılan formlar."
+        actions={<button>Yeni</button>}
+      />,
+    );
+    const heading = screen.getByRole('heading', { level: 1, name: 'Formlar' });
+    const divider = container.querySelector('[data-slot="page-header-divider"]')!;
+    const action = screen.getByRole('button', { name: 'Yeni' });
+    const row = divider.parentElement!;
+    expect(row).toContainElement(heading);
+    expect(row).toContainElement(action);
+    expect(row).not.toContainElement(screen.getByText('Paylaşılan formlar.'));
+    expect(heading.compareDocumentPosition(divider)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(divider.compareDocumentPosition(action)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
   it('leads with a link back to the parent page, through the provider’s link component', () => {
     function RouterLink({ href, ...props }: LinkComponentProps) {
       return <a href={href} data-router="" {...props} />;
