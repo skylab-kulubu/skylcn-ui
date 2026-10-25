@@ -822,16 +822,7 @@ export type SidebarUserProps = {
 
 /** The signed-in person at the foot of the sidebar, usually the trigger of a profile menu. */
 export function SidebarUser({ name, email, subtitle, avatarSrc, action, menu }: SidebarUserProps) {
-  const avatar = (
-    <Avatar
-      name={name}
-      email={email}
-      src={avatarSrc}
-      size="sm"
-      shape="square"
-      className="rounded-md"
-    />
-  );
+  const avatar = <Avatar name={name} email={email} src={avatarSrc} size="sm" />;
 
   if (menu) {
     return (

@@ -517,7 +517,7 @@ export const ENTRIES: Entry[] = [
     name: 'Avatar',
     category: 'data',
     description:
-      'Fotoğraf, yoksa baş harfler, yoksa kişi ikonu. Kişiler ve ekipler köşeleri yumuşak kare; yuvarlak yüz gereken yerde shape="circle".',
+      'Fotoğraf, yoksa baş harfler, yoksa kişi ikonu. Kişiler yuvarlak; kare gereken yerde shape="square".',
     imports: ['Avatar'],
   },
   {
