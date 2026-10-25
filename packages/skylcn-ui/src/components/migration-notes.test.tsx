@@ -78,3 +78,22 @@ describe('SkylabLoader', () => {
     expect(container.querySelector('svg')).toHaveAttribute('width', '80');
   });
 });
+
+describe('SkylabLoader variants', () => {
+  it('reveals by default and offers radiate and pulse, all without inline style', () => {
+    const { container, rerender } = render(<SkylabLoader size={80} />);
+    const root = () => container.querySelector('[data-slot="skylab-loader"]')!;
+    expect(root()).toHaveClass('skylcn-loader', 'skylcn-loader-rich');
+    expect(container.querySelector('[data-group]')).not.toBeNull();
+    rerender(<SkylabLoader size={80} variant="radiate" />);
+    expect(root()).toHaveClass('skylcn-loader-radiate');
+    expect(root()).not.toHaveClass('skylcn-loader');
+    expect(container.querySelector('[data-r]')).not.toBeNull();
+    expect(container.querySelector('.skylcn-loader-metal')).toBeNull();
+    rerender(<SkylabLoader size={20} variant="pulse" />);
+    expect(root()).toHaveClass('skylcn-loader-pulse');
+    expect(container.querySelectorAll('[style]')).toHaveLength(0);
+    rerender(<SkylabLoader size={80} variant="pulse" state="done" />);
+    expect(root()).not.toHaveClass('skylcn-loader-pulse');
+  });
+});
