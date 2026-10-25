@@ -131,6 +131,12 @@ export type ConfirmDialogProps = {
    */
   pending?: boolean;
   cancelLabel?: string;
+  /**
+   * Where focus goes when the dialog closes; the trigger, or what had focus before, by
+   * default. `false` leaves it alone, for an action that also closes the surface under it,
+   * such as a drawer that hands focus elsewhere. Takes Base UI's `finalFocus` as is.
+   */
+  finalFocus?: AlertPrimitive.Popup.Props['finalFocus'];
 };
 
 const STALL_AFTER = 25_000;
@@ -160,6 +166,7 @@ export function ConfirmDialog({
   destructive = false,
   pending = false,
   cancelLabel,
+  finalFocus,
 }: ConfirmDialogProps) {
   const { messages } = useSkylcn();
   const cancel = useRef<HTMLButtonElement>(null);
@@ -252,7 +259,12 @@ export function ConfirmDialog({
       {trigger ? <AlertPrimitive.Trigger render={trigger as React.ReactElement} /> : null}
       <AlertPrimitive.Portal>
         <AlertPrimitive.Backdrop className={backdrop} />
-        <AlertPrimitive.Popup data-slot="confirm-dialog" initialFocus={cancel} className={popup}>
+        <AlertPrimitive.Popup
+          data-slot="confirm-dialog"
+          initialFocus={cancel}
+          finalFocus={finalFocus}
+          className={popup}
+        >
           <div className="flex flex-col gap-1 px-5 pt-5">
             <AlertPrimitive.Title className="text-base font-semibold text-foreground">
               {title}
