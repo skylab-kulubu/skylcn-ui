@@ -1,5 +1,9 @@
 import { useId } from 'react';
-import { SKYLAB_MARK_PATHS, SKYLAB_MARK_VIEWBOX } from '../assets/skylab-mark.js';
+import {
+  SKYLAB_MARK_PATHS,
+  SKYLAB_MARK_RADII,
+  SKYLAB_MARK_VIEWBOX,
+} from '../assets/skylab-mark.js';
 import { cn } from '../lib/cn.js';
 
 // Fatih Naz's loader from forms-frontend lights the mark in seven groups from the centre out.
@@ -15,18 +19,35 @@ export type SkylabLoaderProps = {
   size?: number;
   /** `done` holds the mark still, for the moment the wait ends. */
   state?: 'loading' | 'done';
+  /**
+   * `reveal`, the default, lights the mark group by group from its centre with a shimmer,
+   * halo and steel glint at larger sizes; `radiate` lights each path by its distance from
+   * the centre; `pulse` breathes the whole mark, for small quiet places.
+   */
+  variant?: 'reveal' | 'radiate' | 'pulse';
   className?: string;
 };
 
 /** The SKY LAB mark lighting up from its centre; the one loading indicator of every product. */
-export function SkylabLoader({ size = 80, state = 'loading', className }: SkylabLoaderProps) {
+export function SkylabLoader({
+  size = 80,
+  state = 'loading',
+  variant = 'reveal',
+  className,
+}: SkylabLoaderProps) {
   // useId's characters do not all survive inside url(#…)
   const steelId = `skylcn-steel-${useId().replace(/[^\w-]/g, '')}`;
   const animate = state === 'loading';
-  const rich = animate && size >= RICH_FROM;
-  const metal = animate && size >= METAL_FROM;
+  const reveal = animate && variant === 'reveal';
+  const rich = reveal && size >= RICH_FROM;
+  const metal = reveal && size >= METAL_FROM;
   const paths = SKYLAB_MARK_PATHS.map((d, i) => (
-    <path key={i} d={d} data-group={animate ? GROUPS[i] : undefined} />
+    <path
+      key={i}
+      d={d}
+      data-group={reveal ? GROUPS[i] : undefined}
+      data-r={animate && variant === 'radiate' ? Math.round(SKYLAB_MARK_RADII[i]! * 10) : undefined}
+    />
   ));
 
   return (
@@ -35,7 +56,9 @@ export function SkylabLoader({ size = 80, state = 'loading', className }: Skylab
       aria-hidden
       className={cn(
         'relative inline-grid shrink-0 text-secondary-foreground',
-        animate && 'skylcn-loader',
+        reveal && 'skylcn-loader',
+        animate && variant === 'radiate' && 'skylcn-loader-radiate',
+        animate && variant === 'pulse' && 'skylcn-loader-pulse',
         rich && 'skylcn-loader-rich',
         className,
       )}

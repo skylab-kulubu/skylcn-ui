@@ -455,6 +455,83 @@
   }
 }
 
+/*
+ * SkylabLoader's other variants. `radiate` lights each path by its distance from the centre
+ * (the loader before 0.1.4); `pulse` breathes the whole mark, for small quiet places.
+ */
+@layer components {
+  .skylcn-loader-radiate path {
+    opacity: 0.22;
+    animation: skylcn-loader-radiate 1.6s var(--motion-ease-enter) infinite both;
+  }
+  .skylcn-loader-radiate [data-r='1'] {
+    animation-delay: 70ms;
+  }
+  .skylcn-loader-radiate [data-r='2'] {
+    animation-delay: 140ms;
+  }
+  .skylcn-loader-radiate [data-r='3'] {
+    animation-delay: 210ms;
+  }
+  .skylcn-loader-radiate [data-r='4'] {
+    animation-delay: 280ms;
+  }
+  .skylcn-loader-radiate [data-r='5'] {
+    animation-delay: 350ms;
+  }
+  .skylcn-loader-radiate [data-r='6'] {
+    animation-delay: 420ms;
+  }
+  .skylcn-loader-radiate [data-r='7'] {
+    animation-delay: 490ms;
+  }
+  .skylcn-loader-radiate [data-r='8'] {
+    animation-delay: 560ms;
+  }
+  .skylcn-loader-radiate [data-r='9'] {
+    animation-delay: 630ms;
+  }
+  .skylcn-loader-radiate [data-r='10'] {
+    animation-delay: 700ms;
+  }
+  .skylcn-loader-pulse .skylcn-loader-mark {
+    animation: skylcn-loader-pulse 1.6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skylcn-loader-radiate path,
+    .skylcn-loader-pulse .skylcn-loader-mark {
+      animation: none;
+      opacity: 1;
+    }
+  }
+  [data-motion='reduced'] .skylcn-loader-radiate path,
+  [data-motion='reduced'] .skylcn-loader-pulse .skylcn-loader-mark {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@keyframes skylcn-loader-radiate {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+@keyframes skylcn-loader-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @keyframes skylcn-loader-reveal {
   0%,
   100% {
