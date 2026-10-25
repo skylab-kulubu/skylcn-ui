@@ -60,7 +60,7 @@ export function Avatar({
   email,
   src,
   size = 'md',
-  shape = 'square',
+  shape = 'circle',
   className,
 }: AvatarProps) {
   const s = SIZES[size];
