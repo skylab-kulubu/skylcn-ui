@@ -313,12 +313,10 @@ export default function FormsDemo() {
             />
           ) : (
             <DataListBody key={`${query}-${state}-${sort.field}-${sort.direction}`}>
-              {rows.map((row, index) => (
+              {rows.map((row) => (
                 <ContextMenu key={row.id}>
                   <ContextMenuTrigger
-                    render={
-                      <DataListRow href={`/forms?form=${row.id}`} label={row.name} index={index} />
-                    }
+                    render={<DataListRow href={`/forms?form=${row.id}`} label={row.name} />}
                   >
                     <DataListCell column="status">
                       <StatusDot

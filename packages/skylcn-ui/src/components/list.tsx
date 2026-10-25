@@ -98,7 +98,7 @@ export function ListItem({
       data-slot="list-item"
       className={cn(
         'group/row relative transition-colors duration-(--motion-duration-fast)',
-        pressable && 'hover:bg-card',
+        pressable && 'hover:bg-row-highlight',
         className,
       )}
     >

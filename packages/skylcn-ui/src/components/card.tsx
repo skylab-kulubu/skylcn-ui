@@ -100,6 +100,8 @@ export type StatCardProps = {
   hint?: ReactNode;
   /** Recent figures, oldest first, drawn as a sparkline under the value. */
   trend?: readonly number[];
+  /** Draws the card; turn off to set the figure straight into a Section or a row of figures. */
+  framed?: boolean;
   className?: string;
 };
 
@@ -112,18 +114,17 @@ export function StatCard({
   deltaTone = 'neutral',
   hint,
   trend,
+  framed = true,
   className,
 }: StatCardProps) {
-  return (
-    <Card data-slot="stat-card" className={cn('gap-2 p-4', className)}>
+  const figure = (
+    <>
       <div className="flex items-center gap-2">
-        {Icon ? <Icon className="size-3.5 text-subtle-foreground" /> : null}
-        <p className="text-3xs font-medium tracking-label text-subtle-foreground uppercase">
-          {label}
-        </p>
+        {Icon ? <Icon className="size-3.5 shrink-0 text-subtle-foreground" /> : null}
+        <p className="text-2xs text-subtle-foreground">{label}</p>
       </div>
       <div className="flex items-baseline gap-2">
-        <p className="text-2xl font-semibold text-foreground">
+        <p className={cn('text-2xl font-semibold text-foreground', !framed && 'leading-none')}>
           {typeof value === 'number' ? <AnimatedNumber value={value} /> : value}
         </p>
         {delta ? (
@@ -134,6 +135,16 @@ export function StatCard({
       </div>
       {hint ? <p className="text-2xs text-muted-foreground">{hint}</p> : null}
       {trend ? <Sparkline values={trend} className="mt-1" /> : null}
+    </>
+  );
+  return framed ? (
+    <Card data-slot="stat-card" className={cn('gap-2 p-4', className)}>
+      {figure}
     </Card>
+  ) : (
+    // With no frame to hold a figure together, its lines sit closer
+    <div data-slot="stat-card" className={cn('flex min-w-0 flex-col gap-1.5', className)}>
+      {figure}
+    </div>
   );
 }

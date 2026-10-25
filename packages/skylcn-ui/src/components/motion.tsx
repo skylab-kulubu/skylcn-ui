@@ -11,6 +11,7 @@ import {
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { motionTokens, transitions } from '../lib/motion-tokens.js';
+import { numberFormat } from '../lib/number-format.js';
 import { useSkylcn } from '../lib/provider.js';
 import { useReducedMotion } from '../lib/use-reduced-motion.js';
 
@@ -18,6 +19,8 @@ export type CollapseProps = {
   open: boolean;
   children: ReactNode;
   className?: string;
+  /** Called when the content has finished opening (true) or closing (false). */
+  onSettle?: (open: boolean) => void;
 };
 
 /**
@@ -25,9 +28,16 @@ export type CollapseProps = {
  * as a field's error or a revealed section. Its overflow is released once
  * open, so focus rings inside are not clipped.
  */
-export function Collapse({ open, children, className }: CollapseProps) {
+export function Collapse({ open, children, className, onSettle }: CollapseProps) {
   const reduced = useReducedMotion();
   const [settled, setSettled] = useState(false);
+  const [moving, setMoving] = useState(false);
+  // Set while rendering, so the layer is there on the motion's first frame
+  const [shownOpen, setShownOpen] = useState(open);
+  if (open !== shownOpen) {
+    setShownOpen(open);
+    setMoving(true);
+  }
   return (
     <AnimatePresence initial={false}>
       {open ? (
@@ -42,11 +52,18 @@ export function Collapse({ open, children, className }: CollapseProps) {
             opacity: transitions.enter,
           }}
           onAnimationStart={() => setSettled(false)}
-          onAnimationComplete={() => setSettled(open)}
+          onAnimationComplete={() => {
+            setSettled(open);
+            setMoving(false);
+            onSettle?.(open);
+          }}
           style={{ overflow: settled ? 'visible' : 'hidden' }}
           className={className}
         >
-          {children}
+          {/* While the height moves, the content sits on its own layer: painted once and only
+              clipped each frame, instead of painted again on every frame. Only while moving,
+              as a layer of its own loses the text's subpixel smoothing */}
+          <div style={moving ? { willChange: 'transform' } : undefined}>{children}</div>
         </m.div>
       ) : null}
     </AnimatePresence>
@@ -118,7 +135,7 @@ export function AnimatedNumber({ value, format, tabular = false, className }: An
   const { locale } = useSkylcn();
   const reduced = useReducedMotion();
   const tag = locale === 'tr' ? 'tr-TR' : 'en-US';
-  const fmt = format ?? ((n: number) => Math.round(n).toLocaleString(tag));
+  const fmt = format ?? ((n: number) => numberFormat(tag).format(Math.round(n)));
   const formatRef = useRef(fmt);
   useEffect(() => {
     formatRef.current = fmt;

@@ -226,14 +226,13 @@ export default function Members() {
           </DataListEmpty>
         ) : (
           <DataListBody>
-            {visible.map((member, index) => (
+            {visible.map((member) => (
               <ContextMenu key={member.id}>
                 <ContextMenuTrigger
                   render={
                     <DataListRow
                       href={`/playground/members/${member.id}`}
                       label={`${member.name} profilini aç`}
-                      index={index}
                     />
                   }
                 >

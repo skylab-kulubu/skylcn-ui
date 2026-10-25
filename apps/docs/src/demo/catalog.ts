@@ -324,13 +324,17 @@ export const ENTRIES: Entry[] = [
     name: 'AppShell',
     category: 'navigation',
     description:
-      'Konsolların ortak çerçevesi: daralan kenar çubuğu, konsol seçici, profil menüsü, telefonda çekmece.',
-    imports: ['AppShell', 'SidebarBrand', 'SidebarItem', 'SidebarUser'],
+      'Konsolların ortak çerçevesi: daralan kenar çubuğu, konsol seçici, profil menüsü, telefonda çekmece. Sayfalar panelin tüm genişliğini kullanır; AppShellFill içine konan sayfa yüksekliğini de kaplar, liste kendi içinde kayar, sayfalama altta kalır.',
+    imports: ['AppShell', 'AppShellFill', 'SidebarBrand', 'SidebarItem', 'SidebarUser'],
     a11y: [
       '"İçeriğe geç" bağlantısı ilk Tab ile görünür.',
       'Ctrl/⌘+B kenar çubuğunu daraltır; yazı alanlarında kalın yazı kısayoluna dokunmaz.',
     ],
-    motion: ['Aktif öğenin vurgusu sayfa değişince yeni öğeye süzülür.'],
+    motion: [
+      'Aktif öğenin vurgusu sayfa değişince yeni öğeye süzülür.',
+      'Daralırken önce yazılar söner, sonra genişlik daralır; açılırken genişlik önce gelir, yazılar ardından belirir. İkonlar yerinden oynamaz.',
+      'Hareketi azaltınca genişlik bir anda değişir, yazılar yalnızca solar.',
+    ],
   },
   {
     slug: 'navigation-menu',
@@ -432,7 +436,7 @@ export const ENTRIES: Entry[] = [
     name: 'DataList',
     category: 'data',
     description:
-      'Sütunları ekran genişliğine göre gizlenen, sıralanabilir başlıklı, satırları bağlantı olabilen liste.',
+      'Sütunları ekran genişliğine göre gizlenen, sıralanabilir başlıklı, satırları bağlantı olabilen ya da altında panel açan liste. Kolon tanımlarından çizilir ya da parçalarından kurulur.',
     imports: [
       'DataList',
       'DataListHeader',
@@ -440,14 +444,22 @@ export const ENTRIES: Entry[] = [
       'DataListBody',
       'DataListRow',
       'DataListCell',
+      'DataListTitle',
+      'DataListActions',
+      'DataListExpander',
+      'DataListFooter',
     ],
     a11y: [
-      'Tablo rolleriyle okunur; satır bağlantısı ilk görünür hücrenin içindedir.',
+      'Tablo rolleriyle okunur; satır bağlantısı, kaldırılmış (interactive) olmayan ilk görünür hücrenin içindedir.',
       'Yalnız ikonlu sütun başlıkları label ile adlandırılır.',
+      'Panel açan satırın düğmesi aria-expanded taşır ve açık paneli aria-controls ile gösterir; panel kendi satırındadır.',
+      'Hızlı işlemler klavyeyle satıra gelince de belirir; dokunmatik ekranda hep görünür.',
     ],
     motion: [
-      'Liste ilk dolduğunda satırlar sırayla gelir; sonraki arama ve sayfa değişimleri yerinde olur.',
+      'Liste ilk dolduğunda satırlar tek, eşit aralıklı kısa bir dalgayla gelir: satır sayısı ne olursa olsun yukarıdan aşağı 150ms içinde; sonraki arama ve sayfa değişimleri yerinde olur.',
       'Sıralama değişince satırlar yeni yerlerine kayar.',
+      'Panel kendi yüksekliğine açılır, ok döner; hızlı işlemler kendi genişliklerine açılır.',
+      'Panel açılırken içeriği kendi katmanında durur, her karede yeniden boyanmaz; grafik gibi ağır içerik useDataListPanelOpened ile açılış bitince çizilir.',
     ],
   },
   {
@@ -472,10 +484,22 @@ export const ENTRIES: Entry[] = [
     motion: ['Yükleniyor, boş ve dolu durumları birbirine solar.'],
   },
   {
+    slug: 'section',
+    name: 'Section',
+    category: 'data',
+    description:
+      'Sayfayı çerçevesiz bölgelere ayırır: başlık, yanından satırın sonuna uzanan ince çizgi ve isteğe bağlı eylem, altında içerik. Panoda kartların yerine boşluk ve çizgiyle gruplar.',
+    imports: ['Section'],
+    a11y: [
+      'Başlık seviyesi level ile sayfanın düzenine göre seçilir; çizgi ekran okuyucudan gizlenir.',
+    ],
+  },
+  {
     slug: 'card',
     name: 'Card ve StatCard',
     category: 'data',
-    description: 'İçerik kartı ve pano sayı kartı: etiket, değer, değişim ve trend çizgisi.',
+    description:
+      'İçerik kartı ve pano sayı kartı: etiket, değer, değişim ve trend çizgisi. Sayı kartı framed={false} ile çerçevesiz, bir Section’ın içinde durur.',
     imports: ['Card', 'CardHeader', 'CardTitle', 'CardContent', 'StatCard'],
     a11y: ['CardTitle başlık seviyesini sayfanın düzenine göre alır.'],
     motion: ['StatCard değeri değişince yeni değerine akar.'],
@@ -492,7 +516,8 @@ export const ENTRIES: Entry[] = [
     slug: 'avatar',
     name: 'Avatar',
     category: 'data',
-    description: 'Fotoğraf, yoksa baş harfler, yoksa kişi ikonu. Kişiler yuvarlak, ekipler köşeli.',
+    description:
+      'Fotoğraf, yoksa baş harfler, yoksa kişi ikonu. Kişiler yuvarlak; kare gereken yerde shape="square".',
     imports: ['Avatar'],
   },
   {

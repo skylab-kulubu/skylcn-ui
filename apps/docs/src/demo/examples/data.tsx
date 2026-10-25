@@ -15,16 +15,20 @@ import {
   CardTitle,
   Collapse,
   DataList,
+  DataListActions,
   DataListBody,
   DataListCell,
   DataListColumnHeader,
+  DataListFooter,
   DataListHeader,
   DataListRow,
+  DataListTitle,
   IconButton,
   ListItem,
   ListPanel,
   ProportionBar,
   Reveal,
+  Section,
   SegmentedControl,
   Skeleton,
   Sparkline,
@@ -38,10 +42,19 @@ import {
   type DataListSort,
 } from '@skylab-kulubu/skylcn-ui';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@skylab-kulubu/skylcn-ui/charts';
-import { CalendarDays, ChevronDown, Inbox, MoreHorizontal, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  CalendarDays,
+  ChevronDown,
+  Inbox,
+  Mail,
+  MoreHorizontal,
+  RefreshCw,
+  Users,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Example } from '../doc';
-import { MEMBERS, STATUS_LABEL } from '../members';
+import { MEMBERS, STATUS_LABEL, type Member } from '../members';
 import { monthly } from '../metrics';
 
 const COLUMNS: DataListColumn[] = [
@@ -52,6 +65,98 @@ const COLUMNS: DataListColumn[] = [
   { id: 'actions', width: '2rem', align: 'end' },
 ];
 const DOT = { active: 'success', inactive: 'neutral', alumni: 'info' } as const;
+
+const MEMBER_COLUMNS: DataListColumn<Member>[] = [
+  {
+    id: 'status',
+    width: '1.5rem',
+    align: 'center',
+    label: 'Durum',
+    cell: (member) => <StatusDot tone={DOT[member.status]} label={STATUS_LABEL[member.status]} />,
+  },
+  {
+    id: 'name',
+    width: 'minmax(0,2fr)',
+    header: 'Üye',
+    cell: (member) => (
+      <DataListTitle
+        leading={<Avatar name={member.name} size="sm" />}
+        title={member.name}
+        subtitle={member.email}
+      />
+    ),
+  },
+  {
+    id: 'team',
+    width: 'minmax(0,1fr)',
+    from: 'sm',
+    header: 'Ekip',
+    cell: (member) => <Badge>{member.team}</Badge>,
+  },
+  {
+    id: 'events',
+    width: '5rem',
+    from: 'md',
+    align: 'center',
+    header: 'Etkinlik',
+    className: 'text-xs text-muted-foreground tabular-nums',
+    cell: (member) => member.events,
+  },
+  {
+    id: 'actions',
+    width: '4rem',
+    align: 'end',
+    label: 'İşlemler',
+    interactive: true,
+    cell: (member) => (
+      <DataListActions>
+        <IconButton
+          icon={Mail}
+          label={`${member.name} kişisine e-posta gönder`}
+          variant="ghost"
+          size="icon-sm"
+        />
+        <IconButton icon={MoreHorizontal} label="İşlemler" variant="ghost" size="icon-sm" />
+      </DataListActions>
+    ),
+  },
+];
+
+function DataListRowsExample() {
+  const [showTeam, setShowTeam] = useState(true);
+  const rows = MEMBERS.slice(0, 5);
+  return (
+    <Example
+      title="Kolon tanımlarından"
+      description="rows ve columns ver: başlık, satırlar, yükleme ve boş durum tanımlardan çizilir. Bir kolonu diziden çıkarmak onu her yerden kaldırır. Satıra tıkla, altında paneli açılır; hızlı işlemler fareyle üstüne gelince belirir."
+      align="start"
+    >
+      <Button size="sm" className="self-start" onClick={() => setShowTeam((value) => !value)}>
+        {showTeam ? 'Ekip kolonunu gizle' : 'Ekip kolonunu göster'}
+      </Button>
+      <DataList
+        aria-label="Üyeler"
+        rows={rows}
+        columns={
+          showTeam ? MEMBER_COLUMNS : MEMBER_COLUMNS.filter((column) => column.id !== 'team')
+        }
+        getRowId={(member) => member.id}
+        rowLabel={(member) => member.name}
+        renderPanel={(member) => (
+          <p className="text-xs text-muted-foreground">
+            {member.name}, {new Date(member.joined).toLocaleDateString('tr-TR')} tarihinde katıldı
+            ve {member.events} etkinliğe geldi.
+          </p>
+        )}
+      />
+      <DataListFooter>
+        <span>
+          <span className="font-semibold text-foreground tabular-nums">{rows.length}</span> üye
+        </span>
+      </DataListFooter>
+    </Example>
+  );
+}
 
 function DataListExamples() {
   const [sort, setSort] = useState<DataListSort>({ field: 'events', direction: 'desc' });
@@ -69,54 +174,60 @@ function DataListExamples() {
         : { field, direction: 'asc' },
     );
   return (
-    <Example
-      title="Sıralanabilir liste"
-      description="Bir başlığa tıkla: satırlar yeni yerlerine kayar. Pencereyi daraltınca sütunlar gizlenir."
-      align="start"
-    >
-      <DataList columns={COLUMNS} sort={sort} onSortChange={toggle}>
-        <DataListHeader>
-          <DataListColumnHeader column="status" label="Durum" />
-          <DataListColumnHeader column="name" sortable>
-            Üye
-          </DataListColumnHeader>
-          <DataListColumnHeader column="team" sortable>
-            Ekip
-          </DataListColumnHeader>
-          <DataListColumnHeader column="events" sortable>
-            Etkinlik
-          </DataListColumnHeader>
-          <DataListColumnHeader column="actions" label="İşlemler" />
-        </DataListHeader>
-        <DataListBody>
-          {rows.map((member, index) => (
-            <DataListRow
-              key={member.id}
-              href="#member"
-              label={`${member.name} profilini aç`}
-              index={index}
-            >
-              <DataListCell column="status">
-                <StatusDot tone={DOT[member.status]} label={STATUS_LABEL[member.status]} />
-              </DataListCell>
-              <DataListCell column="name" className="gap-3">
-                <Avatar name={member.name} size="sm" />
-                <span className="truncate text-sm text-secondary-foreground">{member.name}</span>
-              </DataListCell>
-              <DataListCell column="team">
-                <Badge>{member.team}</Badge>
-              </DataListCell>
-              <DataListCell column="events" className="text-xs text-muted-foreground tabular-nums">
-                {member.events}
-              </DataListCell>
-              <DataListCell column="actions" interactive>
-                <IconButton icon={MoreHorizontal} label="İşlemler" variant="ghost" size="icon-sm" />
-              </DataListCell>
-            </DataListRow>
-          ))}
-        </DataListBody>
-      </DataList>
-    </Example>
+    <>
+      <Example
+        title="Sıralanabilir liste"
+        description="Bir başlığa tıkla: satırlar yeni yerlerine kayar. Pencereyi daraltınca sütunlar gizlenir."
+        align="start"
+      >
+        <DataList columns={COLUMNS} sort={sort} onSortChange={toggle}>
+          <DataListHeader>
+            <DataListColumnHeader column="status" label="Durum" />
+            <DataListColumnHeader column="name" sortable>
+              Üye
+            </DataListColumnHeader>
+            <DataListColumnHeader column="team" sortable>
+              Ekip
+            </DataListColumnHeader>
+            <DataListColumnHeader column="events" sortable>
+              Etkinlik
+            </DataListColumnHeader>
+            <DataListColumnHeader column="actions" label="İşlemler" />
+          </DataListHeader>
+          <DataListBody>
+            {rows.map((member) => (
+              <DataListRow key={member.id} href="#member" label={`${member.name} profilini aç`}>
+                <DataListCell column="status">
+                  <StatusDot tone={DOT[member.status]} label={STATUS_LABEL[member.status]} />
+                </DataListCell>
+                <DataListCell column="name" className="gap-3">
+                  <Avatar name={member.name} size="sm" />
+                  <span className="truncate text-sm text-secondary-foreground">{member.name}</span>
+                </DataListCell>
+                <DataListCell column="team">
+                  <Badge>{member.team}</Badge>
+                </DataListCell>
+                <DataListCell
+                  column="events"
+                  className="text-xs text-muted-foreground tabular-nums"
+                >
+                  {member.events}
+                </DataListCell>
+                <DataListCell column="actions" interactive>
+                  <IconButton
+                    icon={MoreHorizontal}
+                    label="İşlemler"
+                    variant="ghost"
+                    size="icon-sm"
+                  />
+                </DataListCell>
+              </DataListRow>
+            ))}
+          </DataListBody>
+        </DataList>
+      </Example>
+      <DataListRowsExample />
+    </>
   );
 }
 
@@ -168,6 +279,73 @@ function ListPanelExamples() {
   );
 }
 
+const FIGURES = [
+  ['Toplam form', '128'],
+  ['Toplam cevap', '4.213'],
+  ['Bekleyen onay', '17'],
+  ['Şablon', '6'],
+] as const;
+
+function SectionExamples() {
+  return (
+    <>
+      <Example
+        title="Panoda bölgeler"
+        description="Kart yerine başlık ve yanından uzanan çizgi; eylem çizginin sonunda. Liste -mx-3 ile kenara taşar, satırların metni başlıkla aynı hizada durur."
+        align="start"
+      >
+        <div className="grid w-full gap-x-10 gap-y-8 md:grid-cols-[minmax(0,1fr)_14rem]">
+          <Section
+            title="Son güncellenen formlar"
+            description="Sahibi olduğun ya da seninle paylaşılan formlar."
+            action={
+              <Button variant="ghost" size="sm">
+                Tümünü gör <ArrowRight />
+              </Button>
+            }
+          >
+            <ListPanel status={{ kind: 'ready' }} framed={false} className="-mx-3">
+              <ListItem title="Gece Kodu 2026 başvuru" subtitle="412 yanıt" />
+              <ListItem title="Kulüp üyelik anketi" subtitle="903 yanıt" />
+              <ListItem title="Stant haftası geri bildirim" subtitle="211 yanıt" />
+            </ListPanel>
+          </Section>
+          <Section title="Genel">
+            <div className="grid grid-cols-2 gap-6">
+              {FIGURES.map(([label, value]) => (
+                <StatCard key={label} framed={false} label={label} value={value} />
+              ))}
+            </div>
+          </Section>
+        </div>
+      </Example>
+      <Example
+        title="Yükseklik verilince"
+        description="İçerik başlığın bıraktığı yeri alır; taşan satırlar kendi içinde kayar."
+        align="start"
+      >
+        <Section
+          title="Etkinlik günlüğü"
+          className="h-48 w-full max-w-md"
+          action={<IconButton icon={RefreshCw} label="Yenile" variant="ghost" size="icon-sm" />}
+        >
+          <ul
+            tabIndex={0}
+            aria-label="Etkinlik günlüğü"
+            className="scrollbar h-full overflow-y-auto rounded-md text-xs text-muted-foreground outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <li key={i} className="border-b border-border-subtle py-1.5">
+                {12 - i} Ekim · Kayıt formu güncellendi
+              </li>
+            ))}
+          </ul>
+        </Section>
+      </Example>
+    </>
+  );
+}
+
 function CardExamples() {
   const [value, setValue] = useState(86);
   return (
@@ -207,6 +385,39 @@ function CardExamples() {
             hint="Düşüş iyi haber"
           />
         </div>
+      </Example>
+      <Example
+        title="Çerçevesiz sayılar"
+        description="framed={false}: kart kalkar, sayılar bir Section’ın içinde durur; satırları birbirine yaklaşır, her sayı tek parça okunur."
+        align="start"
+      >
+        <Section title="Bu dönem" className="w-full">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
+            <StatCard
+              framed={false}
+              label="Aktif üye"
+              value={value}
+              icon={Users}
+              delta={<TrendBadge value={12.5} />}
+              hint="Geçen döneme göre"
+            />
+            <StatCard
+              framed={false}
+              label="Katılım"
+              value={1677}
+              icon={CalendarDays}
+              hint="Son 12 ay"
+              trend={monthly('12m').map((row) => row.attendance)}
+            />
+            <StatCard
+              framed={false}
+              label="Bekleyen onay"
+              value={13}
+              delta={<TrendBadge value={-9.7} riseIsGood={false} />}
+              hint="Düşüş iyi haber"
+            />
+          </div>
+        </Section>
       </Example>
       <Example title="İçerik kartı" align="start">
         <Card className="max-w-md">
@@ -276,6 +487,7 @@ function AvatarExamples() {
       <Avatar name="İlayda Şahin" />
       <Avatar email="ozan@example.com" size="lg" />
       <Avatar />
+      <Avatar name="Mira Tunç" />
       <Avatar name="WebLab" shape="square" />
       <Avatar name="Sky Sec" shape="square" size="lg" />
     </Example>
@@ -427,6 +639,24 @@ function ChartExamples({ kind }: { kind: 'area' | 'line' | 'bar' | 'donut' }) {
               markers
               title="Haftalık yanıt"
               badge={<TrendBadge value={-12.2} />}
+              data={data.slice(-8)}
+              x="month"
+              series={{ geceKodu: { label: 'Yanıt' } }}
+            />
+          </div>
+        </Example>
+        <Example
+          title="Çerçevesiz"
+          description="framed={false}: kart kalkar, başlık bir Section başlığı gibi çizilir; panoda bölümlerin arasında durur."
+          align="start"
+        >
+          <div className="w-full max-w-sm">
+            <AreaChart
+              compact
+              markers
+              framed={false}
+              title="Haftalık yanıt"
+              badge={<TrendBadge value={8.4} />}
               data={data.slice(-8)}
               x="month"
               series={{ geceKodu: { label: 'Yanıt' } }}
@@ -605,6 +835,7 @@ function NumberExamples() {
 export const DATA_EXAMPLES = {
   'data-list': DataListExamples,
   'list-panel': ListPanelExamples,
+  section: SectionExamples,
   card: CardExamples,
   badge: BadgeExamples,
   avatar: AvatarExamples,

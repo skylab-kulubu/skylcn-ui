@@ -14,7 +14,7 @@ export type PageHeaderProps = {
   description?: ReactNode;
   /** A badge beside the title, such as a form's open or closed state. */
   badge?: ReactNode;
-  /** Buttons at the right of the title row. */
+  /** Buttons at the end of the title row, after the divider. */
   actions?: ReactNode;
   /** Chips or stats under the description. */
   meta?: ReactNode;
@@ -31,7 +31,7 @@ export type PageHeaderProps = {
   /** The page's TabsNav; it takes the divider's place. */
   tabs?: ReactNode;
   className?: string;
-  /** A toolbar row under the divider: search, filters, view switches. */
+  /** A toolbar row under the title: search, filters, view switches. */
   children?: ReactNode;
 };
 
@@ -73,18 +73,30 @@ export function PageHeader({
           </div>
         ) : null}
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <h1 className="truncate text-lg font-semibold text-foreground">{title}</h1>
-            {badge ? <span className="shrink-0">{badge}</span> : null}
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <h1 className="truncate text-lg font-semibold text-foreground">{title}</h1>
+              {badge ? <span className="shrink-0">{badge}</span> : null}
+            </div>
+            {/* Runs beside the title the way a Section draws its rule; tabs take its place */}
+            {tabs ? null : (
+              <div
+                aria-hidden
+                data-slot="page-header-divider"
+                className="h-px min-w-8 flex-1 bg-border"
+              />
+            )}
+            {actions ? (
+              <div className="ml-auto flex shrink-0 items-center gap-1.5">{actions}</div>
+            ) : null}
           </div>
           {description ? (
             <p className="mt-0.5 text-2xs text-subtle-foreground">{description}</p>
           ) : null}
           {meta ? <div className="flex flex-wrap items-center gap-1.5 pt-2">{meta}</div> : null}
         </div>
-        {actions ? <div className="flex shrink-0 items-center gap-1.5">{actions}</div> : null}
       </div>
-      {tabs ? tabs : <div data-slot="page-header-divider" className="h-px bg-border" />}
+      {tabs}
       {children ? (
         <div className="flex flex-wrap items-center gap-2 md:flex-nowrap">{children}</div>
       ) : null}
@@ -246,9 +258,7 @@ export function Stat({
 }) {
   return (
     <div data-slot="stat" className={cn('text-right', className)}>
-      <p className="text-3xs font-medium tracking-label text-subtle-foreground uppercase">
-        {label}
-      </p>
+      <p className="text-2xs text-subtle-foreground">{label}</p>
       <p className="text-sm font-semibold text-foreground tabular-nums">{value ?? '--'}</p>
     </div>
   );

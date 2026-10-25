@@ -228,6 +228,7 @@ export { Tooltip, TooltipProvider, type TooltipProps } from './components/toolti
 export {
   AppShell,
   AppShellActions,
+  AppShellFill,
   SidebarBrand,
   SidebarContent,
   SidebarFooter,
@@ -246,19 +247,29 @@ export {
 } from './components/app-shell.js';
 export {
   DataList,
+  DataListActions,
   DataListBody,
   DataListCell,
   DataListColumnHeader,
   DataListEmpty,
+  DataListExpander,
+  DataListFooter,
   DataListHeader,
   DataListRow,
   DataListSkeleton,
+  DataListTitle,
+  useDataListPanelOpened,
+  type DataListActionsProps,
   type DataListCellProps,
   type DataListColumn,
   type DataListColumnHeaderProps,
+  type DataListPartsProps,
   type DataListProps,
   type DataListRowProps,
+  type DataListRowsProps,
   type DataListSort,
+  type DataListSortValue,
+  type DataListTitleProps,
 } from './components/data-list.js';
 export {
   ListItem,
@@ -278,6 +289,7 @@ export {
   type PageHeaderProps,
   type SearchInputProps,
 } from './components/page-header.js';
+export { Section, type SectionProps } from './components/section.js';
 export {
   ContextMenu,
   ContextMenuContent,

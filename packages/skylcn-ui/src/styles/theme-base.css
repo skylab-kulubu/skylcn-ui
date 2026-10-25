@@ -96,6 +96,7 @@
   --color-skylab-900: var(--skylab-900);
 
   --color-sidebar: var(--sidebar);
+  --color-sidebar-active: var(--sidebar-active);
   --color-background: var(--background);
   --color-sheet: var(--sheet);
   --color-popover: var(--popover);
@@ -113,6 +114,7 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-row-highlight: var(--row-highlight);
   --color-accent-foreground: var(--foreground-strong);
   --color-secondary: var(--muted);
   --color-border: var(--border);
@@ -157,6 +159,7 @@
   --ease-spring: var(--motion-ease-spring);
 
   --shadow-overlay: var(--elevation-overlay);
+  --shadow-sidebar-active: var(--elevation-sidebar-active);
 }
 
 @keyframes skylcn-shimmer-block {
@@ -197,6 +200,86 @@
 @utility enter-fade {
   --skylcn-enter-shift: 0px;
   animation: skylcn-enter var(--motion-duration-base) var(--motion-ease-enter) backwards;
+}
+
+/*
+ * For a popup's rows: they come in one after another from the side of the
+ * trigger and, closing, go back the same way, the farthest first. The popup's
+ * own exit has to outlast them, since Base UI waits only for the popup itself.
+ * Reduced motion zeroes the stagger and the shift, leaving one plain fade.
+ */
+@keyframes skylcn-stagger-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--skylcn-stagger-shift);
+  }
+}
+
+@keyframes skylcn-stagger-out {
+  to {
+    opacity: 0;
+    translate: 0 var(--skylcn-stagger-shift);
+  }
+}
+
+@utility stagger-items {
+  --skylcn-stagger-step: calc(var(--motion-stagger) / 2);
+
+  & > * {
+    --skylcn-i: 0;
+    --skylcn-r: 0;
+    --skylcn-in: var(--skylcn-i);
+    --skylcn-out: var(--skylcn-r);
+    --skylcn-stagger-shift: calc(var(--motion-shift) * -1);
+    animation: skylcn-stagger-in var(--motion-duration-fast) var(--motion-ease-enter) backwards;
+    animation-delay: calc(var(--skylcn-in) * var(--skylcn-stagger-step));
+  }
+  & > :nth-child(2) {
+    --skylcn-i: 1;
+  }
+  & > :nth-child(3) {
+    --skylcn-i: 2;
+  }
+  & > :nth-child(4) {
+    --skylcn-i: 3;
+  }
+  & > :nth-child(5) {
+    --skylcn-i: 4;
+  }
+  & > :nth-child(6) {
+    --skylcn-i: 5;
+  }
+  & > :nth-child(n + 7) {
+    --skylcn-i: 6;
+  }
+  & > :nth-last-child(2) {
+    --skylcn-r: 1;
+  }
+  & > :nth-last-child(3) {
+    --skylcn-r: 2;
+  }
+  & > :nth-last-child(4) {
+    --skylcn-r: 3;
+  }
+  & > :nth-last-child(5) {
+    --skylcn-r: 4;
+  }
+  & > :nth-last-child(6) {
+    --skylcn-r: 5;
+  }
+  & > :nth-last-child(n + 7) {
+    --skylcn-r: 6;
+  }
+  /* Opening upwards, the row nearest the trigger is the last one */
+  &[data-side='top'] > * {
+    --skylcn-in: var(--skylcn-r);
+    --skylcn-out: var(--skylcn-i);
+    --skylcn-stagger-shift: var(--motion-shift);
+  }
+  &[data-ending-style] > * {
+    animation: skylcn-stagger-out var(--motion-duration-instant) var(--motion-ease-exit) forwards;
+    animation-delay: calc(var(--skylcn-out) * var(--skylcn-stagger-step) / 2);
+  }
 }
 
 /*
@@ -369,6 +452,83 @@
   [data-motion='reduced'] .skylcn-loader .skylcn-loader-metal,
   [data-motion='reduced'] .skylcn-loader .skylcn-loader-halo {
     display: none;
+  }
+}
+
+/*
+ * SkylabLoader's other variants. `radiate` lights each path by its distance from the centre
+ * (the loader before 0.1.4); `pulse` breathes the whole mark, for small quiet places.
+ */
+@layer components {
+  .skylcn-loader-radiate path {
+    opacity: 0.22;
+    animation: skylcn-loader-radiate 1.6s var(--motion-ease-enter) infinite both;
+  }
+  .skylcn-loader-radiate [data-r='1'] {
+    animation-delay: 70ms;
+  }
+  .skylcn-loader-radiate [data-r='2'] {
+    animation-delay: 140ms;
+  }
+  .skylcn-loader-radiate [data-r='3'] {
+    animation-delay: 210ms;
+  }
+  .skylcn-loader-radiate [data-r='4'] {
+    animation-delay: 280ms;
+  }
+  .skylcn-loader-radiate [data-r='5'] {
+    animation-delay: 350ms;
+  }
+  .skylcn-loader-radiate [data-r='6'] {
+    animation-delay: 420ms;
+  }
+  .skylcn-loader-radiate [data-r='7'] {
+    animation-delay: 490ms;
+  }
+  .skylcn-loader-radiate [data-r='8'] {
+    animation-delay: 560ms;
+  }
+  .skylcn-loader-radiate [data-r='9'] {
+    animation-delay: 630ms;
+  }
+  .skylcn-loader-radiate [data-r='10'] {
+    animation-delay: 700ms;
+  }
+  .skylcn-loader-pulse .skylcn-loader-mark {
+    animation: skylcn-loader-pulse 1.6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skylcn-loader-radiate path,
+    .skylcn-loader-pulse .skylcn-loader-mark {
+      animation: none;
+      opacity: 1;
+    }
+  }
+  [data-motion='reduced'] .skylcn-loader-radiate path,
+  [data-motion='reduced'] .skylcn-loader-pulse .skylcn-loader-mark {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@keyframes skylcn-loader-radiate {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+  35% {
+    opacity: 1;
+  }
+}
+
+@keyframes skylcn-loader-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
   }
 }
 

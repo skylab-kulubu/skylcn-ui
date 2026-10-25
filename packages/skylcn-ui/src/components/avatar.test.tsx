@@ -32,3 +32,14 @@ describe('Avatar', () => {
     expect(root()).toHaveClass('bg-muted');
   });
 });
+
+describe('Avatar shape', () => {
+  it('draws people round by default and square only when asked', () => {
+    const { container, rerender } = render(<Avatar name="Mert Kaya" />);
+    const root = () => container.querySelector('[data-slot="avatar"]')!;
+    expect(root()).toHaveClass('rounded-full');
+    rerender(<Avatar name="WebLab" shape="square" />);
+    expect(root()).toHaveClass('rounded-lg');
+    expect(root()).not.toHaveClass('rounded-full');
+  });
+});

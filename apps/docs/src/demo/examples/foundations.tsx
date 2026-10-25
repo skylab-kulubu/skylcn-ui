@@ -298,6 +298,15 @@ function Brand() {
         <SkylabLoader size={80} />
         <p className="shimmer-text text-sm font-semibold text-muted-foreground">Yükleniyor…</p>
       </Example>
+      <Example
+        title="Yükleyici seçenekleri"
+        description="Varsayılan reveal; radiate işareti merkezden uzaklığa göre yakar, pulse küçük ve sakin yerler için tüm işareti nefes aldırır."
+      >
+        <SkylabLoader size={64} />
+        <SkylabLoader size={64} variant="radiate" />
+        <SkylabLoader size={64} variant="pulse" />
+        <SkylabLoader size={20} variant="pulse" />
+      </Example>
     </>
   );
 }

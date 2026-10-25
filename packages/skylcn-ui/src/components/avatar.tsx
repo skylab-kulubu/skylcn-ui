@@ -49,7 +49,7 @@ export type AvatarProps = {
   email?: string | null;
   src?: string | null;
   size?: keyof typeof SIZES;
-  /** `circle` for people; `square` for teams, groups and other organisations. */
+  /** A rounded square by default, as the admin panels draw people and teams; `circle` for a round face. */
   shape?: 'circle' | 'square';
   className?: string;
 };

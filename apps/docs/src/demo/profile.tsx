@@ -29,7 +29,7 @@ export function DemoProfile() {
   const { theme, setTheme } = useTheme();
   const { user, loading } = useHostUser();
   if (HOSTED_IN_ADMIN && !user) {
-    return loading ? <div aria-hidden className="h-13" /> : null;
+    return loading ? <div aria-hidden className="h-11" /> : null;
   }
   const person = user ?? DEMO_PERSON;
   return (

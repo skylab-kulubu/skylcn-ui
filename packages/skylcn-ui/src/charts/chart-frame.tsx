@@ -42,7 +42,10 @@ export type ChartFrameProps = {
   empty?: boolean;
   /** What the empty state says, such as "No applications for this event yet". */
   emptyMessage?: ReactNode;
-  /** Draws the card; turn off to set the chart straight into a section or another card. */
+  /**
+   * Draws the card; turn off to set the chart straight into a Section or another card,
+   * where its caption reads like a Section header.
+   */
   framed?: boolean;
   className?: string;
   /** Draws the plot for the series the reader has not hidden. */
@@ -82,6 +85,40 @@ export function ChartFrame({
       return next;
     });
 
+  const heading = (
+    <div className="flex min-w-0 items-center gap-2">
+      <p
+        className={cn(
+          'truncate',
+          framed
+            ? 'text-sm font-semibold text-foreground'
+            : 'text-xs font-medium text-muted-foreground',
+        )}
+      >
+        {title}
+      </p>
+      {badge ? <span className="shrink-0">{badge}</span> : null}
+    </div>
+  );
+  const controls = (
+    <>
+      {actions}
+      {/* With nothing to show there is no legend to read and no table to switch to */}
+      {empty ? null : (
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-pressed={asTable}
+          aria-label={asTable ? messages.showChart : messages.showTable}
+          title={asTable ? messages.showChart : messages.showTable}
+          onClick={() => setAsTable((value) => !value)}
+        >
+          <IconSwap swapped={asTable} icon={Table2} swappedIcon={ChartColumn} className="size-4" />
+        </Button>
+      )}
+    </>
+  );
+
   return (
     <figure
       data-slot="chart"
@@ -91,36 +128,32 @@ export function ChartFrame({
         className,
       )}
     >
-      <figcaption className={cn('flex items-start gap-3', framed && 'px-4 pt-4')}>
-        <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-2">
-            <p className="truncate text-sm font-semibold text-foreground">{title}</p>
-            {badge ? <span className="shrink-0">{badge}</span> : null}
+      {framed ? (
+        <figcaption className="flex items-start gap-3 px-4 pt-4">
+          <div className="min-w-0 flex-1">
+            {heading}
+            {description ? (
+              <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+            ) : null}
           </div>
-          {description ? (
-            <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
-          ) : null}
-        </div>
-        {actions}
-        {/* With nothing to show there is no legend to read and no table to switch to */}
-        {empty ? null : (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-pressed={asTable}
-            aria-label={asTable ? messages.showChart : messages.showTable}
-            title={asTable ? messages.showChart : messages.showTable}
-            onClick={() => setAsTable((value) => !value)}
-          >
-            <IconSwap
-              swapped={asTable}
-              icon={Table2}
-              swappedIcon={ChartColumn}
-              className="size-4"
+          {controls}
+        </figcaption>
+      ) : (
+        // Without its card the caption reads like a Section header: a quiet title, a rule
+        // running to the controls, the description under them
+        <figcaption className="flex min-w-0 flex-col">
+          <div className="flex min-h-6 min-w-0 items-center gap-3">
+            {heading}
+            <span
+              aria-hidden
+              data-slot="chart-rule"
+              className="h-px min-w-4 flex-1 bg-border-subtle"
             />
-          </Button>
-        )}
-      </figcaption>
+            {controls}
+          </div>
+          {description ? <p className="text-2xs text-subtle-foreground">{description}</p> : null}
+        </figcaption>
+      )}
 
       {legend.length > 1 && !asTable && !empty ? (
         <ul className={cn('flex flex-wrap gap-x-1 gap-y-0.5 pt-2', framed ? 'px-3' : '-mx-1.5')}>
@@ -163,7 +196,8 @@ export function ChartFrame({
 
       <Swap id={asTable ? 'table' : 'chart'} className={cn('min-w-0 pt-2', framed && 'px-2 pb-3')}>
         {empty && loading ? (
-          <Skeleton className="mx-2 rounded-lg" style={{ height: height - 8 }} />
+          // As tall as the plot, so nothing below moves when the data arrives
+          <Skeleton className="mx-2 my-1 rounded-lg" style={{ height: height - 8 }} />
         ) : empty ? (
           <p className="grid place-items-center text-xs text-muted-foreground" style={{ height }}>
             {emptyMessage ?? messages.noData}

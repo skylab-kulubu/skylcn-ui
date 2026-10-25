@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '../lib/cn.js';
+import { numberFormat } from '../lib/number-format.js';
 import { useSkylcn } from '../lib/provider.js';
 
 export type ProportionSegment = { key: string; label: string; value: number };
@@ -21,7 +22,7 @@ export function ProportionBar({ segments, className }: ProportionBarProps) {
   const total = segments.reduce((sum, segment) => sum + segment.value, 0);
   const share = (value: number) => (total ? (value / total) * 100 : 0);
   const percent = (value: number) => {
-    const text = Math.round(share(value)).toLocaleString(tag);
+    const text = numberFormat(tag).format(Math.round(share(value)));
     return locale === 'tr' ? `%${text}` : `${text}%`;
   };
 
@@ -54,7 +55,7 @@ export function ProportionBar({ segments, className }: ProportionBarProps) {
             />
             <span className="text-secondary-foreground">{segment.label}</span>
             <span className="text-subtle-foreground tabular-nums">
-              {segment.value.toLocaleString(tag)} · {percent(segment.value)}
+              {numberFormat(tag).format(segment.value)} · {percent(segment.value)}
             </span>
           </li>
         ))}

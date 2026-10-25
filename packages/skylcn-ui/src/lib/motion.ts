@@ -6,7 +6,8 @@
  */
 function popupMotion(duration: 'fast' | 'base') {
   return [
-    'origin-(--transform-origin) transition-[opacity,transform] ease-enter',
+    // Tailwind 4's scale and translate utilities set the scale and translate properties, not transform
+    'origin-(--transform-origin) transition-[opacity,scale,translate] ease-enter',
     duration === 'fast' ? 'duration-(--motion-duration-fast)' : 'duration-(--motion-duration-base)',
     'data-starting-style:scale-(--motion-scale-from) data-starting-style:opacity-0',
     'data-ending-style:scale-(--motion-scale-from) data-ending-style:opacity-0 data-ending-style:ease-exit',
