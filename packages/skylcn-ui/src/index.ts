@@ -64,6 +64,11 @@ export {
   type TimelineItem,
 } from './components/display-extra.js';
 export {
+  ChoiceList,
+  type ChoiceListOption,
+  type ChoiceListProps,
+} from './components/choice-list.js';
+export {
   Kbd,
   Meter,
   Notice,
@@ -73,7 +78,13 @@ export {
   type NoticeProps,
   type ProgressProps,
 } from './components/feedback.js';
-export { Radio, RadioGroup, type RadioProps } from './components/radio-group.js';
+export {
+  Radio,
+  RadioCard,
+  RadioGroup,
+  type RadioCardProps,
+  type RadioProps,
+} from './components/radio-group.js';
 export { Tab, Tabs, TabsList, TabsPanel } from './components/tabs.js';
 export { TabsNav, type TabsNavItem, type TabsNavProps } from './components/tabs-nav.js';
 export { Tree, type TreeNode, type TreeProps } from './components/tree.js';
@@ -136,7 +147,7 @@ export {
   type CardTitleProps,
   type StatCardProps,
 } from './components/card.js';
-export { Checkbox } from './components/checkbox.js';
+export { Checkbox, CheckboxCard, type CheckboxCardProps } from './components/checkbox.js';
 export { CopyButton, type CopyButtonProps } from './components/copy-button.js';
 export {
   Drawer,
