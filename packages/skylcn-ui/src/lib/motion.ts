@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState, type RefObject } from 'react';
 
 /**
  * The one enter and exit for floating popups (menus, tooltips, popovers).
@@ -36,4 +36,36 @@ export function useSettled() {
     return () => window.clearTimeout(timer);
   }, []);
   return settled;
+}
+
+/**
+ * Keeps a scroll box as tall as its content, up to its max-height, in pixels rather than auto,
+ * so a height transition can ease it as the content changes, the way forms' search list does.
+ * It watches the box too, since its max-height may only resolve once the popup is placed.
+ */
+export function useFitHeight(
+  box: RefObject<HTMLElement | null>,
+  content: RefObject<HTMLElement | null>,
+) {
+  useLayoutEffect(() => {
+    const outer = box.current;
+    const inner = content.current;
+    if (!outer || !inner || typeof ResizeObserver === 'undefined') return;
+    const fit = () => {
+      const style = getComputedStyle(outer);
+      const chrome =
+        parseFloat(style.paddingTop) +
+        parseFloat(style.paddingBottom) +
+        parseFloat(style.borderTopWidth) +
+        parseFloat(style.borderBottomWidth);
+      const max = parseFloat(style.maxHeight);
+      const height = inner.offsetHeight + (Number.isNaN(chrome) ? 0 : chrome);
+      outer.style.height = `${Number.isNaN(max) ? height : Math.min(height, max)}px`;
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(inner);
+    observer.observe(outer);
+    return () => observer.disconnect();
+  }, [box, content]);
 }
