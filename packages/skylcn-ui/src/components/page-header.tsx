@@ -8,6 +8,18 @@ import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
 import type { BreadcrumbItem } from './breadcrumbs.js';
 import { Button, type ButtonProps } from './button.js';
+import {
+  controlFocus,
+  controlHeight,
+  controlIcon,
+  controlIconLeft,
+  controlIconRoom,
+  controlRadius,
+  controlSurface,
+  controlText,
+  useControlSize,
+  type ControlSize,
+} from './control.js';
 import { AnimatedNumber } from './motion.js';
 
 export type PageHeaderProps = {
@@ -108,8 +120,10 @@ export function PageHeader({
 export type SearchInputProps = Omit<ComponentProps<'input'>, 'value' | 'onChange' | 'size'> & {
   value: string;
   onValueChange: (value: string) => void;
-  /** The narrow form for toolbars in the shell header; it widens while focused. */
+  /** The narrow form for toolbars in the shell header; it widens while focused, at sm unless `size` says otherwise. */
   compact?: boolean;
+  /** sm 32px, md 36px (the default) or lg 38px. */
+  size?: ControlSize;
 };
 
 /** A search box with a leading glass and a clear button while it has text. */
@@ -117,11 +131,13 @@ export function SearchInput({
   value,
   onValueChange,
   compact = false,
+  size: sizeProp,
   placeholder,
   className,
   ...props
 }: SearchInputProps) {
   const { messages } = useSkylcn();
+  const size = useControlSize(sizeProp ?? (compact ? 'sm' : undefined));
   return (
     <div
       data-slot="search-input"
@@ -133,9 +149,16 @@ export function SearchInput({
         className,
       )}
     >
-      <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-faint-foreground" />
+      <Search
+        className={cn(
+          'pointer-events-none absolute top-1/2 -translate-y-1/2 text-subtle-foreground',
+          controlIcon[size],
+          controlIconLeft[size],
+        )}
+      />
       <input
         type="search"
+        data-size={size}
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
         placeholder={placeholder ?? messages.search}
@@ -143,12 +166,14 @@ export function SearchInput({
           props['aria-label'] ?? (typeof placeholder === 'string' ? placeholder : messages.search)
         }
         className={cn(
-          'w-full rounded-md border border-input bg-card pr-8 pl-8 text-xs text-foreground outline-hidden placeholder:text-subtle-foreground',
-          'transition-[border-color,background-color] duration-(--motion-duration-fast) ease-enter',
-          'focus-visible:border-skylab-400/50 focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-skylab-400/20',
+          controlSurface,
+          controlFocus,
+          controlHeight[size],
+          controlText[size],
+          controlRadius[size],
+          controlIconRoom[size],
+          size === 'lg' ? 'pr-9' : 'pr-8',
           '[&::-webkit-search-cancel-button]:hidden',
-          compact ? 'h-8' : 'h-9 rounded-lg',
-          'pointer-coarse:h-10 pointer-coarse:text-base',
         )}
         {...props}
       />

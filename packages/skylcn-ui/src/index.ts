@@ -113,6 +113,7 @@ export {
   type DateRange,
   type DateRangePickerProps,
 } from './components/calendar.js';
+export { ControlSizeProvider, useControlSize, type ControlSize } from './components/control.js';
 export {
   Carousel,
   Kanban,

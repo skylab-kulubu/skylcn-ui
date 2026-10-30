@@ -5,35 +5,49 @@ import { Input as InputPrimitive } from '@base-ui/react/input';
 import type { LucideIcon } from 'lucide-react';
 import { useState, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import {
+  controlFocus,
+  controlHeight,
+  controlIcon,
+  controlIconLeft,
+  controlIconRoom,
+  controlInvalid,
+  controlPadding,
+  controlRadius,
+  controlSurface,
+  controlText,
+  useControlSize,
+  type ControlSize,
+} from './control.js';
 import { Collapse } from './motion.js';
 
-const controlClass = [
-  'w-full min-w-0 rounded-md border border-input bg-input-background text-xs text-foreground outline-hidden',
-  // 16px on touch screens keeps iOS from zooming into the field
-  'pointer-coarse:text-base',
-  'transition-[border-color] duration-(--motion-duration-fast) ease-enter',
-  'placeholder:text-subtle-foreground',
-  'hover:border-border-strong focus-visible:border-skylab-400/50 focus-visible:ring-2 focus-visible:ring-skylab-400/20',
-  'aria-invalid:border-destructive/50 aria-invalid:ring-destructive/20 data-invalid:border-destructive/50',
-  'disabled:cursor-not-allowed disabled:opacity-60',
-];
+const controlClass = cn(controlSurface, controlFocus, controlInvalid);
 // Read-only reads as filled in, like a locked Combobox, not as a box waiting for input
 const readOnlyClass = 'border-border bg-muted text-secondary-foreground hover:border-border';
 
 export type InputProps = InputPrimitive.Props & {
   /** A leading icon inside the box, such as a search glass. */
   icon?: LucideIcon;
-  inputSize?: 'sm' | 'md';
+  /**
+   * sm 32px, md 36px (the default) or lg 38px. Named apart from `size`, a native input
+   * attribute; a ControlSizeProvider above sets it for a whole form.
+   */
+  inputSize?: ControlSize;
 };
 
-export function Input({ className, icon: Icon, inputSize = 'md', ...props }: InputProps) {
+export function Input({ className, icon: Icon, inputSize, ...props }: InputProps) {
+  const size = useControlSize(inputSize);
   const input = (
     <InputPrimitive
       data-slot="input"
+      data-size={size}
       className={cn(
         controlClass,
-        inputSize === 'sm' ? 'h-7 px-2 pointer-coarse:h-9' : 'h-8 px-2.5 pointer-coarse:h-10',
-        Icon && (inputSize === 'sm' ? 'pl-7' : 'pl-8'),
+        controlHeight[size],
+        controlText[size],
+        controlRadius[size],
+        controlPadding[size],
+        Icon && controlIconRoom[size],
         props.readOnly && readOnlyClass,
         !Icon && className,
       )}
@@ -43,28 +57,53 @@ export function Input({ className, icon: Icon, inputSize = 'md', ...props }: Inp
   if (!Icon) return input;
   return (
     <div className={cn('relative', className)}>
-      <Icon className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-subtle-foreground" />
+      <Icon
+        className={cn(
+          'pointer-events-none absolute top-1/2 -translate-y-1/2 text-subtle-foreground',
+          controlIcon[size],
+          controlIconLeft[size],
+        )}
+      />
       {input}
     </div>
   );
 }
 
+const textareaSize = {
+  sm: 'min-h-16 px-2.5 py-1.5',
+  md: 'min-h-18 px-2.5 py-2',
+  lg: 'min-h-20 px-3 py-2.5',
+} as const;
+
 export type TextareaProps = ComponentProps<'textarea'> & {
   /** Counts the characters under the box, against `maxLength` when it has one. */
   showCount?: boolean;
+  /** sm, md (the default) or lg, the text and padding of the other boxes at that size. */
+  size?: ControlSize;
 };
 
 /** A multi-line box; inside a Field it takes the field's label, hint and error like Input. */
-export function Textarea({ className, showCount = false, onChange, ...props }: TextareaProps) {
+export function Textarea({
+  className,
+  showCount = false,
+  onChange,
+  size: sizeProp,
+  ...props
+}: TextareaProps) {
+  const size = useControlSize(sizeProp);
   const [typed, setTyped] = useState(() => String(props.defaultValue ?? '').length);
   const control = (
     <FieldPrimitive.Control
       render={
         <textarea
           data-slot="textarea"
+          data-size={size}
           className={cn(
             controlClass,
-            'field-sizing-content min-h-16 resize-y px-2.5 py-2 leading-relaxed',
+            controlText[size],
+            controlRadius[size],
+            textareaSize[size],
+            'field-sizing-content resize-y leading-relaxed',
             props.readOnly && readOnlyClass,
             className,
           )}
