@@ -281,10 +281,14 @@ export {
   type ListStatus,
 } from './components/list.js';
 export {
+  ActiveFilters,
+  FilterButton,
   FilterPills,
   PageHeader,
   SearchInput,
   Stat,
+  type ActiveFilter,
+  type FilterButtonProps,
   type FilterPillOption,
   type FilterPillsProps,
   type PageHeaderProps,

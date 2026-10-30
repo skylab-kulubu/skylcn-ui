@@ -94,6 +94,7 @@ const MESSAGES = {
     confirmHint: 'Metin tutunca Enter ile de onaylayabilirsin.',
     unlocksIn: (seconds: number) => `${seconds} saniye sonra açılır`,
     secondsShort: (seconds: number) => `${seconds} sn`,
+    removeFilter: (label: string) => `${label} filtresini kaldır`,
   },
   en: {
     loading: 'Loading…',
@@ -181,6 +182,7 @@ const MESSAGES = {
     confirmHint: 'Once it matches, Enter confirms too.',
     unlocksIn: (seconds: number) => `unlocks in ${seconds} seconds`,
     secondsShort: (seconds: number) => `${seconds}s`,
+    removeFilter: (label: string) => `Remove the ${label} filter`,
   },
 } as const;
 

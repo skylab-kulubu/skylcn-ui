@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { SkylcnProvider, type LinkComponentProps } from '../lib/provider.js';
 import { axeViolations } from '../test/axe.js';
-import { PageHeader } from './page-header.js';
+import { ActiveFilters, FilterButton, PageHeader } from './page-header.js';
 import { TabsNav } from './tabs-nav.js';
 
 const tabs = (
@@ -99,5 +100,31 @@ describe('PageHeader', () => {
       />,
     );
     expect(await axeViolations()).toEqual([]);
+  });
+});
+
+describe('Filter parts', () => {
+  it('says on the button how many filters are on', () => {
+    render(<FilterButton count={2} />);
+    expect(screen.getByRole('button', { name: 'Filtreler (2)' })).toBeInTheDocument();
+  });
+
+  it('takes one filter off per chip and offers clearing once two are on', async () => {
+    const user = userEvent.setup();
+    const onRemove = vi.fn();
+    const onClear = vi.fn();
+    render(
+      <ActiveFilters
+        filters={[
+          { key: 'status', label: 'Durum: Açık', onRemove },
+          { key: 'timed', label: 'Süreli', onRemove: vi.fn() },
+        ]}
+        onClear={onClear}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: 'Durum: Açık filtresini kaldır' }));
+    expect(onRemove).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Temizle' }));
+    expect(onClear).toHaveBeenCalledTimes(1);
   });
 });

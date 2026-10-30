@@ -1,12 +1,13 @@
 'use client';
 
-import { ArrowLeft, Search, X } from 'lucide-react';
+import { ArrowLeft, Search, SlidersHorizontal, X } from 'lucide-react';
 import { AnimatePresence, LayoutGroup, m } from 'motion/react';
 import { useId, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
 import type { BreadcrumbItem } from './breadcrumbs.js';
+import { Button, type ButtonProps } from './button.js';
 import { AnimatedNumber } from './motion.js';
 
 export type PageHeaderProps = {
@@ -243,6 +244,85 @@ export function FilterPills<T extends string>({
         })}
       </div>
     </LayoutGroup>
+  );
+}
+
+export type FilterButtonProps = Omit<ButtonProps, 'children'> & {
+  /** How many filters are on; above zero the button takes the brand colour and says so. */
+  count?: number;
+  /** The words on the button; the locale's "Filtreler" by default. */
+  label?: ReactNode;
+};
+
+/** The toolbar button that opens a filter panel, saying how many filters are on. */
+export function FilterButton({ count = 0, label, ...props }: FilterButtonProps) {
+  const { messages } = useSkylcn();
+  return (
+    <Button variant={count > 0 ? 'primary' : 'outline'} {...props}>
+      <SlidersHorizontal aria-hidden />
+      {label ?? messages.filters}
+      {count > 0 ? (
+        <>
+          {/* The space is for screen readers ("Filtreler (2)"); on screen the flex gap spaces it */}{' '}
+          <span className="tabular-nums">({count})</span>
+        </>
+      ) : null}
+    </Button>
+  );
+}
+
+export type ActiveFilter = {
+  key: string;
+  /** What the filter keeps, such as "Durum: Açık"; also names its remove button. */
+  label: string;
+  onRemove: () => void;
+};
+
+/** The filters that are on, as chips that each take one off, with a way to clear them all. */
+export function ActiveFilters({
+  filters,
+  onClear,
+  className,
+}: {
+  filters: readonly ActiveFilter[];
+  /** Clears every filter; offered once two or more are on. */
+  onClear?: () => void;
+  className?: string;
+}) {
+  const { messages } = useSkylcn();
+  if (filters.length === 0) return null;
+  return (
+    <div
+      data-slot="active-filters"
+      className={cn('flex flex-wrap items-center gap-1.5', className)}
+    >
+      {filters.map((filter) => (
+        <span
+          key={filter.key}
+          className="inline-flex enter-fade items-center gap-1 rounded-md border border-border bg-muted py-0.5 pr-0.5 pl-2 text-2xs text-secondary-foreground"
+        >
+          {filter.label}
+          <button
+            type="button"
+            aria-label={messages.removeFilter(filter.label)}
+            title={messages.removeFilter(filter.label)}
+            onClick={filter.onRemove}
+            className="grid size-4 place-items-center rounded text-subtle-foreground outline-hidden transition-colors duration-(--motion-duration-fast) hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring pointer-coarse:size-6"
+          >
+            <X className="size-3" />
+          </button>
+        </span>
+      ))}
+      {onClear && filters.length > 1 ? (
+        <button
+          type="button"
+          onClick={onClear}
+          className="rounded px-1 text-2xs font-medium text-muted-foreground outline-hidden transition-colors duration-(--motion-duration-fast) hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {messages.clear}
+        </button>
+      ) : null}
+    </div>
   );
 }
 
