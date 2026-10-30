@@ -64,6 +64,12 @@ export {
   type TimelineItem,
 } from './components/display-extra.js';
 export {
+  ChoiceMatrix,
+  type ChoiceMatrixProps,
+  type MatrixColumn,
+  type MatrixRow,
+} from './components/choice-matrix.js';
+export {
   ChoiceList,
   type ChoiceListOption,
   type ChoiceListProps,
