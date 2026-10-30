@@ -2,7 +2,7 @@
 
 import { Toast as ToastPrimitive } from '@base-ui/react/toast';
 import { CircleAlert, CircleCheck, Info, X } from 'lucide-react';
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, type MouseEvent, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
 
@@ -20,20 +20,32 @@ const ACTION_TIMEOUT = 10_000;
  * Adds a toast from anywhere under ToastProvider:
  * `toast.add({ title, description, type: 'success' })`. A plain toast leaves after the
  * provider's timeout, one with an action (an undo through `actionProps`) after ten
- * seconds, and an error stays until closed; pass `timeout` to choose otherwise.
+ * seconds or once the action is taken, and an error stays until closed; pass `timeout`
+ * to choose otherwise, or call `preventDefault()` in the action's click to keep it open.
  */
 export function useToast() {
   const manager = ToastPrimitive.useToastManager();
   return useMemo(
     () => ({
       ...manager,
-      add: (options: Parameters<typeof manager.add>[0]) =>
-        manager.add({
+      add: (options: Parameters<typeof manager.add>[0]) => {
+        const { actionProps } = options;
+        const id = manager.add({
           ...options,
           timeout:
             options.timeout ??
-            (options.type === 'error' ? 0 : options.actionProps ? ACTION_TIMEOUT : undefined),
-        }),
+            (options.type === 'error' ? 0 : actionProps ? ACTION_TIMEOUT : undefined),
+          // An undo left on screen would still say the deed is done
+          actionProps: actionProps && {
+            ...actionProps,
+            onClick: (event: MouseEvent<HTMLButtonElement>) => {
+              actionProps.onClick?.(event);
+              if (!event.defaultPrevented) manager.close(id);
+            },
+          },
+        });
+        return id;
+      },
     }),
     [manager],
   );

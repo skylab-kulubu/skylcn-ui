@@ -1,6 +1,6 @@
-import { act, render, renderHook, screen } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { SkylcnProvider } from '../lib/provider.js';
 import { Notice } from './feedback.js';
 import { Field, Textarea } from './field.js';
@@ -28,6 +28,26 @@ describe('useToast', () => {
     expect(byTitle('Silindi').timeout).toBe(10_000);
     expect(byTitle('Kaydedildi').timeout).toBeUndefined();
     expect(byTitle('Özel').timeout).toBe(3000);
+  });
+
+  it('closes a toast once its action is taken, unless the click prevents it', async () => {
+    const undo = vi.fn();
+    const { result } = renderHook(() => useToast(), { wrapper: wrap });
+    act(() => {
+      result.current.add({ title: 'Silindi', actionProps: { children: 'Geri al', onClick: undo } });
+      result.current.add({
+        title: 'Arşivlendi',
+        actionProps: { children: 'Aç', onClick: (event) => event.preventDefault() },
+      });
+    });
+    fireEvent.click(await screen.findByRole('button', { name: 'Geri al' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Aç' }));
+    expect(undo).toHaveBeenCalledOnce();
+    await waitFor(() =>
+      expect(
+        result.current.toasts.filter((t) => t.transitionStatus !== 'ending').map((t) => t.title),
+      ).toEqual(['Arşivlendi']),
+    );
   });
 });
 
