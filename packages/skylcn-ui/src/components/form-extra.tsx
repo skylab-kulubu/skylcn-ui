@@ -220,10 +220,19 @@ export type SliderProps = SliderPrimitive.Root.Props & {
   showValue?: boolean;
   /** Names each thumb when there is no visible label, one per thumb. */
   thumbLabels?: readonly string[];
+  /** Words under the two ends of the track, such as a scale's lowest and highest answer. */
+  ends?: readonly [ReactNode, ReactNode];
 };
 
 /** A value, or a range with two thumbs, picked along a track: a budget, a team size. */
-export function Slider({ label, showValue = true, thumbLabels, className, ...props }: SliderProps) {
+export function Slider({
+  label,
+  showValue = true,
+  thumbLabels,
+  ends,
+  className,
+  ...props
+}: SliderProps) {
   const values = props.value ?? props.defaultValue;
   const count = Array.isArray(values) ? values.length : 1;
   return (
@@ -255,6 +264,12 @@ export function Slider({ label, showValue = true, thumbLabels, className, ...pro
           ))}
         </SliderPrimitive.Track>
       </SliderPrimitive.Control>
+      {ends ? (
+        <div className="-mt-1 flex justify-between gap-3 text-2xs text-subtle-foreground">
+          <span>{ends[0]}</span>
+          <span className="text-right">{ends[1]}</span>
+        </div>
+      ) : null}
     </SliderPrimitive.Root>
   );
 }
