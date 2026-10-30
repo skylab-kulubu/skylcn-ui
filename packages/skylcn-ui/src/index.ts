@@ -153,6 +153,7 @@ export {
   Textarea,
   type FieldProps,
   type InputProps,
+  type TextareaProps,
 } from './components/field.js';
 export { IconSwap, type IconSwapProps } from './components/icon-swap.js';
 export {
