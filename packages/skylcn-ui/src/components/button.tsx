@@ -107,7 +107,11 @@ export function Button({
         )}
       </span>
       {busy ? (
-        <SkylabLoader size={16} className="absolute inset-0 m-auto enter-fade text-current" />
+        // size-4 gives inset-0 a box to centre; without it the loader stretches and the mark sits top left
+        <SkylabLoader
+          size={16}
+          className="absolute inset-0 m-auto size-4 enter-fade text-current"
+        />
       ) : null}
     </>
   );
