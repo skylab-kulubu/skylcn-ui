@@ -283,6 +283,56 @@
 }
 
 /*
+ * A list popup's rows (Select, Combobox), as forms' pickers bring theirs: on opening they rise
+ * 6px from the trigger's side half a stagger step apart, at most six steps. Once the list is
+ * data-settled, rows that join later, as a search narrows it, only fade in, so typing does not
+ * replay the cascade. One keyframes name throughout, so settling never restarts a finished row.
+ * Reduced motion zeroes the travel and the stagger, leaving the fade.
+ */
+@keyframes skylcn-row-in {
+  from {
+    opacity: 0;
+    translate: 0 var(--skylcn-row-shift);
+  }
+}
+
+@utility list-rows {
+  & > * {
+    --skylcn-row-i: 0;
+    --skylcn-row-shift: calc(var(--motion-shift) * -1.5);
+    animation: skylcn-row-in var(--motion-duration-fast) var(--motion-ease-enter) backwards;
+    animation-delay: calc(var(--skylcn-row-i) * var(--motion-stagger) / 2);
+  }
+  & > :nth-child(2) {
+    --skylcn-row-i: 1;
+  }
+  & > :nth-child(3) {
+    --skylcn-row-i: 2;
+  }
+  & > :nth-child(4) {
+    --skylcn-row-i: 3;
+  }
+  & > :nth-child(5) {
+    --skylcn-row-i: 4;
+  }
+  & > :nth-child(6) {
+    --skylcn-row-i: 5;
+  }
+  & > :nth-child(n + 7) {
+    --skylcn-row-i: 6;
+  }
+  /* Opening upwards, the rows come down from the trigger below them */
+  [data-side='top'] & > * {
+    --skylcn-row-shift: calc(var(--motion-shift) * 1.5);
+  }
+  &[data-settled] > * {
+    --skylcn-row-i: 0;
+    --skylcn-row-shift: 0px;
+    animation-duration: var(--motion-duration-instant);
+  }
+}
+
+/*
  * A ConfirmDialog's delay: a line under the action drains over --skylcn-drain.
  * It is scaling, so reduced motion hides the line and the seconds show as text.
  */
