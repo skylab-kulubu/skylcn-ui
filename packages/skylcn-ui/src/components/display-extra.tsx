@@ -56,7 +56,13 @@ export type TimelineItem = {
   icon?: LucideIcon;
   /** Someone who did it, shown instead of an icon. */
   person?: { name: string; src?: string | null };
-  tone?: 'neutral' | 'brand' | 'success' | 'warning' | 'danger';
+  tone?: 'neutral' | 'brand' | 'success' | 'warning' | 'danger' | 'info';
+  /** What the mark shows instead of the icon, such as the current step's number. */
+  marker?: ReactNode;
+  /** The step happening now: a ring around its mark. */
+  current?: boolean;
+  /** A step still to come: a dashed, empty mark, a dashed line to it and a quieter title. */
+  upcoming?: boolean;
 };
 
 const TONE = {
@@ -65,6 +71,7 @@ const TONE = {
   success: 'border-success/40 bg-success/10 text-success',
   warning: 'border-warning/40 bg-warning/10 text-warning',
   danger: 'border-destructive/40 bg-destructive/10 text-destructive',
+  info: 'border-info/40 bg-info/10 text-info',
 } as const;
 
 /** What happened, in order, along a line: an approval's history, a member's activity, an event programme. */
@@ -79,12 +86,22 @@ export function Timeline({
     <ol data-slot="timeline" className={cn('flex flex-col', className)}>
       {items.map((item, i) => {
         const Icon = item.icon;
+        const next = items[i + 1];
         return (
-          <li key={item.id} className="relative flex gap-3 pb-5 last:pb-0">
-            {i < items.length - 1 ? (
+          <li
+            key={item.id}
+            aria-current={item.current ? 'step' : undefined}
+            className="relative flex gap-3 pb-5 last:pb-0"
+          >
+            {next ? (
               <span
                 aria-hidden
-                className="absolute top-8 bottom-0 left-3.5 w-px -translate-x-1/2 bg-border"
+                className={cn(
+                  'absolute top-8 bottom-0 left-3.5 -translate-x-1/2',
+                  next.upcoming
+                    ? 'w-0 border-l border-dashed border-border-strong'
+                    : 'w-px bg-border',
+                )}
               />
             ) : null}
             {item.person ? (
@@ -92,20 +109,32 @@ export function Timeline({
             ) : (
               <span
                 className={cn(
-                  'grid size-7 shrink-0 place-items-center rounded-full border',
-                  TONE[item.tone ?? 'neutral'],
+                  'grid size-7 shrink-0 place-items-center rounded-lg border',
+                  item.upcoming
+                    ? 'border-dashed border-border-strong text-subtle-foreground'
+                    : TONE[item.tone ?? 'neutral'],
+                  item.current && 'ring-4 ring-skylab-500/10',
                 )}
               >
-                {Icon ? (
+                {item.marker != null ? (
+                  <span className="text-2xs font-semibold tabular-nums">{item.marker}</span>
+                ) : Icon ? (
                   <Icon className="size-3.5" aria-hidden />
-                ) : (
+                ) : item.upcoming ? null : (
                   <span className="size-1.5 rounded-full bg-current" />
                 )}
               </span>
             )}
             <div className="flex min-w-0 flex-1 flex-col gap-0.5 pt-1">
               <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                <p className="text-sm text-foreground">{item.title}</p>
+                <p
+                  className={cn(
+                    'text-sm',
+                    item.upcoming ? 'text-muted-foreground' : 'font-medium text-foreground',
+                  )}
+                >
+                  {item.title}
+                </p>
                 {item.time ? (
                   <p className="text-2xs text-subtle-foreground tabular-nums">{item.time}</p>
                 ) : null}
@@ -125,7 +154,13 @@ export function Timeline({
 
 /* Stepper */
 
-export type Step = { id: string; label: ReactNode; description?: ReactNode };
+export type Step = {
+  id: string;
+  label: ReactNode;
+  description?: ReactNode;
+  /** A step that may not come, such as one a later answer decides: drawn dashed. */
+  uncertain?: boolean;
+};
 
 /**
  * Where a multi-step task stands: done steps ticked, the current one ringed.
@@ -160,6 +195,7 @@ export function Stepper({
                   active &&
                     'border-skylab-400 bg-skylab-500/15 text-skylab-300 ring-4 ring-skylab-500/10',
                   !done && !active && 'border-border text-subtle-foreground',
+                  !done && !active && step.uncertain && 'border-dashed border-border-strong',
                 )}
               >
                 {done ? <Check className="size-3.5" aria-hidden /> : i + 1}
