@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { axeViolations } from '../test/axe.js';
 import { Section } from './section.js';
@@ -32,6 +33,21 @@ describe('Section', () => {
     expect(screen.getByRole('heading', { level: 3, name: 'Alt bölüm' })).toBeInTheDocument();
     expect(container.querySelector('[data-slot="section"]')).toHaveClass('h-80');
     expect(container.querySelector('[data-slot="section-content"]')).toBeNull();
+  });
+
+  it('folds its content away by its title when collapsible', async () => {
+    const user = userEvent.setup();
+    render(
+      <Section title="Bildirimler" collapsible>
+        <p>E-posta ayarları</p>
+      </Section>,
+    );
+    const toggle = screen.getByRole('button', { name: 'Bildirimler' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('E-posta ayarları')).toBeInTheDocument();
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await waitFor(() => expect(screen.queryByText('E-posta ayarları')).toBeNull());
   });
 
   it('breaks no accessibility rules', async () => {
