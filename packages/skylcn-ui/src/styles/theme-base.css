@@ -333,6 +333,85 @@
 }
 
 /*
+ * A picker panel's rows (header, body, footer) rise into place one stagger step
+ * apart, with a soft blur; --skylcn-rise-i is the row's step. Reduced motion
+ * zeroes the travel, the blur and the stagger, leaving one fade.
+ */
+@keyframes skylcn-rise {
+  from {
+    opacity: 0;
+    translate: 0 calc(var(--motion-shift) * 2.5);
+    filter: blur(calc(var(--motion-shift) / 2));
+  }
+}
+
+@utility enter-rise-blur {
+  animation: skylcn-rise calc(var(--motion-duration-base) * 1.25) var(--motion-ease-enter) backwards;
+  animation-delay: calc(var(--skylcn-rise-i, 0) * var(--motion-stagger));
+}
+
+/*
+ * Calendar month changes. react-day-picker's `animate` lays the leaving month
+ * over the new one and tags both: the weeks glide a step sideways on the
+ * drawer spring while the two cross-fade. The leaving caption's animationend is
+ * what removes the old month, so the captions run exactly as long as the weeks.
+ * Each class is one token, since react-day-picker adds them with classList.
+ */
+@keyframes skylcn-weeks-in {
+  from {
+    opacity: 0;
+    translate: var(--skylcn-weeks-shift) 0;
+  }
+}
+
+@keyframes skylcn-weeks-out {
+  to {
+    opacity: 0;
+    translate: var(--skylcn-weeks-shift) 0;
+  }
+}
+
+@keyframes skylcn-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes skylcn-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@utility calendar-weeks-after-enter {
+  --skylcn-weeks-shift: calc(var(--motion-shift) * 6);
+  animation: skylcn-weeks-in var(--motion-duration-spring) var(--motion-ease-spring) backwards;
+}
+
+@utility calendar-weeks-before-enter {
+  --skylcn-weeks-shift: calc(var(--motion-shift) * -6);
+  animation: skylcn-weeks-in var(--motion-duration-spring) var(--motion-ease-spring) backwards;
+}
+
+@utility calendar-weeks-after-exit {
+  --skylcn-weeks-shift: calc(var(--motion-shift) * 6);
+  animation: skylcn-weeks-out var(--motion-duration-spring) var(--motion-ease-spring) forwards;
+}
+
+@utility calendar-weeks-before-exit {
+  --skylcn-weeks-shift: calc(var(--motion-shift) * -6);
+  animation: skylcn-weeks-out var(--motion-duration-spring) var(--motion-ease-spring) forwards;
+}
+
+@utility calendar-caption-enter {
+  animation: skylcn-fade-in var(--motion-duration-spring) linear backwards;
+}
+
+@utility calendar-caption-exit {
+  animation: skylcn-fade-out var(--motion-duration-spring) linear forwards;
+}
+
+/*
  * A ConfirmDialog's delay: a line under the action drains over --skylcn-drain.
  * It is scaling, so reduced motion hides the line and the seconds show as text.
  */

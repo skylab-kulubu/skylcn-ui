@@ -113,7 +113,9 @@ export {
   type DateRange,
   type DateRangePickerProps,
 } from './components/calendar.js';
+export { TimePicker, type TimePickerProps } from './components/time-picker.js';
 export { ControlSizeProvider, useControlSize, type ControlSize } from './components/control.js';
+export type { PickerVariant } from './components/picker-parts.js';
 export {
   Carousel,
   Kanban,
