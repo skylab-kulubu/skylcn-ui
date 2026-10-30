@@ -283,6 +283,21 @@
 }
 
 /*
+ * A ConfirmDialog's delay: a line under the action drains over --skylcn-drain.
+ * It is scaling, so reduced motion hides the line and the seconds show as text.
+ */
+@keyframes skylcn-drain {
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@utility drain-line {
+  transform-origin: left;
+  animation: skylcn-drain var(--skylcn-drain, 0s) linear forwards;
+}
+
+/*
  * useTheme swaps the theme inside a view transition: the page cross-fades as a
  * whole, and per-element colour transitions are held off so nothing lags behind.
  */

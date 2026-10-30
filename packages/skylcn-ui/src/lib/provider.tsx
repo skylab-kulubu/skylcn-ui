@@ -87,6 +87,13 @@ const MESSAGES = {
     searching: 'Aranıyor…',
     clear: 'Temizle',
     unexpectedError: 'Beklenmeyen bir hata oluştu.',
+    whatHappens: 'Ne olacak',
+    whatStays: 'Ne kalacak',
+    typedConfirmation: 'Yazılı onay',
+    requiredPhrase: 'Gereken metin',
+    confirmHint: 'Metin tutunca Enter ile de onaylayabilirsin.',
+    unlocksIn: (seconds: number) => `${seconds} saniye sonra açılır`,
+    secondsShort: (seconds: number) => `${seconds} sn`,
   },
   en: {
     loading: 'Loading…',
@@ -167,6 +174,13 @@ const MESSAGES = {
     searching: 'Searching…',
     clear: 'Clear',
     unexpectedError: 'Something went wrong.',
+    whatHappens: 'What happens',
+    whatStays: 'What stays',
+    typedConfirmation: 'Typed confirmation',
+    requiredPhrase: 'Required text',
+    confirmHint: 'Once it matches, Enter confirms too.',
+    unlocksIn: (seconds: number) => `unlocks in ${seconds} seconds`,
+    secondsShort: (seconds: number) => `${seconds}s`,
   },
 } as const;
 

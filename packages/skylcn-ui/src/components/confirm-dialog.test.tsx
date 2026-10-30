@@ -1,7 +1,9 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { Archive } from 'lucide-react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SkylcnProvider } from '../lib/provider.js';
+import { axeViolations } from '../test/axe.js';
 import { CoverImage } from './cover-image.js';
 import { ConfirmDialog } from './dialog.js';
 
@@ -297,6 +299,100 @@ describe('ConfirmDialog whose parent holds the open state', () => {
     await act(async () => setOpen(false));
     await act(async () => work.reject('500'));
     expect(onLateFailure).toHaveBeenCalledWith('500');
+  });
+});
+
+describe('ConfirmDialog guards for heavy actions', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('lists what will happen and unlocks only once the phrase is typed, in any case', () => {
+    const onAction = vi.fn();
+    draw({
+      onAction,
+      consequences: ['Tüm cevaplar silinir', 'Paylaşılan bağlantı çalışmaz'],
+      confirmText: 'Gece Kodu',
+    });
+    expect(screen.getByText('Tüm cevaplar silinir')).toBeInTheDocument();
+    expect(action()).toBeDisabled();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Yazılı onay' }), {
+      target: { value: 'gece kodu' },
+    });
+    expect(action()).toBeEnabled();
+    fireEvent.click(action());
+    expect(onAction).toHaveBeenCalledTimes(1);
+  });
+
+  it('counts the wait down for screen readers while a line drains under the action', () => {
+    vi.useFakeTimers();
+    draw({ delay: 2 });
+    const button = screen.getByRole('button', { name: 'Oturumu sil, 2 saniye sonra açılır' });
+    expect(button).toBeDisabled();
+    expect(button.querySelector('.drain-line')).toHaveStyle({ '--skylcn-drain': '2s' });
+    act(() => vi.advanceTimersByTime(1000));
+    expect(
+      screen.getByRole('button', { name: 'Oturumu sil, 1 saniye sonra açılır' }),
+    ).toBeDisabled();
+    act(() => vi.advanceTimersByTime(1000));
+    expect(action()).toBeEnabled();
+  });
+});
+
+describe('ConfirmDialog summary and typed confirmation', () => {
+  it('sets what happens beside what stays, under their own headings, in the wide window', () => {
+    draw({
+      consequences: ['Akış yayından kalkar'],
+      unaffected: ['Cevaplar silinmez', 'Formlar kalır'],
+    });
+    const happens = screen.getByRole('heading', { name: 'Ne olacak' }).parentElement!;
+    const stays = screen.getByRole('heading', { name: 'Ne kalacak' }).parentElement!;
+    expect(happens).toHaveTextContent('Akış yayından kalkar');
+    expect(stays).toHaveTextContent('Cevaplar silinmez');
+    expect(stays).toHaveTextContent('Formlar kalır');
+    expect(document.querySelector('[data-slot="confirm-dialog"]')).toHaveClass('sm:max-w-2xl');
+  });
+
+  it('keeps a bare question in the narrow window, with Cancel focused', async () => {
+    draw({ description: 'Geri al ile döndürebilirsin.' });
+    expect(document.querySelector('[data-slot="confirm-dialog"]')).toHaveClass('sm:max-w-md');
+    expect(screen.queryByRole('heading', { name: 'Ne olacak' })).toBeNull();
+    await waitFor(() => expect(cancelButton()).toHaveFocus());
+  });
+
+  it('starts in the phrase box, ticks once it matches and confirms on Enter', async () => {
+    const onAction = vi.fn();
+    draw({ onAction, confirmText: 'Kabul ediyorum' });
+    const box = screen.getByRole('textbox', { name: 'Yazılı onay' });
+    await waitFor(() => expect(box).toHaveFocus());
+    expect(box).toHaveAccessibleDescription(/Gereken metin: Kabul ediyorum/);
+    const tick = box.parentElement!.querySelector('svg')!;
+    fireEvent.keyDown(box, { key: 'Enter' });
+    expect(onAction).not.toHaveBeenCalled();
+    fireEvent.change(box, { target: { value: 'kabul ed' } });
+    expect(tick).not.toHaveAttribute('data-on');
+    fireEvent.change(box, { target: { value: ' Kabul Ediyorum ' } });
+    expect(tick).toHaveAttribute('data-on');
+    fireEvent.keyDown(box, { key: 'Enter' });
+    expect(onAction).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the icon in a destructive tint and closes from the header', () => {
+    const { onOpenChange } = draw({ icon: Archive });
+    const tile = document.querySelector('[data-slot="confirm-dialog"] span[aria-hidden]')!;
+    expect(tile).toHaveClass('text-destructive');
+    fireEvent.click(screen.getByRole('button', { name: 'Kapat' }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it('breaks no accessibility rules with the summary and a phrase', async () => {
+    vi.useRealTimers();
+    draw({
+      icon: Archive,
+      description: 'SKY LAB 2026 Başvurusu · 128 başvuru',
+      consequences: ['Akış yayından kalkar'],
+      unaffected: ['Cevaplar silinmez'],
+      confirmText: 'Kabul ediyorum',
+    });
+    expect(await axeViolations(document.body)).toEqual([]);
   });
 });
 
