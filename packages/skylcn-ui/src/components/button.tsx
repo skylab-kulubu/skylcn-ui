@@ -7,6 +7,7 @@ import { cloneElement, isValidElement, type MouseEvent, type ReactElement } from
 import { cn } from '../lib/cn.js';
 import { usePendingIndicator } from '../lib/use-pending-indicator.js';
 import { SkylabLoader } from './skylab-loader.js';
+import { Tooltip } from './tooltip.js';
 
 const buttonVariants = cva(
   [
@@ -169,8 +170,10 @@ export function Button({
 
 export type IconButtonProps = Omit<ButtonProps, 'children'> & {
   icon: LucideIcon;
-  /** Read by screen readers and shown as the native tooltip. */
+  /** Read by screen readers and shown in a tooltip on hover and keyboard focus. */
   label: string;
+  /** Where the tooltip opens; `false` leaves it out, such as inside a part with its own. */
+  tooltip?: 'top' | 'bottom' | 'left' | 'right' | false;
 };
 
 /** A square button holding one icon; the admin toolbars' action button. */
@@ -180,12 +183,21 @@ export function IconButton({
   size = 'icon',
   pending,
   title,
+  tooltip = 'bottom',
   ...props
 }: IconButtonProps) {
-  return (
-    <Button size={size} aria-label={label} title={title ?? label} pending={pending} {...props}>
+  const button = (
+    <Button size={size} aria-label={label} pending={pending} {...props}>
       <Icon />
     </Button>
+  );
+  // An icon alone says too little, so its name shows on hover; `title` can word it longer
+  return tooltip ? (
+    <Tooltip label={title ?? label} side={tooltip}>
+      {button}
+    </Tooltip>
+  ) : (
+    cloneElement(button, { title: title ?? label })
   );
 }
 

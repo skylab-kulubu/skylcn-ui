@@ -1,6 +1,24 @@
 import { act, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { RefreshCw } from 'lucide-react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Button } from './button.js';
+import { Button, IconButton } from './button.js';
+
+describe('IconButton', () => {
+  it('shows its name in a tooltip on hover instead of the browser’s title', async () => {
+    const user = userEvent.setup();
+    render(<IconButton icon={RefreshCw} label="Yenile" />);
+    const button = screen.getByRole('button', { name: 'Yenile' });
+    expect(button).not.toHaveAttribute('title');
+    await user.hover(button);
+    expect(await screen.findByText('Yenile', {}, { timeout: 2000 })).toBeInTheDocument();
+  });
+
+  it('falls back to the browser’s title when its tooltip is turned off', () => {
+    render(<IconButton icon={RefreshCw} label="Yenile" tooltip={false} />);
+    expect(screen.getByRole('button', { name: 'Yenile' })).toHaveAttribute('title', 'Yenile');
+  });
+});
 
 describe('Button pending', () => {
   beforeEach(() => vi.useFakeTimers());
