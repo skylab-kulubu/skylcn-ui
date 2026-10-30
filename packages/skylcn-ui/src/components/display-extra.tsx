@@ -1,8 +1,8 @@
 'use client';
 
-import { Check, FileUp, Megaphone, X, type LucideIcon } from 'lucide-react';
+import { Check, FileUp, Megaphone, Upload, X, type LucideIcon } from 'lucide-react';
 import { AnimatePresence, m } from 'motion/react';
-import { useId, useRef, useState, type ComponentProps, type ReactNode } from 'react';
+import { useId, useState, type ComponentProps, type DragEvent, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
@@ -284,6 +284,13 @@ export type DropzoneProps = {
   /** What the files are for, such as "Özgeçmiş (PDF, en fazla 5 MB)". */
   hint?: ReactNode;
   disabled?: boolean;
+  /** Draws the frame in the error colour, such as a required file left out. */
+  invalid?: boolean;
+  /** `compact` is one 64px row, all of it pressable, the way a form question takes a file. */
+  variant?: 'area' | 'compact';
+  /** The file input's id, so a Field's label can name it. */
+  id?: string;
+  'aria-label'?: string;
   className?: string;
 };
 
@@ -297,67 +304,109 @@ export function Dropzone({
   multiple = false,
   hint,
   disabled = false,
+  invalid = false,
+  variant = 'area',
+  id,
+  'aria-label': ariaLabel,
   className,
 }: DropzoneProps) {
   const { messages } = useSkylcn();
-  const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
-  const id = useId();
-  return (
-    <div
-      data-slot="dropzone"
-      data-over={over || undefined}
-      onDragOver={(event) => {
-        if (disabled) return;
-        event.preventDefault();
-        setOver(true);
-      }}
-      onDragLeave={() => setOver(false)}
-      onDrop={(event) => {
-        event.preventDefault();
-        setOver(false);
-        if (disabled) return;
-        const files = Array.from(event.dataTransfer.files);
-        if (files.length) onFiles(multiple ? files : files.slice(0, 1));
-      }}
-      className={cn(
-        'relative flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border-strong px-6 py-8 text-center',
-        'transition-[border-color,background-color] duration-(--motion-duration-fast)',
-        over && 'border-skylab-400 bg-skylab-500/10',
-        disabled && 'opacity-50',
-        className,
-      )}
-    >
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const compact = variant === 'compact';
+  const frame = {
+    'data-slot': 'dropzone',
+    'data-over': over || undefined,
+    onDragOver: (event: DragEvent<HTMLElement>) => {
+      if (disabled) return;
+      event.preventDefault();
+      setOver(true);
+    },
+    onDragLeave: (event: DragEvent<HTMLElement>) => {
+      // Moving onto a child fires dragleave too; only leaving the frame ends the hover
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setOver(false);
+    },
+    onDrop: (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      setOver(false);
+      if (disabled) return;
+      const files = Array.from(event.dataTransfer.files);
+      if (files.length) onFiles(multiple ? files : files.slice(0, 1));
+    },
+    className: cn(
+      'relative border border-dashed border-border-strong',
+      'transition-[border-color,background-color] duration-(--motion-duration-fast)',
+      // The input is visually hidden, so its keyboard focus shows on the frame
+      'has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-ring',
+      compact
+        ? 'flex h-16 cursor-pointer items-center gap-3 rounded-lg px-3 text-left hover:bg-accent/40'
+        : 'flex flex-col items-center justify-center gap-2 rounded-xl px-6 py-8 text-center',
+      invalid && 'border-destructive/50',
+      over && 'border-primary bg-primary/10',
+      disabled && 'pointer-events-none opacity-50',
+      className,
+    ),
+  };
+  const content = (
+    <>
       <span
         className={cn(
-          'grid size-10 place-items-center rounded-full bg-muted text-muted-foreground transition-transform duration-(--motion-duration-base) ease-enter',
-          over && 'scale-110 text-skylab-300',
+          'grid size-10 shrink-0 place-items-center bg-muted text-muted-foreground transition-[scale,color,background-color] duration-(--motion-duration-base) ease-enter',
+          compact ? 'rounded-md' : 'rounded-full',
+          invalid && 'bg-destructive/10 text-destructive',
+          over && 'scale-110 bg-primary/15 text-primary',
         )}
       >
-        <FileUp className="size-5" aria-hidden />
+        {compact ? (
+          <Upload className="size-4.5" aria-hidden />
+        ) : (
+          <FileUp className="size-5" aria-hidden />
+        )}
       </span>
-      <label htmlFor={id} className="text-sm text-foreground">
-        <span className="cursor-pointer font-medium text-skylab-300 underline-offset-4 hover:underline">
-          {messages.chooseFile}
-        </span>{' '}
-        {messages.orDropHere}
-      </label>
-      {hint ? <p className="text-2xs text-subtle-foreground">{hint}</p> : null}
+      {compact ? (
+        <span className="flex min-w-0 flex-col">
+          <span className="text-sm font-medium text-foreground">
+            {messages.chooseFile} {messages.orDropHere}
+          </span>
+          {hint ? (
+            <span className="mt-0.5 truncate text-2xs text-subtle-foreground">{hint}</span>
+          ) : null}
+        </span>
+      ) : (
+        <>
+          <label htmlFor={inputId} className="text-sm text-foreground">
+            <span className="cursor-pointer font-medium text-skylab-300 underline-offset-4 hover:underline">
+              {messages.chooseFile}
+            </span>{' '}
+            {messages.orDropHere}
+          </label>
+          {hint ? <p className="text-2xs text-subtle-foreground">{hint}</p> : null}
+        </>
+      )}
       <input
-        ref={input}
-        id={id}
+        id={inputId}
         type="file"
         accept={accept}
         multiple={multiple}
         disabled={disabled}
+        aria-label={ariaLabel}
+        aria-invalid={invalid || undefined}
         className="sr-only"
         onChange={(event) => {
           const files = Array.from(event.target.files ?? []);
-          if (files.length) onFiles(files);
+          if (files.length) onFiles(multiple ? files : files.slice(0, 1));
           event.target.value = '';
         }}
       />
-    </div>
+    </>
+  );
+  return compact ? (
+    <label htmlFor={inputId} {...frame}>
+      {content}
+    </label>
+  ) : (
+    <div {...frame}>{content}</div>
   );
 }
 

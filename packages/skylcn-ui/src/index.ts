@@ -75,6 +75,14 @@ export {
   type ChoiceListProps,
 } from './components/choice-list.js';
 export {
+  FileRow,
+  FileUpload,
+  type FileRowProps,
+  type FileUploadItem,
+  type FileUploadProps,
+  type FileUploadStatus,
+} from './components/file-upload.js';
+export {
   Kbd,
   Meter,
   Notice,
