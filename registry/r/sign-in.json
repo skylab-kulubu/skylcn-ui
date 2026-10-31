@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sign-in",
+  "type": "registry:block",
+  "title": "Giriş sayfası",
+  "description": "A sign-in page on TaskPage: the club's mark, one line on what the account opens and one button.",
+  "dependencies": [
+    "@skylab-kulubu/skylcn-ui",
+    "lucide-react"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/sign-in/page.tsx",
+      "type": "registry:page",
+      "target": "app/giris/page.tsx",
+      "content": "'use client';\n\nimport { Button, TaskPage } from '@skylab-kulubu/skylcn-ui';\nimport { LogIn } from 'lucide-react';\n\n/** A sign-in page: the club's mark, one line on what the account opens, one button. */\nexport default function SignInPage() {\n  return (\n    <TaskPage\n      align=\"center\"\n      title=\"Giriş yap\"\n      description=\"Kulüp hesabınla gir; etkinliklerin, sertifikaların ve formların burada.\"\n      actions={\n        <Button variant=\"primary\" className=\"sm:flex-1\" render={<a href=\"/api/auth/login\" />}>\n          <LogIn aria-hidden />\n          SKY LAB ile giriş yap\n        </Button>\n      }\n      footer={\n        <>\n          <a href=\"/gizlilik\">Gizlilik</a>\n          <a href=\"/yardim\">Yardım</a>\n        </>\n      }\n    />\n  );\n}\n"
+    }
+  ]
+}

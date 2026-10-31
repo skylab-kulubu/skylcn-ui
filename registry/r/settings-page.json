@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "settings-page",
+  "type": "registry:block",
+  "title": "Ayarlar sayfası",
+  "description": "A settings page: groups as frameless Sections, switches as ToggleRows, one save at the end.",
+  "dependencies": [
+    "@skylab-kulubu/skylcn-ui"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/settings-page/page.tsx",
+      "type": "registry:page",
+      "target": "app/ayarlar/page.tsx",
+      "content": "'use client';\n\nimport { Button, Field, Input, PageHeader, Section, ToggleRow } from '@skylab-kulubu/skylcn-ui';\nimport { useState } from 'react';\n\n/** A settings page: groups as frameless sections, switches as rows, one save at the end. */\nexport default function SettingsPage() {\n  const [name, setName] = useState('Gece Kodu 2026');\n  return (\n    <div className=\"flex max-w-2xl flex-col gap-8\">\n      <PageHeader title=\"Ayarlar\" description=\"Formun genel ayarları ve yanıt kuralları.\" />\n      <Section title=\"Genel\">\n        <div className=\"flex flex-col gap-4\">\n          <Field label=\"Form adı\">\n            <Input value={name} onChange={(event) => setName(event.target.value)} />\n          </Field>\n        </div>\n      </Section>\n      <Section\n        title=\"Yanıtlar\"\n        description=\"Kimin yanıt verebileceği ve yanıtların nasıl sayılacağı.\"\n      >\n        <div className=\"flex flex-col gap-2\">\n          <ToggleRow\n            title=\"Anonim yanıt\"\n            description=\"Giriş yapmadan yanıtlanabilir.\"\n            defaultChecked\n          />\n          <ToggleRow title=\"Elle onay\" description=\"Yanıtlar onaydan sonra sayılır.\" />\n        </div>\n      </Section>\n      <div className=\"flex justify-end\">\n        <Button variant=\"primary\">Kaydet</Button>\n      </div>\n    </div>\n  );\n}\n"
+    }
+  ]
+}

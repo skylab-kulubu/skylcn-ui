@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { CalendarClock, Info } from 'lucide-react';
 import { describe, expect, it } from 'vitest';
 import { axeViolations } from '../test/axe.js';
-import { Notice } from './feedback.js';
+import { Notice } from './notice.js';
 
 describe('Notice', () => {
   it("shows the tone's own icon unless given one, in the tone's colour", async () => {

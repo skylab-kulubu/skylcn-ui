@@ -14,5 +14,6 @@
     "noEmit": true,
     "types": ["vitest/globals"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/registry-blocks.test.tsx"]
 }

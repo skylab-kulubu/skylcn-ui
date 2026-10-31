@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "dashboard",
+  "type": "registry:block",
+  "title": "Genel bakış",
+  "description": "An overview page: a row of StatCards, a trend as an AreaChart and a part-of-whole as a DonutChart.",
+  "dependencies": [
+    "@skylab-kulubu/skylcn-ui",
+    "lucide-react",
+    "recharts"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/dashboard/page.tsx",
+      "type": "registry:page",
+      "target": "app/genel-bakis/page.tsx",
+      "content": "'use client';\n\nimport { PageHeader, StatCard } from '@skylab-kulubu/skylcn-ui';\nimport { AreaChart, DonutChart } from '@skylab-kulubu/skylcn-ui/charts';\nimport { CalendarDays, Users } from 'lucide-react';\n\n// Made-up figures; replace with the page's own data.\nconst MONTHS = [\n  { month: 'Haz', applications: 120 },\n  { month: 'Tem', applications: 95 },\n  { month: 'Ağu', applications: 140 },\n  { month: 'Eyl', applications: 310 },\n  { month: 'Eki', applications: 412 },\n];\n\nconst MEMBERSHIP = [\n  { key: 'active', label: 'Aktif', value: 85 },\n  { key: 'passive', label: 'Pasif', value: 16 },\n  { key: 'graduate', label: 'Mezun', value: 23 },\n];\n\n/** An overview page: a row of figures, a trend over time and a part-of-whole. */\nexport default function OverviewPage() {\n  return (\n    <div className=\"flex flex-col gap-6\">\n      <PageHeader title=\"Genel bakış\" description=\"Kulübün bu dönemki durumu.\" />\n      <div className=\"grid gap-4 sm:grid-cols-2 lg:grid-cols-3\">\n        <StatCard\n          label=\"Aktif üye\"\n          value=\"85\"\n          delta=\"+18\"\n          deltaTone=\"positive\"\n          icon={Users}\n          hint=\"Geçen döneme göre\"\n        />\n        <StatCard label=\"Etkinlik\" value=\"43\" icon={CalendarDays} hint=\"Bu dönem\" />\n        <StatCard\n          label=\"Açık başvuru\"\n          value=\"412\"\n          delta=\"+57\"\n          deltaTone=\"positive\"\n          hint=\"Son 7 gün\"\n        />\n      </div>\n      <div className=\"grid gap-4 lg:grid-cols-3\">\n        <AreaChart\n          className=\"lg:col-span-2\"\n          title=\"Başvurular\"\n          data={MONTHS}\n          x=\"month\"\n          series={{ applications: { label: 'Başvuru' } }}\n        />\n        <DonutChart title=\"Üye durumu\" data={MEMBERSHIP} />\n      </div>\n    </div>\n  );\n}\n"
+    }
+  ]
+}

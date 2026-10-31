@@ -1,6 +1,6 @@
 'use client';
 
-import { LazyMotion, MotionConfig, domMax } from 'motion/react';
+import { LazyMotion, MotionConfig } from 'motion/react';
 import { createContext, useContext, type ComponentType, type ReactNode } from 'react';
 import { transitions } from './motion-tokens.js';
 import { useReducedMotion } from './use-reduced-motion.js';
@@ -256,13 +256,18 @@ export function SkylcnProvider({
   const reduced = useReducedMotion();
   return (
     <SkylcnContext.Provider value={{ locale, messages: MESSAGES[locale], Link: linkComponent }}>
-      <LazyMotion features={domMax}>
+      <LazyMotion features={loadMotionFeatures}>
         <MotionConfig reducedMotion={reduced ? 'always' : 'never'} transition={transitions.enter}>
           {children}
         </MotionConfig>
       </LazyMotion>
     </SkylcnContext.Provider>
   );
+}
+
+// domMax is about 38 KB gzipped; components draw with the light `m` and animate once it arrives
+function loadMotionFeatures() {
+  return import('./motion-features.js').then((features) => features.default);
 }
 
 export function useSkylcn() {
