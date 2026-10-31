@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "not-found",
+  "type": "registry:block",
+  "title": "Bulunamadı sayfası",
+  "description": "The 404 page on StatusPage, with a way back home.",
+  "dependencies": [
+    "@skylab-kulubu/skylcn-ui"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/not-found/not-found.tsx",
+      "type": "registry:page",
+      "target": "app/not-found.tsx",
+      "content": "import { Button, StatusPage } from '@skylab-kulubu/skylcn-ui';\n\n/** The page for an address that leads nowhere; Next.js shows it from app/not-found.tsx. */\nexport default function NotFound() {\n  return (\n    <StatusPage\n      code=\"404\"\n      title=\"Bu sayfa yok\"\n      description=\"Bağlantı eskimiş ya da yanlış yazılmış olabilir.\"\n    >\n      <Button variant=\"primary\" render={<a href=\"/\" />}>\n        Ana sayfaya dön\n      </Button>\n    </StatusPage>\n  );\n}\n"
+    }
+  ]
+}

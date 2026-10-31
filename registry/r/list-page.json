@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "list-page",
+  "type": "registry:block",
+  "title": "Liste sayfası",
+  "description": "A list page: title and main action, a search, a sortable DataList with row links, and paging.",
+  "dependencies": [
+    "@skylab-kulubu/skylcn-ui",
+    "lucide-react"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/list-page/page.tsx",
+      "type": "registry:page",
+      "target": "app/uyeler/page.tsx",
+      "content": "'use client';\n\nimport {\n  Avatar,\n  Badge,\n  Button,\n  DataList,\n  DataListTitle,\n  PageHeader,\n  Pagination,\n  SearchInput,\n  type DataListColumn,\n} from '@skylab-kulubu/skylcn-ui';\nimport { UserPlus } from 'lucide-react';\nimport { useMemo, useState } from 'react';\n\ntype Member = { id: string; name: string; email: string; team: string; events: number };\n\n// Made-up people; replace with the page's own data.\nconst MEMBERS: Member[] = [\n  { id: '1', name: 'Ece Yıldırım', email: 'ece@example.com', team: 'WebLab', events: 12 },\n  { id: '2', name: 'Mert Kaya', email: 'mert@example.com', team: 'GameLab', events: 7 },\n  { id: '3', name: 'Zeynep Arslan', email: 'zeynep@example.com', team: 'AirLab', events: 15 },\n  { id: '4', name: 'Can Öztürk', email: 'can@example.com', team: 'WebLab', events: 3 },\n  { id: '5', name: 'Selin Bulut', email: 'selin@example.com', team: 'SkySec', events: 9 },\n];\n\nconst PAGE_SIZE = 10;\n\nconst COLUMNS: DataListColumn<Member>[] = [\n  {\n    id: 'name',\n    width: 'minmax(0,2fr)',\n    header: 'Üye',\n    sortValue: (member) => member.name,\n    cell: (member) => (\n      <DataListTitle\n        leading={<Avatar name={member.name} size=\"sm\" />}\n        title={member.name}\n        subtitle={member.email}\n      />\n    ),\n  },\n  {\n    id: 'team',\n    width: 'minmax(0,1fr)',\n    from: 'sm',\n    header: 'Ekip',\n    sortValue: (member) => member.team,\n    cell: (member) => <Badge>{member.team}</Badge>,\n  },\n  {\n    id: 'events',\n    width: '5rem',\n    from: 'md',\n    align: 'end',\n    header: 'Etkinlik',\n    sortValue: (member) => member.events,\n    className: 'tabular-nums text-muted-foreground',\n    cell: (member) => member.events,\n  },\n];\n\n/** A list page: title and main action, a search, a sortable list and paging. */\nexport default function MembersPage() {\n  const [query, setQuery] = useState('');\n  const [page, setPage] = useState(1);\n  const found = useMemo(() => {\n    const q = query.trim().toLocaleLowerCase('tr-TR');\n    return q\n      ? MEMBERS.filter((m) =>\n          `${m.name} ${m.email} ${m.team}`.toLocaleLowerCase('tr-TR').includes(q),\n        )\n      : MEMBERS;\n  }, [query]);\n  const rows = found.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);\n\n  return (\n    <div className=\"flex flex-col gap-4\">\n      <PageHeader\n        title=\"Üyeler\"\n        description=\"Kulübe kayıtlı herkes.\"\n        actions={\n          <Button variant=\"primary\">\n            <UserPlus aria-hidden />\n            Üye ekle\n          </Button>\n        }\n      >\n        <SearchInput\n          value={query}\n          onValueChange={(value) => {\n            setQuery(value);\n            setPage(1);\n          }}\n          placeholder=\"Ad, e-posta ya da ekip\"\n          aria-label=\"Üye ara\"\n        />\n      </PageHeader>\n      <DataList\n        aria-label=\"Üyeler\"\n        rows={rows}\n        columns={COLUMNS}\n        getRowId={(member) => member.id}\n        rowLabel={(member) => member.name}\n        rowHref={(member) => `/uyeler/${member.id}`}\n        empty={{ title: 'Aramaya uyan üye yok.' }}\n      />\n      <Pagination\n        current={page}\n        totalPages={Math.ceil(found.length / PAGE_SIZE)}\n        onPageChange={setPage}\n        aria-label=\"Üye listesi sayfaları\"\n      />\n    </div>\n  );\n}\n"
+    }
+  ]
+}

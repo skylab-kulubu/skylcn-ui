@@ -1,0 +1,91 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "skylcn-ui",
+  "homepage": "https://github.com/skylab-kulubu/skylcn-ui",
+  "items": [
+    {
+      "name": "sign-in",
+      "type": "registry:block",
+      "title": "Giriş sayfası",
+      "description": "A sign-in page on TaskPage: the club's mark, one line on what the account opens and one button.",
+      "dependencies": ["@skylab-kulubu/skylcn-ui", "lucide-react"],
+      "files": [
+        {
+          "path": "registry/blocks/sign-in/page.tsx",
+          "type": "registry:page",
+          "target": "app/giris/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "not-found",
+      "type": "registry:block",
+      "title": "Bulunamadı sayfası",
+      "description": "The 404 page on StatusPage, with a way back home.",
+      "dependencies": ["@skylab-kulubu/skylcn-ui"],
+      "files": [
+        {
+          "path": "registry/blocks/not-found/not-found.tsx",
+          "type": "registry:page",
+          "target": "app/not-found.tsx"
+        }
+      ]
+    },
+    {
+      "name": "list-page",
+      "type": "registry:block",
+      "title": "Liste sayfası",
+      "description": "A list page: title and main action, a search, a sortable DataList with row links, and paging.",
+      "dependencies": ["@skylab-kulubu/skylcn-ui", "lucide-react"],
+      "files": [
+        {
+          "path": "registry/blocks/list-page/page.tsx",
+          "type": "registry:page",
+          "target": "app/uyeler/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "settings-page",
+      "type": "registry:block",
+      "title": "Ayarlar sayfası",
+      "description": "A settings page: groups as frameless Sections, switches as ToggleRows, one save at the end.",
+      "dependencies": ["@skylab-kulubu/skylcn-ui"],
+      "files": [
+        {
+          "path": "registry/blocks/settings-page/page.tsx",
+          "type": "registry:page",
+          "target": "app/ayarlar/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "form-page",
+      "type": "registry:block",
+      "title": "Başvuru formu",
+      "description": "A form people fill in: numbered questions, choice cards, a text answer, a file and one send button.",
+      "dependencies": ["@skylab-kulubu/skylcn-ui"],
+      "files": [
+        {
+          "path": "registry/blocks/form-page/page.tsx",
+          "type": "registry:page",
+          "target": "app/basvuru/page.tsx"
+        }
+      ]
+    },
+    {
+      "name": "dashboard",
+      "type": "registry:block",
+      "title": "Genel bakış",
+      "description": "An overview page: a row of StatCards, a trend as an AreaChart and a part-of-whole as a DonutChart.",
+      "dependencies": ["@skylab-kulubu/skylcn-ui", "lucide-react", "recharts"],
+      "files": [
+        {
+          "path": "registry/blocks/dashboard/page.tsx",
+          "type": "registry:page",
+          "target": "app/genel-bakis/page.tsx"
+        }
+      ]
+    }
+  ]
+}

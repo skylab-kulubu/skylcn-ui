@@ -59,6 +59,7 @@ export default function RootLayout({ children }) {
 - `@skylab-kulubu/skylcn-ui/charts`: charts on Recharts (area, line, bar, donut). An app without charts never loads Recharts.
 - `@skylab-kulubu/skylcn-ui/data-table`: the admin table on TanStack Table.
 - `@skylab-kulubu/skylcn-ui/theme.css` and `/tokens.css`: the Tailwind theme and plain CSS tokens.
+- `registry/r/<block>.json`: the page blocks for the shadcn CLI (see Registry).
 - `@skylab-kulubu/skylcn-ui/theme-base.css` and `/sources/<component>.css`: the theme without components, and one stylesheet per component for apps that use only some.
 
 ## Components
@@ -73,6 +74,25 @@ Every component has live examples in the docs app's playground (`/playground/com
 - **Motion:** Reveal, Collapse, Swap, AnimatedNumber
 
 The playground also has scenarios, whole pages built from these components, and a page builder for composing a page from blocks and copying its code.
+
+## Registry
+
+Page blocks are also offered as a [shadcn registry](https://ui.shadcn.com/docs/registry), to copy into an app and make its own. They are compositions of this package's components, which stay in the npm package and update with it; only the page around them is copied.
+
+| Block           | What it is                                                             |
+| --------------- | ---------------------------------------------------------------------- |
+| `sign-in`       | A sign-in page on TaskPage                                             |
+| `not-found`     | The 404 page on StatusPage                                             |
+| `list-page`     | Title and action, a search, a sortable DataList with row links, paging |
+| `settings-page` | Frameless Sections, ToggleRows, one save                               |
+| `form-page`     | Numbered questions, ChoiceList, a text answer, FileUpload              |
+| `dashboard`     | StatCards, an AreaChart and a DonutChart                               |
+
+```bash
+npx shadcn@latest add https://raw.githubusercontent.com/skylab-kulubu/skylcn-ui/main/registry/r/list-page.json
+```
+
+The block lands where its `target` says (such as `app/uyeler/page.tsx`) and installs `@skylab-kulubu/skylcn-ui` with the other packages it needs. The sources are in `registry/blocks`; `pnpm registry:build` writes `registry/r`, and a test fails if they drift apart.
 
 ## Principles
 

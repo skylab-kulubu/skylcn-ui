@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@skylab-kulubu/skylcn-ui": ["./src/index.ts"],
+      "@skylab-kulubu/skylcn-ui/charts": ["./src/charts/index.ts"],
+      "react": ["./node_modules/@types/react/index.d.ts"],
+      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime.d.ts"],
+      "lucide-react": ["./node_modules/lucide-react"]
+    },
+    "types": ["vitest/globals"]
+  },
+  "include": ["../../registry/blocks", "src/registry-blocks.test.tsx"]
+}

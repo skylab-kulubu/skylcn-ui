@@ -1,0 +1,18 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "form-page",
+  "type": "registry:block",
+  "title": "Başvuru formu",
+  "description": "A form people fill in: numbered questions, choice cards, a text answer, a file and one send button.",
+  "dependencies": [
+    "@skylab-kulubu/skylcn-ui"
+  ],
+  "files": [
+    {
+      "path": "registry/blocks/form-page/page.tsx",
+      "type": "registry:page",
+      "target": "app/basvuru/page.tsx",
+      "content": "'use client';\n\nimport {\n  Button,\n  ChoiceList,\n  Field,\n  FileUpload,\n  Textarea,\n  type FileUploadItem,\n} from '@skylab-kulubu/skylcn-ui';\nimport { useState } from 'react';\n\nconst TRACKS = [\n  { value: 'web', label: 'Web geliştirme', description: 'React, Next.js, API tasarımı' },\n  { value: 'game', label: 'Oyun geliştirme', description: 'Unity, Godot' },\n  { value: 'ai', label: 'Yapay zekâ', description: 'Model eğitimi, veri hazırlama' },\n];\n\n/** A form people fill in: numbered questions, choice cards, a file and one send button. */\nexport default function ApplicationForm() {\n  const [track, setTrack] = useState<string | null>(null);\n  const [files, setFiles] = useState<FileUploadItem[]>([]);\n  return (\n    <form className=\"flex max-w-xl flex-col gap-8\" onSubmit={(event) => event.preventDefault()}>\n      <Field variant=\"question\" number={1} label=\"Hangi alanda çalışmak istersin?\">\n        <ChoiceList aria-label=\"Alan\" options={TRACKS} value={track} onValueChange={setTrack} />\n      </Field>\n      <Field\n        variant=\"question\"\n        number={2}\n        label=\"Neden katılmak istiyorsun?\"\n        description=\"Birkaç cümle yeter.\"\n      >\n        <Textarea rows={4} />\n      </Field>\n      <Field variant=\"question\" number={3} label=\"Özgeçmişin\" description=\"İsteğe bağlı.\">\n        <FileUpload\n          files={files}\n          accept=\".pdf\"\n          rules=\"PDF, en çok 5 MB\"\n          onFiles={(added) =>\n            setFiles((current) => [\n              ...current,\n              ...added.map((file) => ({\n                id: `${file.name}-${file.size}`,\n                name: file.name,\n                size: file.size,\n                status: 'ready' as const,\n              })),\n            ])\n          }\n          onRemove={(id) => setFiles((current) => current.filter((file) => file.id !== id))}\n        />\n      </Field>\n      <div className=\"flex justify-end\">\n        <Button type=\"submit\" variant=\"primary\">\n          Başvuruyu gönder\n        </Button>\n      </div>\n    </form>\n  );\n}\n"
+    }
+  ]
+}

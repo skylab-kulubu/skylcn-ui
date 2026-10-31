@@ -37,7 +37,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "prepack": "node -e \"require('node:fs').copyFileSync('../../README.md', 'README.md')\"",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.registry.json",
     "test": "vitest run --passWithNoTests"
   },
   "peerDependencies": {

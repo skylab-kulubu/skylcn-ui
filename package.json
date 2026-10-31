@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "pnpm --filter @skylab-kulubu/skylcn-ui build && node scripts/release.mjs"
+    "release": "pnpm --filter @skylab-kulubu/skylcn-ui build && node scripts/release.mjs",
+    "registry:build": "node scripts/build-registry.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
