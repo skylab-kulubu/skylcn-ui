@@ -286,6 +286,7 @@ export {
   DataListRow,
   DataListSkeleton,
   DataListTitle,
+  nextDataListSort,
   useDataListPanelOpened,
   type DataListActionsProps,
   type DataListCellProps,

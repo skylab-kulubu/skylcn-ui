@@ -29,6 +29,7 @@ import {
   Stat,
   StatusDot,
   type DataListColumn,
+  nextDataListSort,
   type DataListSort,
 } from '@skylab-kulubu/skylcn-ui';
 import {
@@ -87,7 +88,10 @@ export default function Members() {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'all' | MemberStatus>('all');
   const [team, setTeam] = useState<string>('all');
-  const [sort, setSort] = useState<DataListSort>({ field: 'joined', direction: 'desc' });
+  const [sort, setSort] = useState<DataListSort | null>({
+    field: 'joined',
+    direction: 'desc',
+  });
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -105,6 +109,7 @@ export default function Members() {
         (team === 'all' || member.team === team) &&
         (!q || member.name.toLocaleLowerCase('tr-TR').includes(q) || member.email.includes(q)),
     );
+    if (!sort) return filtered;
     const direction = sort.direction === 'asc' ? 1 : -1;
     const key = sort.field as keyof Member;
     return filtered.sort(
@@ -117,12 +122,7 @@ export default function Members() {
   const visible = rows.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
   const filtered = query !== '' || status !== 'all' || team !== 'all';
 
-  const toggleSort = (field: string) =>
-    setSort((prev) =>
-      prev.field === field
-        ? { field, direction: prev.direction === 'asc' ? 'desc' : 'asc' }
-        : { field, direction: 'asc' },
-    );
+  const toggleSort = (field: string) => setSort((prev) => nextDataListSort(prev, field));
   const reset = () => {
     setQuery('');
     setStatus('all');

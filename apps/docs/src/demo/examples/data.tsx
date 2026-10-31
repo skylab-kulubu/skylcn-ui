@@ -39,6 +39,7 @@ import {
   TrendBadge,
   listStatus,
   type DataListColumn,
+  nextDataListSort,
   type DataListSort,
 } from '@skylab-kulubu/skylcn-ui';
 import { AreaChart, BarChart, DonutChart, LineChart } from '@skylab-kulubu/skylcn-ui/charts';
@@ -159,25 +160,24 @@ function DataListRowsExample() {
 }
 
 function DataListExamples() {
-  const [sort, setSort] = useState<DataListSort>({ field: 'events', direction: 'desc' });
+  const [sort, setSort] = useState<DataListSort | null>({
+    field: 'events',
+    direction: 'desc',
+  });
   const rows = useMemo(() => {
+    if (!sort) return MEMBERS.slice(0, 6);
     const direction = sort.direction === 'asc' ? 1 : -1;
     const key = sort.field as 'name' | 'team' | 'events';
     return MEMBERS.slice(0, 6).sort(
       (a, b) => String(a[key]).localeCompare(String(b[key]), 'tr', { numeric: true }) * direction,
     );
   }, [sort]);
-  const toggle = (field: string) =>
-    setSort((prev) =>
-      prev.field === field
-        ? { field, direction: prev.direction === 'asc' ? 'desc' : 'asc' }
-        : { field, direction: 'asc' },
-    );
+  const toggle = (field: string) => setSort((prev) => nextDataListSort(prev, field));
   return (
     <>
       <Example
         title="Sıralanabilir liste"
-        description="Bir başlığa tıkla: satırlar yeni yerlerine kayar. Pencereyi daraltınca sütunlar gizlenir."
+        description="Bir başlığa tıkla: satırlar yeni yerlerine kayar, üçüncü tıklama sıralamayı kaldırır. Pencereyi daraltınca sütunlar gizlenir."
         align="start"
       >
         <DataList columns={COLUMNS} sort={sort} onSortChange={toggle}>

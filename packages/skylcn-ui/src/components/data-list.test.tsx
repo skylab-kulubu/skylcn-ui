@@ -14,6 +14,7 @@ import {
   DataListHeader,
   DataListSkeleton,
   DataListRow,
+  nextDataListSort,
   useDataListPanelOpened,
   type DataListColumn,
 } from './data-list.js';
@@ -286,6 +287,20 @@ describe('DataList drawn from rows', () => {
       'aria-sort',
       'ascending',
     );
+
+    // A third press leaves the rows as they came
+    await user.click(screen.getByRole('button', { name: 'Puan' }));
+    expect(names()).toEqual(['Çağla', 'Ali', 'Zeynep', 'Cem']);
+    expect(screen.getByRole('columnheader', { name: 'Puan' })).toHaveAttribute('aria-sort', 'none');
+  });
+
+  it('turns a sort over and then off, for a list that keeps its own', () => {
+    const asc = nextDataListSort(null, 'name');
+    expect(asc).toEqual({ field: 'name', direction: 'asc' });
+    const desc = nextDataListSort(asc, 'name');
+    expect(desc).toEqual({ field: 'name', direction: 'desc' });
+    expect(nextDataListSort(desc, 'name')).toBeNull();
+    expect(nextDataListSort(desc, 'score', 'desc')).toEqual({ field: 'score', direction: 'desc' });
   });
 
   it('comes in as one even wave on its first fill, no row lagging behind the rest', () => {
