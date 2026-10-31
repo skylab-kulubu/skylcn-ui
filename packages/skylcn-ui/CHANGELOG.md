@@ -1,5 +1,22 @@
 # @skylab-kulubu/skylcn-ui
 
+## 0.2.2
+
+### Patch Changes
+
+- 0b4dafc: New ActivityHeatmap draws days as small squares in week columns, darker the busier, such as attendance over a term or a member's activity. Screen readers hear the total and the busiest day, the arrow keys move along the days while a line under the chart reads the one in focus, and the grid needs no inline style.
+- f695763: New CodeBlock shows code with its filename, line numbers, highlighted lines and a copy button, coloured by each language's own light rules with no dependency: JSX tags and props in tsx, keys in json and yaml, properties and at-rules in css, commands, flags and variables in bash, and the keywords and comments of python, go, sql and html, in new `--code-*` colour tokens that keep 4.5:1 in both themes. New CodeComparison sets two versions side by side and marks the lines that went and came, also in words for screen readers; `diffLines` and `tokenizeCode` are exported for other uses.
+- 0b4dafc: ConfirmDialog eases its height when an error or a stall note appears instead of jumping, and `DialogBody animateHeight` does the same for a dialog whose content changes, such as a step that swaps in a longer form. Under reduced motion the height still changes at once.
+- 0b4dafc: Menus and context menus light the highlighted row with one background that slides from row to row, by pointer or arrow keys, instead of each row lighting up on its own. It lands on the first row in place, takes the destructive tint on destructive rows and jumps under reduced motion.
+- 0b4dafc: New OverflowActions keeps as many actions as fit as buttons, in order of importance, and moves the rest into a "⋯" menu at the row's end, so a page header or bulk bar never wraps or spills on a narrow screen. It measures every button out of sight and follows the row's width.
+- 133e196: The sidebar slides without stalling on heavy pages: while the panel moves, the page inside holds the width it will end at, so it lays out once instead of on every frame of the slide, and lets go when the slide ends. Reduced motion and phones are untouched.
+- 0b4dafc: New RelativeTime says a moment from now, such as "3 saat önce" or "yarın", in the provider's language, kept current by one shared 30-second clock, with the full date and time in a Tooltip on hover (`tooltip` picks the side, `false` uses the title) and the exact moment in its `datetime`. `formatRelativeTime` gives the same words as a string.
+- 0b4dafc: New SaveStatus says where an autosaving form's last change stands beside the form: saving, saved for a moment, or failed until the next try, as a polite status line instead of a toast per change. The README's feedback rule names it.
+- 133e196: The sidebar lights the row under the pointer with one background that slides from row to row, as menus now do, instead of each row lighting up on its own. Its labels slide a step as they fade into the rail, rows give a little when pressed, and a click along the sidebar's unmarked edge opens or closes it. Menus and the sidebar share the sliding background through one helper.
+- aad17d6: DataList: a third press on a sorted column header leaves the rows unsorted, in the order they came, after the first direction and its reverse. `nextDataListSort(current, field, first?)` gives the same cycle to a list that keeps its own sort, and `sort` takes `null` for no sort.
+- 0b4dafc: New SortableList puts a list in order by dragging each row by its handle, or with the up and down arrow keys on the focused handle. The other rows glide out of the way with the lazily loaded motion layout, Esc puts a dragged row back, and the new place is said to screen readers.
+- f695763: Tree takes `files`, which gives branches a folder that opens with them and leaves an icon by their extension, and `guides`, which draws a line down each level. Rows are indented by a step per level instead of an inline padding, so the tree no longer sets any inline style.
+
 ## 0.2.1
 
 ### Patch Changes
