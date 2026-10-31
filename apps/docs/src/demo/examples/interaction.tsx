@@ -24,11 +24,63 @@ import {
   Tabs,
   TabsList,
   TabsPanel,
+  Textarea,
   useToast,
 } from '@skylab-kulubu/skylcn-ui';
 import { Archive, BarChart3, Settings, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Example } from '../doc';
+
+function StepDialogExample() {
+  const [step, setStep] = useState(0);
+  return (
+    <Example
+      title="Adımlı pencere"
+      description="animateHeight ile içerik değişince pencere yeni boyuna yumuşakça geçer."
+    >
+      <Dialog onOpenChange={(open) => open && setStep(0)}>
+        <DialogTrigger render={<Button />}>Etkinlik oluştur</DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Yeni etkinlik</DialogTitle>
+            <DialogDescription>
+              {step === 0 ? '1. adım: ad' : '2. adım: ayrıntılar'}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody animateHeight className="flex flex-col gap-3">
+            {step === 0 ? (
+              <Field label="Etkinlik adı">
+                <Input placeholder="Gece Kodu 2026" />
+              </Field>
+            ) : (
+              <>
+                <Field label="Yer">
+                  <Input placeholder="Davutpaşa B-201" />
+                </Field>
+                <Field label="Kontenjan">
+                  <Input type="number" placeholder="40" />
+                </Field>
+                <Field label="Açıklama">
+                  <Textarea rows={4} placeholder="Katılımcılar ne yapacak?" />
+                </Field>
+              </>
+            )}
+          </DialogBody>
+          <DialogFooter>
+            {step === 1 ? (
+              <Button variant="ghost" onClick={() => setStep(0)}>
+                Geri
+              </Button>
+            ) : null}
+            <Button variant="primary" onClick={() => setStep(1)} disabled={step === 1}>
+              {step === 0 ? 'İleri' : 'Oluştur'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </Example>
+  );
+}
 
 function DialogExamples() {
   const [deleting, setDeleting] = useState(false);
@@ -54,6 +106,22 @@ function DialogExamples() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </Example>
+      <StepDialogExample />
+      <Example
+        title="Hata olunca"
+        description="Eylem başarısız olunca hata metni gelir; pencere boyu sıçramadan uzar."
+      >
+        <ConfirmDialog
+          trigger={<Button>Davetleri yeniden gönder</Button>}
+          title="Davetler yeniden gönderilsin mi?"
+          description="Yanıt vermeyen 23 kişiye e-posta gider."
+          actionLabel="Gönder"
+          failureMessage="Posta sunucusuna ulaşılamadı. Biraz sonra yeniden dene."
+          onAction={() =>
+            new Promise<void>((_, reject) => window.setTimeout(() => reject(new Error()), 700))
+          }
+        />
       </Example>
       <Example
         title="Geri alınamaz eylem"

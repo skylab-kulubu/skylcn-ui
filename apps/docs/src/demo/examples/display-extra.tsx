@@ -14,6 +14,9 @@ import {
   type FileUploadItem,
   Kanban,
   MonthCalendar,
+  ActivityHeatmap,
+  RelativeTime,
+  SortableList,
   StatusPage,
   Stepper,
   Swap,
@@ -514,7 +517,131 @@ function CarouselExamples() {
   );
 }
 
+const MINUTE = 60_000;
+
+function RelativeTimeExamples() {
+  const [opened] = useState(() => Date.now());
+  const rows = [
+    { who: 'Deniz Aydın', what: 'başvuru formunu düzenledi', at: opened - 20_000 },
+    { who: 'Mira Tunç', what: 'etkinliği yayına aldı', at: opened - 42 * MINUTE },
+    { who: 'Cem Kaya', what: '18 katılımcıyı onayladı', at: opened - 5 * 60 * MINUTE },
+    { who: 'Ece Arslan', what: 'ekibe katıldı', at: opened - 26 * 60 * MINUTE },
+    { who: 'Bora Şen', what: 'duyuru taslağı açtı', at: opened - 9 * 24 * 60 * MINUTE },
+  ];
+  return (
+    <>
+      <Example
+        title="Etkinlik günlüğü"
+        description="Üzerine gel: tam tarih ve saat görünür. Sayfa açık kaldıkça yazılar kendiliğinden ilerler."
+        align="start"
+      >
+        <ul className="flex w-full max-w-md flex-col divide-y divide-border-subtle text-sm">
+          {rows.map((row) => (
+            <li key={row.who} className="flex items-baseline justify-between gap-4 py-2">
+              <span className="min-w-0 truncate text-secondary-foreground">
+                <span className="font-medium text-foreground">{row.who}</span> {row.what}
+              </span>
+              <RelativeTime date={row.at} className="shrink-0 text-xs text-subtle-foreground" />
+            </li>
+          ))}
+        </ul>
+      </Example>
+      <Example
+        title="İleriye dönük"
+        description="Gelecekteki anlar da aynı dille söylenir."
+        align="start"
+      >
+        <p className="text-sm text-muted-foreground">
+          Başvurular{' '}
+          <RelativeTime date={opened + 2 * 24 * 60 * MINUTE} className="text-foreground" />{' '}
+          kapanıyor, etkinlik{' '}
+          <RelativeTime date={opened + 3 * 7 * 24 * 60 * MINUTE} className="text-foreground" />.
+        </p>
+      </Example>
+    </>
+  );
+}
+
+const AGENDA = [
+  { id: 'a', title: 'Kayıt ve karşılama', time: '09.30' },
+  { id: 'b', title: 'Açılış konuşması', time: '10.00' },
+  { id: 'c', title: 'Atölye: Next.js ile panel', time: '10.30' },
+  { id: 'd', title: 'Öğle arası', time: '12.30' },
+  { id: 'e', title: 'Proje sunumları', time: '13.30' },
+];
+
+function SortableExamples() {
+  const [agenda, setAgenda] = useState(AGENDA);
+  return (
+    <Example
+      title="Etkinlik akışı"
+      description="Tutamaktan sürükle ya da tutamağa odaklanıp ok tuşlarına bas. Sürüklerken Esc vazgeçer."
+      align="start"
+    >
+      <SortableList
+        aria-label="Etkinlik akışı"
+        className="w-full max-w-md"
+        items={agenda}
+        getId={(step) => step.id}
+        getLabel={(step) => step.title}
+        onReorder={setAgenda}
+        renderItem={(step) => (
+          <span className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="truncate text-foreground">{step.title}</span>
+            <span className="shrink-0 text-xs text-subtle-foreground tabular-nums">
+              {step.time}
+            </span>
+          </span>
+        )}
+      />
+    </Example>
+  );
+}
+
+// Made-up attendance: busier on weekday evenings and in the weeks of the term's events
+function attendance(weeks: number) {
+  const today = new Date();
+  return Array.from({ length: weeks * 7 }, (_, i) => {
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+    const weekday = date.getDay();
+    const base = weekday === 0 || weekday === 6 ? 0 : (date.getDate() * 7 + weekday * 3) % 9;
+    const eventWeek = Math.floor(i / 7) % 5 === 1 ? 4 : 0;
+    return { date, count: base > 4 ? base - 4 + eventWeek : 0 };
+  });
+}
+
+function HeatmapExamples() {
+  const [data] = useState(() => attendance(26));
+  return (
+    <>
+      <Example
+        title="Dönem boyu katılım"
+        description="Bir güne gel ya da odaklanıp ok tuşlarıyla gez: altındaki satır o günü okur."
+        align="start"
+      >
+        <ActivityHeatmap
+          aria-label="Son 26 haftada atölye katılımı"
+          data={data}
+          formatCount={(n) => `${n} katılım`}
+          className="max-w-full"
+        />
+      </Example>
+      <Example title="Üye sayfasında" description="weeks ile kısa bir dönem." align="start">
+        <ActivityHeatmap
+          aria-label="Deniz Aydın'ın son 12 haftası"
+          data={data}
+          weeks={12}
+          formatCount={(n) => `${n} etkinlik`}
+        />
+      </Example>
+    </>
+  );
+}
+
 export const DISPLAY_EXTRA_EXAMPLES = {
+  'activity-heatmap': HeatmapExamples,
+  'sortable-list': SortableExamples,
+  'relative-time': RelativeTimeExamples,
   kanban: KanbanExamples,
   carousel: CarouselExamples,
   'data-table': DataTableExamples,

@@ -12,6 +12,8 @@ import {
   IconButton,
   IconSwap,
   Input,
+  OverflowActions,
+  type OverflowAction,
   SegmentedControl,
   Select,
   Switch,
@@ -503,7 +505,47 @@ function SwitchExamples() {
   );
 }
 
+const FORM_ACTIONS: OverflowAction[] = [
+  { key: 'share', label: 'Paylaş', icon: Share2, variant: 'primary', onSelect: () => {} },
+  { key: 'preview', label: 'Önizle', icon: Eye, onSelect: () => {} },
+  { key: 'refresh', label: 'Yanıtları yenile', icon: RefreshCw, onSelect: () => {} },
+  { key: 'notify', label: 'Bildirimleri kapat', icon: BellOff, onSelect: () => {} },
+  { key: 'delete', label: 'Sil', icon: Trash2, destructive: true, onSelect: () => {} },
+];
+
+function OverflowExamples() {
+  const [width, setWidth] = useState(100);
+  return (
+    <>
+      <Example
+        title="Daralan araç çubuğu"
+        description="Genişliği değiştir: en sondaki eylemler önce menüye geçer, yer açılınca geri gelir."
+        align="start"
+      >
+        <SegmentedControl
+          aria-label="Genişlik"
+          value={String(width)}
+          onValueChange={(value) => setWidth(Number(value))}
+          options={[
+            { value: '100', label: 'Geniş' },
+            { value: '60', label: 'Orta' },
+            { value: '35', label: 'Dar' },
+          ]}
+        />
+        <div
+          className="flex items-center gap-3 rounded-lg border border-border-subtle p-3 transition-[width] duration-(--motion-duration-base) ease-enter"
+          style={{ width: `${width}%` }}
+        >
+          <span className="shrink-0 text-sm font-medium text-foreground">Kayıt formu</span>
+          <OverflowActions aria-label="Form eylemleri" size="sm" actions={FORM_ACTIONS} />
+        </div>
+      </Example>
+    </>
+  );
+}
+
 export const ACTION_FORM_EXAMPLES = {
+  'overflow-actions': OverflowExamples,
   button: ButtonExamples,
   'icon-swap': IconSwapExamples,
   'copy-button': CopyExamples,

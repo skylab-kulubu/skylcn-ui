@@ -28,6 +28,7 @@ export {
   DialogTitle,
   DialogTrigger,
   type ConfirmDialogProps,
+  type DialogBodyProps,
   type DialogContentProps,
 } from './components/dialog.js';
 export {
@@ -222,6 +223,11 @@ export {
 } from './components/motion.js';
 export { motionTokens, transitions } from './lib/motion-tokens.js';
 export { TrendBadge, type TrendBadgeProps } from './components/trend-badge.js';
+export {
+  formatRelativeTime,
+  RelativeTime,
+  type RelativeTimeProps,
+} from './components/relative-time.js';
 export { Pagination, pageSlots, type PaginationProps } from './components/pagination.js';
 export {
   Popover,
@@ -323,6 +329,18 @@ export {
   type SearchInputProps,
 } from './components/page-header.js';
 export { Section, type SectionProps } from './components/section.js';
+export {
+  OverflowActions,
+  type OverflowAction,
+  type OverflowActionsProps,
+} from './components/overflow-actions.js';
+export { SortableList, type SortableListProps } from './components/sortable-list.js';
+export {
+  ActivityHeatmap,
+  type ActivityDay,
+  type ActivityHeatmapProps,
+} from './components/activity-heatmap.js';
+export { SaveStatus, type SaveState, type SaveStatusProps } from './components/save-status.js';
 export {
   ContextMenu,
   ContextMenuContent,
