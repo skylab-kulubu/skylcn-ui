@@ -1,5 +1,33 @@
 # @skylab-kulubu/skylcn-ui
 
+## 0.2.0
+
+### Minor Changes
+
+- 37b0c17: Building blocks for forms people fill in: box controls in three sizes set once with ControlSizeProvider, Field as a numbered question, ChoiceList, ChoiceMatrix, FileUpload and TimePicker, Combobox and Select that create, search and pick several, and a ConfirmDialog that spells out what happens.
+
+### Patch Changes
+
+- 4617cf0: A pending Button centres its SkylabLoader again; the loader had no size, so it stretched over the button and its mark sat in the top-left corner.
+- 2ff14a7: New CheckboxCard and RadioCard draw an option as a bordered row, and new ChoiceList lays out a question's options as cards: round marks take one answer, square marks (`multiple`) several. The cards stand as tall as the box controls of their size, and a checked radio fills with the brand purple like a checked checkbox.
+- ae66d70: New ChoiceMatrix asks rows by columns: one choice per row with radios, or several with `multiple`, a clear button on each answered row, only the unanswered rows marked while invalid, and each row stacked with its choices on phones.
+- 54527e6: Combobox can create what was typed (`onCreate`), search on the server (`onSearch`, `loading`), show a locked value (`readOnly`) and take several picks as removable chips (`multiple`); MultiSelect is now Combobox multiple under its old name. Combobox and NumberField take `size`. The list rises in order as it opens and eases its height as a search narrows it.
+- 5978f42: ConfirmDialog lists what happens (`consequences`) beside what stays (`unaffected`), can ask for a typed phrase (`confirmText`) that ticks once it matches and confirms on Enter, and can hold its action for `delay` seconds behind a draining line. It takes an `icon` in a new header band with a close button, opens wide when it carries a summary or a phrase, and rises as a sheet on phones.
+- c181f54: ConfirmDialog takes `finalFocus`, Base UI's own prop, for where focus goes when it closes; `false` leaves focus alone, for an action that also closes the drawer under it and lets the drawer hand focus elsewhere. Without it focus returns to the trigger as before.
+- 69c066a: Box controls come in three sizes: sm 32px, md 36px (the default) and lg 38px, taller on touch screens, set per control or once for a whole form with the new ControlSizeProvider. Input (`inputSize`), Textarea and SearchInput take them, with a see-through fill, rounder corners above sm and a lilac focus ring. Input grows from 32px to 36px by default.
+- badb19a: Field takes `variant="question"` with `number`, `required` and `hint` for forms people fill in; Textarea counts its characters with `showCount`; read-only Inputs and Textareas are filled so they read as set; and errors use a softer red.
+- c2d1744: New FileUpload and FileRow show files through the states the app sets: uploading with progress, scanning, ready, failed with retry and rejected, each removable. Dropzone gains a compact 64px variant, an invalid state, an id for a Field's label, a visible keyboard focus and a steady brand tint while a file is over it.
+- 432b6a1: New FilterButton opens a filter panel and says how many filters are on; new ActiveFilters shows the filters that are on as chips that each take one off, with a way to clear them all.
+- 5737ae1: IconButton shows its label in a Tooltip on hover and keyboard focus instead of the browser's title. `tooltip` picks the side, or `false` falls back to the title inside parts that bring their own.
+- 466b838: The calendar moves like forms' calendar: months slide, the month and year views slide in vertically with a blur, and picker panels rise into place. Its header is a plain row, it always shows six weeks, the chosen day is tinted and today has a dot. New TimePicker picks hours and minutes from two columns; DateTimePicker uses the same columns; DatePicker gains Bugün and Temizle; and the picker triggers take `size` and a 26px `variant="pill"`.
+- 83f36c7: `Section` can fold away by its title: `collapsible` turns the title into a button with a turning chevron, open by default, with `defaultOpen`, `open` and `onOpenChange` for control.
+- ec9dfbc: Select takes `action`, a command row at the end of the list; `size`; a 26px `variant="pill"` for dense rows; and `multiple`, which ticks several options in a list that stays open and shows them as chips, or a count once they do not fit. Its list opens with the pickers' motion, rows rising in order.
+- 3cabb4d: Slider takes `ends`, words under the two ends of the track, such as a scale's lowest and highest answer.
+- 3538d32: A framed StatCard is now a compact tile with its mark beside the label and figure. `href` makes the whole figure a link, `dot` puts a state dot before the label and `valueTone` colours the figure.
+- 4a3aaa7: Timeline marks are rounded squares with medium-weight titles; `marker` shows a number in the mark, `current` rings the step happening now, `upcoming` draws a step still to come dashed, and there is an `info` tone. Stepper steps take `uncertain` for a step that may not come.
+- 0a22dae: A toast with an action, such as an undo, now closes once the action is taken, so it no longer says the deed is done; calling `preventDefault()` in the click keeps it open.
+- 2eeefe4: ToggleRow shows its children under the row while the switch is on, such as the settings the switch unlocks, and takes `checkedTitle` for a row that says its state, such as consent.
+
 ## 0.1.11
 
 ### Patch Changes
