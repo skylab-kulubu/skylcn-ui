@@ -614,10 +614,23 @@ export const ENTRIES: Entry[] = [
     ],
   },
   {
+    slug: 'code-block',
+    name: 'CodeBlock ve CodeComparison',
+    category: 'data',
+    description:
+      'Atölye, duyuru ve belgelerde kod: dosya adı, satır numarası, vurgulu satırlar, kopyalama; iki sürümü yan yana karşılaştırma.',
+    imports: ['CodeBlock', 'CodeComparison'],
+    a11y: [
+      'Yatay kayan kod alanı klavyeyle odak alır ve dosya adıyla adlandırılır.',
+      'Karşılaştırmada silinen ve eklenen satırlar ekran okuyucuya yazıyla söylenir; renk tek başına kalmaz.',
+      'Kopyala butonu hangi dosyayı kopyaladığını adında taşır.',
+    ],
+  },
+  {
     slug: 'tree',
     name: 'Tree',
     category: 'data',
-    description: 'İç içe öğeler: Keycloak grupları, klasörler, ekip yapısı.',
+    description: 'İç içe öğeler: Keycloak grupları, ekip yapısı, bir projenin klasör ve dosyaları.',
     imports: ['Tree'],
     a11y: [
       'Sekmeyle tek satır odak alır; oklar gezer, sağ ok açar ya da içeri girer, sol ok kapatır ya da üste çıkar.',

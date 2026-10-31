@@ -15,6 +15,8 @@ import {
   Kanban,
   MonthCalendar,
   ActivityHeatmap,
+  CodeBlock,
+  CodeComparison,
   RelativeTime,
   SortableList,
   StatusPage,
@@ -367,7 +369,54 @@ function BulkExamples() {
   );
 }
 
+const PROJECT = [
+  {
+    id: 'app',
+    label: 'app',
+    children: [
+      { id: 'layout', label: 'layout.tsx' },
+      { id: 'page', label: 'page.tsx' },
+      {
+        id: 'events',
+        label: 'etkinlikler',
+        children: [
+          { id: 'events-page', label: 'page.tsx' },
+          { id: 'events-data', label: 'veri.json' },
+        ],
+      },
+    ],
+  },
+  { id: 'public', label: 'public', children: [{ id: 'logo', label: 'logo.svg' }] },
+  { id: 'readme', label: 'README.md' },
+  { id: 'package', label: 'package.json' },
+];
+
 function TreeExamples() {
+  const [file, setFile] = useState<string | null>('events-page');
+  return (
+    <>
+      <GroupTree />
+      <Example
+        title="Proje yapısı"
+        description="files klasör ve dosya ikonlarını uzantıya göre koyar, guides her seviyeye çizgi çeker."
+        align="start"
+      >
+        <Tree
+          aria-label="Atölye projesi"
+          files
+          guides
+          className="w-full max-w-xs"
+          selected={file}
+          onSelect={setFile}
+          defaultExpanded={['app', 'events']}
+          nodes={PROJECT}
+        />
+      </Example>
+    </>
+  );
+}
+
+function GroupTree() {
   const [selected, setSelected] = useState<string | null>('weblab');
   return (
     <Example
@@ -638,7 +687,139 @@ function HeatmapExamples() {
   );
 }
 
+const BEFORE = `export default function Page() {
+  const [events, setEvents] = useState([]);
+  useEffect(() => {
+    fetch('/api/etkinlikler')
+      .then((res) => res.json())
+      .then(setEvents);
+  }, []);
+  return <EventList events={events} />;
+}`;
+
+const AFTER = `export default async function Page() {
+  // Veri sunucuda alınır, sayfa hazır gelir
+  const events = await getEvents();
+  return <EventList events={events} />;
+}`;
+
+const SAMPLES = [
+  {
+    filename: 'components/event-card.tsx',
+    language: 'tsx',
+    code: `export function EventCard({ event }: { event: Event }) {
+  return (
+    <Card href={\`/etkinlikler/\${event.slug}\`}>
+      <CardTitle>{event.title}</CardTitle>
+      <Badge tone="brand">{event.seats} kişi</Badge>
+    </Card>
+  );
+}`,
+  },
+  {
+    filename: 'package.json',
+    language: 'json',
+    code: `{
+  "name": "gece-kodu",
+  "private": true,
+  "scripts": { "dev": "next dev", "test": "vitest" },
+  "dependencies": { "@skylab-kulubu/skylcn-ui": "^0.3.0" }
+}`,
+  },
+  {
+    filename: 'app/globals.css',
+    language: 'css',
+    code: `@import '@skylab-kulubu/skylcn-ui/theme.css' source(none);
+
+/* Etkinlik kartının kapağı */
+.event-cover {
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+  background: #1a1a1a;
+}`,
+  },
+  {
+    filename: 'kurulum.sh',
+    language: 'bash',
+    code: `# Projeyi kur ve çalıştır
+git clone https://github.com/skylab-kulubu/gece-kodu.git
+cd gece-kodu && pnpm install --frozen-lockfile
+PORT=3000 pnpm dev`,
+  },
+  {
+    filename: 'sorgular/katilim.sql',
+    language: 'sql',
+    code: `-- Son 30 günde en çok katılan üyeler
+SELECT m.name, COUNT(*) AS katilim
+FROM attendance a
+JOIN members m ON m.id = a.member_id
+WHERE a.created_at > now() - interval '30 days'
+GROUP BY m.name
+ORDER BY katilim DESC
+LIMIT 10;`,
+  },
+  {
+    filename: 'bot/duyuru.py',
+    language: 'python',
+    code: `@app.command()
+def duyur(baslik: str, kanal: str = "genel") -> None:
+    """Duyuruyu Discord kanalına gönderir."""
+    mesaj = f"📣 {baslik}"
+    gonder(kanal, mesaj, tekrar=3)`,
+  },
+];
+
+function CodeExamples() {
+  return (
+    <>
+      <Example
+        title="Dile göre renklendirme"
+        description="tsx, json, css, bash, sql, python, go, yaml ve html kendi kurallarıyla renklenir; bilinmeyen dilde yorum, metin ve sayı kalır."
+        align="start"
+      >
+        <div className="grid w-full gap-3 lg:grid-cols-2">
+          {SAMPLES.map((sample) => (
+            <CodeBlock key={sample.filename} {...sample} />
+          ))}
+        </div>
+      </Example>
+      <Example
+        title="Kod bloğu"
+        description="Dosya adı, satır numarası, vurgulanan satırlar ve kopyalama. Renklendirme paket getirmez."
+        align="start"
+      >
+        <CodeBlock
+          className="w-full max-w-2xl"
+          filename="app/etkinlikler/page.tsx"
+          language="tsx"
+          highlightLines={[3]}
+          code={AFTER}
+        />
+        <CodeBlock
+          className="w-full max-w-2xl"
+          language="bash"
+          code={'pnpm add @skylab-kulubu/skylcn-ui # kütüphane\npnpm dev'}
+        />
+      </Example>
+      <Example
+        title="Önce ve sonra"
+        description="Silinen ve eklenen satırlar kendiliğinden bulunur; telefonda alt alta dizilir."
+        align="start"
+      >
+        <CodeComparison
+          className="w-full"
+          filename="app/etkinlikler/page.tsx"
+          language="tsx"
+          before={BEFORE}
+          after={AFTER}
+        />
+      </Example>
+    </>
+  );
+}
+
 export const DISPLAY_EXTRA_EXAMPLES = {
+  'code-block': CodeExamples,
   'activity-heatmap': HeatmapExamples,
   'sortable-list': SortableExamples,
   'relative-time': RelativeTimeExamples,

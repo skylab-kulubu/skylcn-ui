@@ -732,6 +732,16 @@ const MINIS: Record<string, () => ReactNode> = {
       ))}
     </span>
   ),
+  'code-block': () => (
+    <span className="flex w-44 flex-col gap-0.5 rounded-md border border-border bg-muted/40 p-2 font-mono text-3xs leading-4">
+      <span>
+        <span className="text-skylab-300">const</span> <span className="text-info">Kart</span> ={' '}
+        <span className="text-success">'web'</span>
+      </span>
+      <span className="bg-destructive/10 text-subtle-foreground">− eski();</span>
+      <span className="bg-success/10 text-secondary-foreground">+ yeni();</span>
+    </span>
+  ),
   tree: () => (
     <span className="flex flex-col gap-1 text-2xs">
       <span>▾ Üyeler</span>

@@ -1,6 +1,16 @@
 'use client';
 
-import { ChevronRight, type LucideIcon } from 'lucide-react';
+import {
+  ChevronRight,
+  File,
+  FileCode,
+  FileImage,
+  FileJson,
+  FileText,
+  Folder,
+  FolderOpen,
+  type LucideIcon,
+} from 'lucide-react';
 import { useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { Collapse } from './motion.js';
@@ -21,8 +31,31 @@ export type TreeProps = {
   onSelect?: (id: string) => void;
   /** Branches open at first. */
   defaultExpanded?: readonly string[];
+  /**
+   * Draws a project's files: branches get a folder that opens with them and leaves an icon
+   * by their extension, unless a node brings its own.
+   */
+  files?: boolean;
+  /** Lines down each level, so deep rows show which branch they hang from. */
+  guides?: boolean;
   className?: string;
 };
+
+const FILE_ICONS: [RegExp, LucideIcon][] = [
+  [
+    /\.(tsx?|jsx?|mjs|cjs|go|py|rs|java|kt|c|cpp|h|cs|php|rb|swift|sh|css|scss|html|vue|svelte)$/i,
+    FileCode,
+  ],
+  [/\.(json|jsonc|ya?ml|toml)$/i, FileJson],
+  [/\.(md|mdx|txt|pdf|docx?)$/i, FileText],
+  [/\.(png|jpe?g|gif|svg|webp|avif|ico)$/i, FileImage],
+];
+
+function fileIcon(node: TreeNode, branch: boolean, open: boolean): LucideIcon {
+  if (branch) return open ? FolderOpen : Folder;
+  const name = typeof node.label === 'string' ? node.label : '';
+  return FILE_ICONS.find(([pattern]) => pattern.test(name))?.[1] ?? File;
+}
 
 type Flat = { node: TreeNode; depth: number; parent: string | null };
 
@@ -37,6 +70,8 @@ export function Tree({
   selected = null,
   onSelect,
   defaultExpanded = [],
+  files = false,
+  guides = false,
   className,
 }: TreeProps) {
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set(defaultExpanded));
@@ -104,7 +139,7 @@ export function Tree({
     list.map((node) => {
       const branch = Boolean(node.children?.length);
       const open = expanded.has(node.id);
-      const Icon = node.icon;
+      const Icon = node.icon ?? (files ? fileIcon(node, branch, open) : undefined);
       const flat = { node, depth, parent };
       return (
         <li key={node.id} role="none">
@@ -125,15 +160,25 @@ export function Tree({
               if (branch) toggle(node.id);
               onSelect?.(node.id);
             }}
-            style={{ paddingLeft: `${depth * 1.25 + 0.5}rem` }}
             className={cn(
-              'flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-2 text-sm outline-hidden select-none pointer-coarse:py-2.5',
+              'flex cursor-pointer items-center gap-2 rounded-md py-1.5 pr-2 pl-2 text-sm outline-hidden select-none pointer-coarse:py-2.5',
               'transition-colors duration-(--motion-duration-instant) focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
               selected === node.id
                 ? 'bg-skylab-500/10 text-foreground-strong'
                 : 'text-secondary-foreground hover:bg-accent',
             )}
           >
+            {/* One step per level instead of an inline padding; each step can carry the level's line */}
+            {Array.from({ length: depth }, (_, level) => (
+              <span
+                key={level}
+                aria-hidden
+                className={cn(
+                  '-my-1.5 -mr-2 w-5 shrink-0 self-stretch pointer-coarse:-my-2.5',
+                  guides && 'ml-1.5 w-3.5 border-l border-border-subtle',
+                )}
+              />
+            ))}
             <ChevronRight
               aria-hidden
               className={cn(
@@ -142,7 +187,15 @@ export function Tree({
                 !branch && 'invisible',
               )}
             />
-            {Icon ? <Icon className="size-4 shrink-0 text-subtle-foreground" aria-hidden /> : null}
+            {Icon ? (
+              <Icon
+                className={cn(
+                  'size-4 shrink-0 text-subtle-foreground',
+                  files && branch && 'text-skylab-300',
+                )}
+                aria-hidden
+              />
+            ) : null}
             <span className="min-w-0 flex-1 truncate">{node.label}</span>
             {node.meta ? (
               <span className="shrink-0 text-2xs text-subtle-foreground tabular-nums">

@@ -342,6 +342,15 @@ export {
 } from './components/activity-heatmap.js';
 export { SaveStatus, type SaveState, type SaveStatusProps } from './components/save-status.js';
 export {
+  CodeBlock,
+  CodeComparison,
+  diffLines,
+  tokenizeCode,
+  type CodeBlockProps,
+  type CodeComparisonProps,
+  type CodeLineMark,
+} from './components/code-block.js';
+export {
   ContextMenu,
   ContextMenuContent,
   ContextMenuTrigger,

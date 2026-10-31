@@ -132,6 +132,15 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-code-comment: var(--code-comment);
+  --color-code-keyword: var(--code-keyword);
+  --color-code-string: var(--code-string);
+  --color-code-number: var(--code-number);
+  --color-code-type: var(--code-type);
+  --color-code-call: var(--code-call);
+  --color-code-tag: var(--code-tag);
+  --color-code-attr: var(--code-attr);
+  --color-code-property: var(--code-property);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);

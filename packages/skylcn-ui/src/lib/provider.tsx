@@ -70,6 +70,11 @@ const MESSAGES = {
     saving: 'Kaydediliyor…',
     saved: 'Kaydedildi',
     saveFailed: 'Kaydedilemedi',
+    code: 'Kod',
+    before: 'Önce',
+    after: 'Sonra',
+    addedLine: 'eklendi',
+    removedLine: 'silindi',
     movedTo: (label: string, position: number, total: number) =>
       `${label}: ${total} öğeden ${position}. sırada`,
     chooseFile: 'Dosya seç',
@@ -183,6 +188,11 @@ const MESSAGES = {
     saving: 'Saving…',
     saved: 'Saved',
     saveFailed: 'Could not save',
+    code: 'Code',
+    before: 'Before',
+    after: 'After',
+    addedLine: 'added',
+    removedLine: 'removed',
     movedTo: (label: string, position: number, total: number) =>
       `${label}: position ${position} of ${total}`,
     chooseFile: 'Choose a file',
