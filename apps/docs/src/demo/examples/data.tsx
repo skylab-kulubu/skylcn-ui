@@ -320,6 +320,22 @@ function SectionExamples() {
         </div>
       </Example>
       <Example
+        title="Katlanan bölüm"
+        description="collapsible başlığı bir butona çevirir; ok dönerek bölümü kapatır."
+        align="start"
+      >
+        <div className="flex w-full max-w-md flex-col gap-6">
+          <Section title="Gelişmiş ayarlar" collapsible defaultOpen={false}>
+            <p className="text-sm text-muted-foreground">
+              Yanıt sınırı, tekrar yanıtlama ve e-posta onayı burada.
+            </p>
+          </Section>
+          <Section title="Paylaşım" collapsible>
+            <p className="text-sm text-muted-foreground">Form bağlantısı herkese açık.</p>
+          </Section>
+        </div>
+      </Example>
+      <Example
         title="Yükseklik verilince"
         description="İçerik başlığın bıraktığı yeri alır; taşan satırlar kendi içinde kayar."
         align="start"
@@ -418,6 +434,17 @@ function CardExamples() {
             />
           </div>
         </Section>
+      </Example>
+      <Example
+        title="Kompakt kutular"
+        description="Çerçeveli StatCard işaretini etiketin yanına alır. href sayıyı bağlantı yapar, dot durumu, valueTone sayının rengini söyler."
+        align="start"
+      >
+        <div className="grid w-full gap-3 sm:grid-cols-3">
+          <StatCard label="Açık başvuru" value={42} dot="success" href="#basvurular" />
+          <StatCard label="Onay bekleyen" value={7} dot="warning" valueTone="warning" />
+          <StatCard label="Ulaşılamayan adres" value={3} dot="danger" valueTone="danger" />
+        </div>
       </Example>
       <Example title="İçerik kartı" align="start">
         <Card className="max-w-md">

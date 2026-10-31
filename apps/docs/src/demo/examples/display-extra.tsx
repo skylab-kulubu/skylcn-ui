@@ -10,6 +10,8 @@ import {
   DescriptionList,
   Carousel,
   Dropzone,
+  FileUpload,
+  type FileUploadItem,
   Kanban,
   MonthCalendar,
   StatusPage,
@@ -19,15 +21,131 @@ import {
   Tree,
 } from '@skylab-kulubu/skylcn-ui';
 import { CheckCircle2, Mail, Send, Shield, Trash2, UserPlus, Users, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Example } from '../doc';
 import { MemberTable } from '../member-table';
 import { MEMBERS } from '../members';
 
+// The demo plays an upload: progress, a virus scan, then ready; a file named with "virus" is refused
+function useFakeUploads(initial: FileUploadItem[] = []) {
+  const [files, setFiles] = useState<FileUploadItem[]>(initial);
+  const timers = useRef(new Map<string, number>());
+  useEffect(() => {
+    const all = timers.current;
+    return () => all.forEach((timer) => window.clearInterval(timer));
+  }, []);
+  const patch = (id: string, next: Partial<FileUploadItem>) =>
+    setFiles((prev) => prev.map((file) => (file.id === id ? { ...file, ...next } : file)));
+  const start = (id: string, refuse: boolean) => {
+    let progress = 0;
+    const timer = window.setInterval(() => {
+      progress += 20;
+      if (progress < 100) return patch(id, { status: 'uploading', progress });
+      window.clearInterval(timer);
+      patch(id, { status: 'scanning', progress: undefined });
+      timers.current.set(
+        id,
+        window.setTimeout(
+          () =>
+            patch(
+              id,
+              refuse
+                ? { status: 'error', rejected: true, error: 'Taramada zararlı içerik bulundu.' }
+                : { status: 'ready' },
+            ),
+          1200,
+        ),
+      );
+    }, 300);
+    timers.current.set(id, timer);
+  };
+  const add = (picked: File[], single: boolean) => {
+    const items = picked.map((file, i) => ({
+      id: `${Date.now()}-${i}`,
+      name: file.name,
+      size: file.size,
+      status: 'uploading' as const,
+      progress: 0,
+    }));
+    setFiles((prev) => (single ? items.slice(0, 1) : [...prev, ...items]));
+    items.forEach((item) => start(item.id, /virus/i.test(item.name)));
+  };
+  const remove = (id: string) => {
+    window.clearInterval(timers.current.get(id));
+    setFiles((prev) => prev.filter((file) => file.id !== id));
+  };
+  const retry = (id: string) => {
+    patch(id, { status: 'uploading', progress: 0, error: undefined, rejected: undefined });
+    start(id, false);
+  };
+  return { files, add, remove, retry };
+}
+
+function FileUploadExamples() {
+  const many = useFakeUploads([
+    { id: 'a', name: 'sponsor-sunumu.pdf', size: 2_400_000, status: 'ready' },
+    {
+      id: 'b',
+      name: 'afis-son.png',
+      size: 820_000,
+      status: 'error',
+      error: 'Bağlantı koptu, dosya yarım kaldı.',
+    },
+  ]);
+  const one = useFakeUploads();
+  return (
+    <>
+      <Example
+        title="Yükleme durumları"
+        description="Uygulama durumu söyler, bileşen çizer: yükleniyor, taranıyor, hazır, hata. Adında virus geçen dosya reddedilir."
+        align="start"
+      >
+        <FileUpload
+          multiple
+          maxFiles={4}
+          className="w-full max-w-md"
+          accept=".pdf,image/*"
+          rules="PDF ya da görsel, en fazla 4 dosya"
+          files={many.files}
+          onFiles={(picked) => many.add(picked, false)}
+          onRemove={many.remove}
+          onRetry={many.retry}
+        />
+      </Example>
+      <Example
+        title="Tek dosyalı soru"
+        description="Kompakt alan formdaki bir soruya sığar; seçilen dosya alanın yerini alır."
+        align="start"
+      >
+        <FileUpload
+          variant="compact"
+          className="w-full max-w-md"
+          aria-label="Öğrenci belgesi"
+          rules="PDF, en fazla 10 MB"
+          accept=".pdf"
+          files={one.files}
+          onFiles={(picked) => one.add(picked, true)}
+          onRemove={one.remove}
+          onRetry={one.retry}
+        />
+      </Example>
+    </>
+  );
+}
+
 function DropzoneExamples() {
+  return (
+    <>
+      <FileUploadExamples />
+      <PlainDropzone />
+    </>
+  );
+}
+
+function PlainDropzone() {
   const [files, setFiles] = useState<File[]>([]);
   return (
-    <Example title="Dosya yükleme" align="start">
+    <Example title="Yalnız bırakma alanı" align="start">
       <Dropzone
         multiple
         className="max-w-md"
@@ -51,6 +169,7 @@ function DropzoneExamples() {
 const STEPS = [
   { id: 'info', label: 'Bilgiler', description: 'Ad ve iletişim' },
   { id: 'team', label: 'Takım', description: 'Üyeler ve rol' },
+  { id: 'interview', label: 'Görüşme', description: 'Gerekirse', uncertain: true },
   { id: 'review', label: 'Onay', description: 'Gözden geçir' },
 ];
 
@@ -109,6 +228,45 @@ function DescriptionExamples() {
 }
 
 function TimelineExamples() {
+  return (
+    <>
+      <ApprovalTimeline />
+      <Example
+        title="Etkinlik akışı"
+        description="marker adımın numarasını yazar, current şu anki adımı halkayla gösterir, upcoming gelecek adımları kesikli çizer."
+        align="start"
+      >
+        <Timeline
+          className="max-w-lg"
+          items={[
+            { id: 'a', marker: 1, title: 'Kayıt ve karşılama', time: '09.30', tone: 'success' },
+            { id: 'b', marker: 2, title: 'Açılış konuşması', time: '10.00', tone: 'success' },
+            {
+              id: 'c',
+              marker: 3,
+              title: 'Atölye: Next.js ile panel',
+              description: 'B-201, 40 kişi',
+              time: '10.30',
+              tone: 'brand',
+              current: true,
+            },
+            { id: 'd', marker: 4, title: 'Öğle arası', time: '12.30', upcoming: true },
+            {
+              id: 'e',
+              marker: 5,
+              title: 'Proje sunumları',
+              time: '13.30',
+              tone: 'info',
+              upcoming: true,
+            },
+          ]}
+        />
+      </Example>
+    </>
+  );
+}
+
+function ApprovalTimeline() {
   return (
     <Example title="Onay geçmişi" align="start">
       <Timeline

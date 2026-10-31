@@ -119,8 +119,8 @@ export const ENTRIES: Entry[] = [
     name: 'Field ve Input',
     category: 'forms',
     description:
-      'Etiket, alan, açıklama ve hata tek yerde; alanlar ikonlu ve küçük boyutlu olabilir.',
-    imports: ['Field', 'Input', 'Textarea', 'Label'],
+      'Etiket, alan, açıklama ve hata tek yerde; üç boy, numaralı soru görünümü ve karakter sayacı.',
+    imports: ['Field', 'Input', 'Textarea', 'Label', 'ControlSizeProvider'],
     a11y: [
       'Etiket, açıklama ve hata alana bağlıdır; hata varken alan geçersiz olarak işaretlenir.',
       'Dokunmatik ekranda yazı 16px olur, iOS alana yakınlaşmaz.',
@@ -131,17 +131,18 @@ export const ENTRIES: Entry[] = [
     slug: 'select',
     name: 'Select',
     category: 'forms',
-    description: 'Kutu ya da satır içi görünümde, ipuçlu ve devre dışı seçenekli açılır liste.',
+    description:
+      'Kutu, hap ya da satır içi görünümde açılır liste; çoklu seçim ve listenin sonunda bir eylem.',
     imports: ['Select'],
     a11y: ['Görünür etiketi olmayan her Select aria-label alır.'],
   },
   {
     slug: 'checkbox',
-    name: 'Checkbox',
+    name: 'Checkbox ve seçenek kartları',
     category: 'forms',
     description:
-      'Seçili, seçili değil ve kısmen seçili durumlarıyla onay kutusu; dokunma alanı büyütülmüş.',
-    imports: ['Checkbox'],
+      'Onay kutusu, seçenekleri kart olarak dizen ChoiceList ve satırlara aynı soruyu soran ChoiceMatrix.',
+    imports: ['Checkbox', 'CheckboxCard', 'ChoiceList', 'ChoiceMatrix'],
     a11y: [
       'Onay kutuları hiçbir zaman izin ya da abonelik için varsayılan olarak işaretli gelmez.',
     ],
@@ -150,7 +151,8 @@ export const ENTRIES: Entry[] = [
     slug: 'switch',
     name: 'Switch ve ToggleRow',
     category: 'forms',
-    description: 'Aç/kapa anahtarı ve başlığı, açıklaması olan ayar satırı.',
+    description:
+      'Aç/kapa anahtarı ve başlığı, açıklaması olan ayar satırı; açınca altında bağlı ayarlar.',
     imports: ['Switch', 'ToggleRow'],
     a11y: ['Tek başına kullanılan Switch aria-label alır; ToggleRow başlığını ad olarak verir.'],
   },
@@ -158,8 +160,8 @@ export const ENTRIES: Entry[] = [
     slug: 'radio-group',
     name: 'RadioGroup',
     category: 'forms',
-    description: 'Birbirini dışlayan birkaç seçenek, açıklamalarıyla alt alta.',
-    imports: ['RadioGroup', 'Radio'],
+    description: 'Birbirini dışlayan birkaç seçenek, açıklamalarıyla alt alta ya da kart olarak.',
+    imports: ['RadioGroup', 'Radio', 'RadioCard'],
     a11y: ['Grup bir ad alır; ok tuşları seçenekler arasında gezer, satırın tamamı tıklanır.'],
   },
   {
@@ -167,7 +169,7 @@ export const ENTRIES: Entry[] = [
     name: 'Combobox ve MultiSelect',
     category: 'forms',
     description:
-      'Uzun listeden yazarak seçim; çoklu seçimde seçilenler kaldırılabilir çipler olur.',
+      'Uzun listeden yazarak seçim; çoklu seçimde çipler, listede olmayanı ekleme ve salt okunur değer.',
     imports: ['Combobox', 'MultiSelect'],
     a11y: [
       'Liste yazdıkça daralır; ok tuşları gezinir, Enter seçer, Esc kapatır.',
@@ -179,7 +181,8 @@ export const ENTRIES: Entry[] = [
     slug: 'number-field',
     name: 'NumberField ve Slider',
     category: 'forms',
-    description: 'Adımlı sayı alanı; tek değer ya da iki uçlu aralık için kaydırıcı.',
+    description:
+      'Adımlı sayı alanı; tek değer ya da iki uçlu aralık için kaydırıcı, uçlarında ölçeğin sözleri.',
     imports: ['NumberField', 'Slider'],
     a11y: [
       'Ok tuşları bir, Shift ile on adım değiştirir; yazılan değer sınırlar içinde tutulur.',
@@ -192,7 +195,7 @@ export const ENTRIES: Entry[] = [
     category: 'forms',
     description:
       'Takvimle gün, gün ve saat ya da aralık seçimi; aralıkta hazır seçenekler önce gelir. Başlığa basınca aylar, yıllar ve on yıllar açılır.',
-    imports: ['DatePicker', 'DateTimePicker', 'DateRangePicker', 'Calendar'],
+    imports: ['DatePicker', 'DateTimePicker', 'DateRangePicker', 'TimePicker', 'Calendar'],
     a11y: [
       'Ok tuşları günler, PageUp ve PageDown aylar arasında gezer.',
       'Ay, yıl ve on yıl ızgaralarında ok tuşları hücreler, PageUp ve PageDown dönemler arasında gezer; seçim bir alt seviyeye iner ve odak orada kalır.',
@@ -202,10 +205,11 @@ export const ENTRIES: Entry[] = [
   },
   {
     slug: 'dropzone',
-    name: 'Dropzone',
+    name: 'FileUpload ve Dropzone',
     category: 'forms',
-    description: 'Dosya bırakma alanı; tıklayınca dosya seçici açılır.',
-    imports: ['Dropzone'],
+    description:
+      'Dosya bırakma alanı ve her dosyanın yolu: yükleniyor, taranıyor, hazır ya da hata, yeniden deneme ile.',
+    imports: ['FileUpload', 'FileRow', 'Dropzone'],
     a11y: ['Sürükleyip bırakmak tek yol değildir; alan bir dosya seçicisine bağlı etiket taşır.'],
     motion: ['Dosya üstünde tutulunca çerçeve ve ikon canlanır.'],
   },
@@ -428,7 +432,7 @@ export const ENTRIES: Entry[] = [
     category: 'navigation',
     description:
       'Başlık, açıklama, eylemler ve arama, filtre hapları gibi araçlar; ayrıntı sayfalarında geri bağlantısı, kapak ve sekmeler.',
-    imports: ['PageHeader', 'SearchInput', 'FilterPills', 'Stat'],
+    imports: ['PageHeader', 'SearchInput', 'FilterPills', 'FilterButton', 'ActiveFilters', 'Stat'],
     motion: ['Filtre hapının dolgusu seçime doğru kayar, sayılar akar.'],
   },
   {

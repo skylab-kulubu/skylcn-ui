@@ -18,6 +18,7 @@ import {
   Field,
   Input,
   Radio,
+  RadioCard,
   RadioGroup,
   Tab,
   Tabs,
@@ -25,7 +26,7 @@ import {
   TabsPanel,
   useToast,
 } from '@skylab-kulubu/skylcn-ui';
-import { BarChart3, Settings, Trash2, Users } from 'lucide-react';
+import { Archive, BarChart3, Settings, Trash2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Example } from '../doc';
 
@@ -79,6 +80,39 @@ function DialogExamples() {
               toast.add({ title: 'Form silindi', type: 'success' });
             }, 900);
           }}
+        />
+      </Example>
+      <Example
+        title="Ne olacağını sayan onay"
+        description="Neyin gideceğini ve neyin kalacağını yan yana yazar; silmek için ekibin adını yazdırır."
+      >
+        <ConfirmDialog
+          trigger={
+            <Button variant="destructive">
+              <Trash2 /> Ekibi sil
+            </Button>
+          }
+          icon={Trash2}
+          title="WebLab silinsin mi?"
+          consequences={['18 üyenin ekip bağı kalkar', '4 taslak etkinlik silinir']}
+          unaffected={['Geçmiş etkinlikler ve sertifikalar', 'Üyelerin hesapları']}
+          confirmText="WebLab"
+          actionLabel="Ekibi sil"
+          destructive
+          onAction={() => new Promise<void>((resolve) => window.setTimeout(resolve, 900))}
+        />
+        <ConfirmDialog
+          trigger={
+            <Button>
+              <Archive /> Arşivle
+            </Button>
+          }
+          icon={Archive}
+          title="Gece Kodu 2026 arşivlensin mi?"
+          description="Etkinlik listelerden kalkar, istediğinde geri alabilirsin."
+          actionLabel="Arşivle"
+          delay={3}
+          onAction={() => {}}
         />
       </Example>
     </>
@@ -191,11 +225,35 @@ function AccordionExamples() {
 
 function RadioExamples() {
   return (
+    <>
+      <RadioListExample />
+      <RadioCardExample />
+    </>
+  );
+}
+
+function RadioListExample() {
+  return (
     <Example title="Gönderim zamanı" align="start">
       <RadioGroup aria-label="Gönderim zamanı" defaultValue="now">
         <Radio value="now" label="Hemen gönder" description="Onaylandığı anda kuyruğa girer." />
         <Radio value="later" label="Zamanla" description="Seçtiğin tarih ve saatte gönderilir." />
         <Radio value="draft" label="Taslak olarak sakla" disabled />
+      </RadioGroup>
+    </Example>
+  );
+}
+
+function RadioCardExample() {
+  return (
+    <Example
+      title="Kart olarak"
+      description="Satırın tamamı tıklanır; seçilen kart lilayla dolar."
+      align="start"
+    >
+      <RadioGroup aria-label="Katılım şekli" defaultValue="hall" className="w-full max-w-md">
+        <RadioCard value="hall" label="Salonda" description="Kampüste, Davutpaşa B-201" />
+        <RadioCard value="online" label="Çevrim içi" description="Bağlantı bir gün önce gelir" />
       </RadioGroup>
     </Example>
   );
