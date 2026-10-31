@@ -351,6 +351,8 @@ export const ENTRIES: Entry[] = [
       'Ctrl/⌘+B kenar çubuğunu daraltır; yazı alanlarında kalın yazı kısayoluna dokunmaz.',
     ],
     motion: [
+      'Fareyle satırlar arasında gezerken tek bir zemin satırdan satıra kayar; dar hâle geçerken yazılar hafifçe sola kayarak solar.',
+      'Kenar çubuğunun kenarına tıklamak onu açar ya da kapatır; kenar işaretsizdir, tutamaç gibi görünmez.',
       'Aktif öğenin vurgusu sayfa değişince yeni öğeye süzülür.',
       'Daralırken önce yazılar söner, sonra genişlik daralır; açılırken genişlik önce gelir, yazılar ardından belirir. İkonlar yerinden oynamaz.',
       'Hareketi azaltınca genişlik bir anda değişir, yazılar yalnızca solar.',

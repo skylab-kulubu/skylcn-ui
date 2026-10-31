@@ -5,6 +5,7 @@ import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { Check, ChevronRight, type LucideIcon } from 'lucide-react';
 import { useEffect, useRef, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { createGlide, glideClass } from '../lib/glide.js';
 import { popupMotionFast } from '../lib/motion.js';
 
 const popupClass = cn(
@@ -25,9 +26,8 @@ const destructiveClass =
   'text-destructive data-highlighted:bg-destructive/10 data-highlighted:text-destructive in-data-glide:data-highlighted:bg-transparent';
 
 /**
- * One background that slides to whichever row is highlighted, by pointer or keys, instead of
- * each row lighting up on its own; the rows go clear while it runs. It reads the highlight
- * Base UI sets on the rows, so it needs no wiring from them.
+ * Menus light the highlighted row with one background that slides to it. It reads the
+ * highlight Base UI sets on the rows, so it needs no wiring from them; the rows go clear.
  */
 function Glide() {
   const ref = useRef<HTMLSpanElement>(null);
@@ -36,26 +36,10 @@ function Glide() {
     const popup = glide?.parentElement;
     if (!glide || !popup || typeof MutationObserver === 'undefined') return;
     popup.dataset.glide = '';
-    let shown = false;
+    const move = createGlide(glide);
     const place = () => {
       const row = popup.querySelector<HTMLElement>('[data-highlighted]');
-      if (!row) {
-        glide.style.opacity = '0';
-        shown = false;
-        return;
-      }
-      // The first row it lands on takes it in place; only later moves slide
-      if (!shown) glide.style.transition = 'none';
-      glide.style.transform = `translate(${row.offsetLeft}px, ${row.offsetTop}px)`;
-      glide.style.width = `${row.offsetWidth}px`;
-      glide.style.height = `${row.offsetHeight}px`;
-      glide.dataset.tone = row.dataset.destructive === undefined ? '' : 'destructive';
-      glide.style.opacity = '1';
-      if (!shown) {
-        glide.getBoundingClientRect();
-        glide.style.transition = '';
-      }
-      shown = true;
+      move(row, row?.dataset.destructive === undefined ? '' : 'destructive');
     };
     const observer = new MutationObserver(place);
     observer.observe(popup, {
@@ -73,7 +57,7 @@ function Glide() {
     <span
       ref={ref}
       aria-hidden
-      className="pointer-events-none absolute top-0 left-0 rounded-md bg-accent opacity-0 transition-[transform,width,height,opacity] duration-(--motion-duration-fast) ease-enter data-[tone=destructive]:bg-destructive/10 motion-reduce:transition-none"
+      className={cn(glideClass, 'bg-accent data-[tone=destructive]:bg-destructive/10')}
     />
   );
 }
