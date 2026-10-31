@@ -2,7 +2,7 @@ import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-li
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { SkylcnProvider } from '../lib/provider.js';
-import { Notice } from './feedback.js';
+import { Notice } from './notice.js';
 import { Field, Textarea } from './field.js';
 import { SkylabLoader } from './skylab-loader.js';
 import { TaskPage } from './task-page.js';

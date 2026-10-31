@@ -85,13 +85,12 @@ export {
 export {
   Kbd,
   Meter,
-  Notice,
   Progress,
   Separator,
   type MeterProps,
-  type NoticeProps,
   type ProgressProps,
 } from './components/feedback.js';
+export { Notice, type NoticeProps } from './components/notice.js';
 export {
   Radio,
   RadioCard,
