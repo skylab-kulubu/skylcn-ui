@@ -33,6 +33,8 @@ import { LayoutGroup, m } from 'motion/react';
 import { cn } from '../lib/cn.js';
 import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
+import { useReducedMotion } from '../lib/use-reduced-motion.js';
+import { createGlide, glideClass } from '../lib/glide.js';
 import { Avatar } from './avatar.js';
 import { SkylabMark } from './skylab-mark.js';
 import { IconSwap } from './icon-swap.js';
@@ -119,9 +121,14 @@ function useIsDesktop() {
  * width moves; expanding, the width moves first and the text fades in as it lands.
  */
 const FULL_ONLY = [
-  'transition-opacity duration-(--motion-duration-fast) ease-enter delay-100',
-  'group-data-collapsed/sidebar:opacity-0 group-data-collapsed/sidebar:duration-(--motion-duration-instant) group-data-collapsed/sidebar:delay-0',
+  'transition-[opacity,translate] duration-(--motion-duration-fast) ease-enter delay-100',
+  'group-data-collapsed/sidebar:-translate-x-1 group-data-collapsed/sidebar:opacity-0 group-data-collapsed/sidebar:duration-(--motion-duration-instant) group-data-collapsed/sidebar:delay-0',
+  'motion-reduce:translate-x-0',
 ].join(' ');
+
+// A row's own hover background, cleared while the sidebar's sliding one runs; a light press
+const ROW_HOVER =
+  'hover:bg-accent in-data-glide:hover:bg-transparent active:scale-[0.98] motion-reduce:active:scale-100';
 
 /*
  * Groups fold in CSS alone, through grid rows going 0fr ↔ 1fr, so nothing is
@@ -181,6 +188,11 @@ export function AppShell({
   const [desktopSlot, setDesktopSlot] = useState<HTMLElement | null>(null);
   const [mobileSlot, setMobileSlot] = useState<HTMLElement | null>(null);
   const collapsedRef = useRef(collapsed);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const slideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const reduced = useReducedMotion();
+  useEffect(() => () => clearTimeout(slideTimer.current), []);
   useLayoutEffect(() => {
     collapsedRef.current = collapsed;
   }, [collapsed]);
@@ -199,6 +211,22 @@ export function AppShell({
     (next: boolean) => {
       setAnimated(true);
       setCollapsedState(next);
+      // While the panel slides, the page inside holds the width it will end at, so it lays out
+      // once instead of on every frame, which stalls heavy pages; it lets go once the slide ends
+      const shell = shellRef.current;
+      const content = contentRef.current;
+      if (shell && content && !reduced && window.matchMedia(DESKTOP_QUERY).matches) {
+        const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        // The rail is 12rem narrower than the sidebar: md:pl-66 against md:pl-18
+        const shift = 12 * rem * (next ? 1 : -1);
+        content.style.width = `${content.offsetWidth + shift}px`;
+        shell.dataset.sliding = '';
+        clearTimeout(slideTimer.current);
+        slideTimer.current = setTimeout(() => {
+          content.style.width = '';
+          delete shell.dataset.sliding;
+        }, 320);
+      }
       if (!storageKey) return;
       try {
         window.localStorage.setItem(storageKey, String(next));
@@ -206,7 +234,7 @@ export function AppShell({
         // Not remembering is fine.
       }
     },
-    [storageKey],
+    [storageKey, reduced],
   );
 
   useEffect(() => {
@@ -235,6 +263,7 @@ export function AppShell({
   return (
     <ShellContext.Provider value={shell}>
       <div
+        ref={shellRef}
         data-slot="app-shell"
         data-collapsed={collapsed || undefined}
         className={cn(
@@ -263,6 +292,14 @@ export function AppShell({
           <CollapsedContext.Provider value={collapsed}>
             <SidebarFrame>{sidebar}</SidebarFrame>
           </CollapsedContext.Provider>
+          {/* An unmarked pointer shortcut along the edge; keys have the header button and Ctrl/⌘+B */}
+          <div
+            aria-hidden
+            data-slot="sidebar-edge"
+            title={collapsed ? messages.expandSidebar : messages.collapseSidebar}
+            onClick={() => setCollapsed(!collapsed)}
+            className="absolute inset-y-0 right-0 z-10 w-1.5 cursor-pointer"
+          />
         </aside>
 
         <div className="sticky top-0 z-40 border-b border-border-subtle bg-sidebar/70 backdrop-blur md:hidden">
@@ -325,10 +362,13 @@ export function AppShell({
             tabIndex={-1}
             // Positioned, so absolute children (a Sparkline's layers, screen-reader copy)
             // scroll with the content instead of stretching the page into a second scroll
-            className="relative scrollbar outline-hidden md:min-h-0 md:flex-1 md:scroll-pt-12 md:overflow-y-auto"
+            className="relative scrollbar outline-hidden in-data-sliding:overflow-x-hidden md:min-h-0 md:flex-1 md:scroll-pt-12 md:overflow-y-auto"
           >
             {/* Every page takes the panel's width; a filled one also its height, from md */}
-            <div className="w-full p-4 sm:p-6 md:has-data-[slot=app-shell-fill]:h-full">
+            <div
+              ref={contentRef}
+              className="w-full p-4 sm:p-6 md:has-data-[slot=app-shell-fill]:h-full"
+            >
               {children}
             </div>
           </main>
@@ -541,9 +581,26 @@ export function SidebarBrand({ name, subtitle, href, consoles, current }: Sideba
 }
 
 export function SidebarContent({ children }: { children: ReactNode }) {
+  const glide = useRef<HTMLSpanElement>(null);
+  const move = useRef<ReturnType<typeof createGlide> | null>(null);
+  const collapsed = useContext(CollapsedContext);
+  // A toggle moves every row under the pointer, so the hover background leaves until the next move
+  useEffect(() => move.current?.(null), [collapsed]);
+  const at = (target: EventTarget) => {
+    if (!glide.current) return;
+    move.current ??= createGlide(glide.current);
+    move.current((target as HTMLElement).closest<HTMLElement>('[data-sidebar-row]'));
+  };
   return (
     // The margin and padding cancel out; they keep focus rings clear of the scroll clip
-    <nav className="-m-1 scrollbar-hidden flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-1">
+    <nav
+      data-glide=""
+      onPointerOver={(event) => event.pointerType === 'mouse' && at(event.target)}
+      onPointerLeave={() => move.current?.(null)}
+      className="relative -m-1 scrollbar-hidden flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-1"
+    >
+      {/* One hover background slides between the rows instead of each lighting up on its own */}
+      <span ref={glide} aria-hidden className={cn(glideClass, 'bg-accent')} />
       {children}
     </nav>
   );
@@ -597,12 +654,12 @@ export function SidebarItem({
 
   const className = cn(
     'group/item relative isolate flex items-center overflow-hidden rounded-md outline-hidden',
-    'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
+    'transition-[color,background-color,scale] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
     nested
       ? 'gap-2 px-2 py-1 text-xs pointer-coarse:py-1.5'
       : 'gap-3 px-2.5 py-2 text-sm pointer-coarse:py-2.5',
-    !active && 'text-muted-foreground hover:bg-accent hover:text-foreground',
-    active && !nested && 'text-foreground',
+    !active && ['text-muted-foreground hover:text-foreground', ROW_HOVER],
+    active && !nested && 'text-foreground active:scale-[0.98] motion-reduce:active:scale-100',
     // A nested item has no pill under it, so its label takes the brand colour with its icon
     active && nested && 'text-skylab-300',
   );
@@ -661,7 +718,7 @@ export function SidebarItem({
 
   const onClick = inDrawer ? () => setMobileOpen(false) : undefined;
   const link = external ? (
-    <a href={href} className={className} onClick={onClick}>
+    <a href={href} className={className} onClick={onClick} data-sidebar-row="">
       {content}
     </a>
   ) : (
@@ -670,6 +727,7 @@ export function SidebarItem({
       className={className}
       aria-current={active ? 'page' : undefined}
       onClick={onClick}
+      data-sidebar-row=""
     >
       {content}
     </Link>
@@ -752,6 +810,7 @@ export function SidebarGroup({
       <RailTooltip label={label}>
         <button
           type="button"
+          data-sidebar-row=""
           aria-expanded={open && !collapsed}
           aria-controls={panelId}
           onClick={() => {
@@ -765,10 +824,10 @@ export function SidebarGroup({
           }}
           className={cn(
             'flex w-full items-center gap-3 overflow-hidden rounded-md px-2.5 py-2 text-sm outline-hidden pointer-coarse:py-2.5',
-            'transition-[color,background-color] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
+            'transition-[color,background-color,scale] duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
             active
-              ? 'text-foreground'
-              : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+              ? 'text-foreground active:scale-[0.98] motion-reduce:active:scale-100'
+              : ['text-muted-foreground hover:text-foreground', ROW_HOVER],
           )}
         >
           <Icon className={cn('size-5 shrink-0', active && 'text-skylab-300')} strokeWidth={1.75} />

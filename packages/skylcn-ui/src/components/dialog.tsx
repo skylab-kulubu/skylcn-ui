@@ -14,6 +14,7 @@ import {
 } from 'react';
 import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
+import { useAutoHeight } from '../lib/use-auto-height.js';
 import { Button } from './button.js';
 
 const backdrop =
@@ -88,12 +89,55 @@ export function DialogDescription({ className, ...props }: DialogPrimitive.Descr
   );
 }
 
-export function DialogBody({ className, ...props }: ComponentProps<'div'>) {
+export type DialogBodyProps = ComponentProps<'div'> & {
+  /**
+   * Eases the dialog's height when the content changes, such as a step that swaps
+   * in a longer form or an error that appears; it jumps under reduced motion.
+   */
+  animateHeight?: boolean;
+};
+
+export function DialogBody({
+  className,
+  animateHeight = false,
+  children,
+  ...props
+}: DialogBodyProps) {
+  if (!animateHeight) {
+    return (
+      <div
+        className={cn('scrollbar min-h-0 flex-1 overflow-y-auto px-5 py-4', className)}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
   return (
-    <div
-      className={cn('scrollbar min-h-0 flex-1 overflow-y-auto px-5 py-4', className)}
-      {...props}
-    />
+    <AutoHeight className="scrollbar" innerClassName={cn('px-5 py-4', className)} {...props}>
+      {children}
+    </AutoHeight>
+  );
+}
+
+const autoHeightClass =
+  'min-h-0 shrink overflow-y-auto transition-[height] duration-(--motion-duration-base) ease-enter motion-reduce:transition-none';
+
+/** A scrolling region whose height follows its content with an ease instead of a jump. */
+function AutoHeight({
+  className,
+  innerClassName,
+  style,
+  children,
+  ...props
+}: ComponentProps<'div'> & { innerClassName?: string }) {
+  const [inner, height] = useAutoHeight<HTMLDivElement>();
+  return (
+    <div className={cn(autoHeightClass, className)} style={{ ...style, height }} {...props}>
+      <div ref={inner} className={innerClassName}>
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -368,7 +412,7 @@ export function ConfirmDialog({
             </AlertPrimitive.Close>
           </div>
           {hasBody ? (
-            <div className="flex scrollbar min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-5 py-5">
+            <AutoHeight className="scrollbar" innerClassName="flex flex-col gap-5 px-5 py-5">
               {description ? (
                 <AlertPrimitive.Description
                   className={cn(
@@ -464,7 +508,7 @@ export function ConfirmDialog({
                   <span className="min-w-0">{stallMessage ?? messages.actionStalled}</span>
                 </p>
               ) : null}
-            </div>
+            </AutoHeight>
           ) : null}
           <div className="flex flex-col-reverse gap-2 border-t border-border-subtle bg-muted/40 px-5 py-3 sm:flex-row sm:items-center sm:justify-end">
             <AlertPrimitive.Close

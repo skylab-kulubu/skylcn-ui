@@ -49,4 +49,40 @@ describe('Tree', () => {
     expect(onSelect).toHaveBeenCalledWith('skysec');
     expect(await axeViolations()).toEqual([]);
   });
+
+  it('draws a project as folders and files, with a line down each level', async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <Tree
+        aria-label="Proje"
+        files
+        guides
+        defaultExpanded={['src']}
+        nodes={[
+          {
+            id: 'src',
+            label: 'src',
+            children: [
+              { id: 'page', label: 'page.tsx' },
+              { id: 'data', label: 'data.json' },
+            ],
+          },
+          { id: 'readme', label: 'README.md' },
+        ]}
+      />,
+    );
+    const icon = (name: string) =>
+      screen.getByRole('treeitem', { name }).querySelector('svg:not(.lucide-chevron-right)');
+    expect(icon('src')).toHaveClass('lucide-folder-open');
+    expect(icon('page.tsx')).toHaveClass('lucide-file-code');
+    expect(icon('data.json')).toHaveClass('lucide-file-json');
+    expect(icon('README.md')).toHaveClass('lucide-file-text');
+    expect(
+      screen.getByRole('treeitem', { name: 'page.tsx' }).querySelector('.border-l'),
+    ).not.toBeNull();
+
+    await user.click(screen.getByRole('treeitem', { name: 'src' }));
+    expect(icon('src')).toHaveClass('lucide-folder');
+    expect(await axeViolations(container)).toEqual([]);
+  });
 });

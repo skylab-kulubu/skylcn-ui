@@ -10,8 +10,15 @@ import {
   DescriptionList,
   Carousel,
   Dropzone,
+  FileUpload,
+  type FileUploadItem,
   Kanban,
   MonthCalendar,
+  ActivityHeatmap,
+  CodeBlock,
+  CodeComparison,
+  RelativeTime,
+  SortableList,
   StatusPage,
   Stepper,
   Swap,
@@ -19,15 +26,131 @@ import {
   Tree,
 } from '@skylab-kulubu/skylcn-ui';
 import { CheckCircle2, Mail, Send, Shield, Trash2, UserPlus, Users, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Example } from '../doc';
 import { MemberTable } from '../member-table';
 import { MEMBERS } from '../members';
 
+// The demo plays an upload: progress, a virus scan, then ready; a file named with "virus" is refused
+function useFakeUploads(initial: FileUploadItem[] = []) {
+  const [files, setFiles] = useState<FileUploadItem[]>(initial);
+  const timers = useRef(new Map<string, number>());
+  useEffect(() => {
+    const all = timers.current;
+    return () => all.forEach((timer) => window.clearInterval(timer));
+  }, []);
+  const patch = (id: string, next: Partial<FileUploadItem>) =>
+    setFiles((prev) => prev.map((file) => (file.id === id ? { ...file, ...next } : file)));
+  const start = (id: string, refuse: boolean) => {
+    let progress = 0;
+    const timer = window.setInterval(() => {
+      progress += 20;
+      if (progress < 100) return patch(id, { status: 'uploading', progress });
+      window.clearInterval(timer);
+      patch(id, { status: 'scanning', progress: undefined });
+      timers.current.set(
+        id,
+        window.setTimeout(
+          () =>
+            patch(
+              id,
+              refuse
+                ? { status: 'error', rejected: true, error: 'Taramada zararlı içerik bulundu.' }
+                : { status: 'ready' },
+            ),
+          1200,
+        ),
+      );
+    }, 300);
+    timers.current.set(id, timer);
+  };
+  const add = (picked: File[], single: boolean) => {
+    const items = picked.map((file, i) => ({
+      id: `${Date.now()}-${i}`,
+      name: file.name,
+      size: file.size,
+      status: 'uploading' as const,
+      progress: 0,
+    }));
+    setFiles((prev) => (single ? items.slice(0, 1) : [...prev, ...items]));
+    items.forEach((item) => start(item.id, /virus/i.test(item.name)));
+  };
+  const remove = (id: string) => {
+    window.clearInterval(timers.current.get(id));
+    setFiles((prev) => prev.filter((file) => file.id !== id));
+  };
+  const retry = (id: string) => {
+    patch(id, { status: 'uploading', progress: 0, error: undefined, rejected: undefined });
+    start(id, false);
+  };
+  return { files, add, remove, retry };
+}
+
+function FileUploadExamples() {
+  const many = useFakeUploads([
+    { id: 'a', name: 'sponsor-sunumu.pdf', size: 2_400_000, status: 'ready' },
+    {
+      id: 'b',
+      name: 'afis-son.png',
+      size: 820_000,
+      status: 'error',
+      error: 'Bağlantı koptu, dosya yarım kaldı.',
+    },
+  ]);
+  const one = useFakeUploads();
+  return (
+    <>
+      <Example
+        title="Yükleme durumları"
+        description="Uygulama durumu söyler, bileşen çizer: yükleniyor, taranıyor, hazır, hata. Adında virus geçen dosya reddedilir."
+        align="start"
+      >
+        <FileUpload
+          multiple
+          maxFiles={4}
+          className="w-full max-w-md"
+          accept=".pdf,image/*"
+          rules="PDF ya da görsel, en fazla 4 dosya"
+          files={many.files}
+          onFiles={(picked) => many.add(picked, false)}
+          onRemove={many.remove}
+          onRetry={many.retry}
+        />
+      </Example>
+      <Example
+        title="Tek dosyalı soru"
+        description="Kompakt alan formdaki bir soruya sığar; seçilen dosya alanın yerini alır."
+        align="start"
+      >
+        <FileUpload
+          variant="compact"
+          className="w-full max-w-md"
+          aria-label="Öğrenci belgesi"
+          rules="PDF, en fazla 10 MB"
+          accept=".pdf"
+          files={one.files}
+          onFiles={(picked) => one.add(picked, true)}
+          onRemove={one.remove}
+          onRetry={one.retry}
+        />
+      </Example>
+    </>
+  );
+}
+
 function DropzoneExamples() {
+  return (
+    <>
+      <FileUploadExamples />
+      <PlainDropzone />
+    </>
+  );
+}
+
+function PlainDropzone() {
   const [files, setFiles] = useState<File[]>([]);
   return (
-    <Example title="Dosya yükleme" align="start">
+    <Example title="Yalnız bırakma alanı" align="start">
       <Dropzone
         multiple
         className="max-w-md"
@@ -51,6 +174,7 @@ function DropzoneExamples() {
 const STEPS = [
   { id: 'info', label: 'Bilgiler', description: 'Ad ve iletişim' },
   { id: 'team', label: 'Takım', description: 'Üyeler ve rol' },
+  { id: 'interview', label: 'Görüşme', description: 'Gerekirse', uncertain: true },
   { id: 'review', label: 'Onay', description: 'Gözden geçir' },
 ];
 
@@ -109,6 +233,45 @@ function DescriptionExamples() {
 }
 
 function TimelineExamples() {
+  return (
+    <>
+      <ApprovalTimeline />
+      <Example
+        title="Etkinlik akışı"
+        description="marker adımın numarasını yazar, current şu anki adımı halkayla gösterir, upcoming gelecek adımları kesikli çizer."
+        align="start"
+      >
+        <Timeline
+          className="max-w-lg"
+          items={[
+            { id: 'a', marker: 1, title: 'Kayıt ve karşılama', time: '09.30', tone: 'success' },
+            { id: 'b', marker: 2, title: 'Açılış konuşması', time: '10.00', tone: 'success' },
+            {
+              id: 'c',
+              marker: 3,
+              title: 'Atölye: Next.js ile panel',
+              description: 'B-201, 40 kişi',
+              time: '10.30',
+              tone: 'brand',
+              current: true,
+            },
+            { id: 'd', marker: 4, title: 'Öğle arası', time: '12.30', upcoming: true },
+            {
+              id: 'e',
+              marker: 5,
+              title: 'Proje sunumları',
+              time: '13.30',
+              tone: 'info',
+              upcoming: true,
+            },
+          ]}
+        />
+      </Example>
+    </>
+  );
+}
+
+function ApprovalTimeline() {
   return (
     <Example title="Onay geçmişi" align="start">
       <Timeline
@@ -206,7 +369,54 @@ function BulkExamples() {
   );
 }
 
+const PROJECT = [
+  {
+    id: 'app',
+    label: 'app',
+    children: [
+      { id: 'layout', label: 'layout.tsx' },
+      { id: 'page', label: 'page.tsx' },
+      {
+        id: 'events',
+        label: 'etkinlikler',
+        children: [
+          { id: 'events-page', label: 'page.tsx' },
+          { id: 'events-data', label: 'veri.json' },
+        ],
+      },
+    ],
+  },
+  { id: 'public', label: 'public', children: [{ id: 'logo', label: 'logo.svg' }] },
+  { id: 'readme', label: 'README.md' },
+  { id: 'package', label: 'package.json' },
+];
+
 function TreeExamples() {
+  const [file, setFile] = useState<string | null>('events-page');
+  return (
+    <>
+      <GroupTree />
+      <Example
+        title="Proje yapısı"
+        description="files klasör ve dosya ikonlarını uzantıya göre koyar, guides her seviyeye çizgi çeker."
+        align="start"
+      >
+        <Tree
+          aria-label="Atölye projesi"
+          files
+          guides
+          className="w-full max-w-xs"
+          selected={file}
+          onSelect={setFile}
+          defaultExpanded={['app', 'events']}
+          nodes={PROJECT}
+        />
+      </Example>
+    </>
+  );
+}
+
+function GroupTree() {
   const [selected, setSelected] = useState<string | null>('weblab');
   return (
     <Example
@@ -356,7 +566,263 @@ function CarouselExamples() {
   );
 }
 
+const MINUTE = 60_000;
+
+function RelativeTimeExamples() {
+  const [opened] = useState(() => Date.now());
+  const rows = [
+    { who: 'Deniz Aydın', what: 'başvuru formunu düzenledi', at: opened - 20_000 },
+    { who: 'Mira Tunç', what: 'etkinliği yayına aldı', at: opened - 42 * MINUTE },
+    { who: 'Cem Kaya', what: '18 katılımcıyı onayladı', at: opened - 5 * 60 * MINUTE },
+    { who: 'Ece Arslan', what: 'ekibe katıldı', at: opened - 26 * 60 * MINUTE },
+    { who: 'Bora Şen', what: 'duyuru taslağı açtı', at: opened - 9 * 24 * 60 * MINUTE },
+  ];
+  return (
+    <>
+      <Example
+        title="Etkinlik günlüğü"
+        description="Üzerine gel: tam tarih ve saat görünür. Sayfa açık kaldıkça yazılar kendiliğinden ilerler."
+        align="start"
+      >
+        <ul className="flex w-full max-w-md flex-col divide-y divide-border-subtle text-sm">
+          {rows.map((row) => (
+            <li key={row.who} className="flex items-baseline justify-between gap-4 py-2">
+              <span className="min-w-0 truncate text-secondary-foreground">
+                <span className="font-medium text-foreground">{row.who}</span> {row.what}
+              </span>
+              <RelativeTime date={row.at} className="shrink-0 text-xs text-subtle-foreground" />
+            </li>
+          ))}
+        </ul>
+      </Example>
+      <Example
+        title="İleriye dönük"
+        description="Gelecekteki anlar da aynı dille söylenir."
+        align="start"
+      >
+        <p className="text-sm text-muted-foreground">
+          Başvurular{' '}
+          <RelativeTime date={opened + 2 * 24 * 60 * MINUTE} className="text-foreground" />{' '}
+          kapanıyor, etkinlik{' '}
+          <RelativeTime date={opened + 3 * 7 * 24 * 60 * MINUTE} className="text-foreground" />.
+        </p>
+      </Example>
+    </>
+  );
+}
+
+const AGENDA = [
+  { id: 'a', title: 'Kayıt ve karşılama', time: '09.30' },
+  { id: 'b', title: 'Açılış konuşması', time: '10.00' },
+  { id: 'c', title: 'Atölye: Next.js ile panel', time: '10.30' },
+  { id: 'd', title: 'Öğle arası', time: '12.30' },
+  { id: 'e', title: 'Proje sunumları', time: '13.30' },
+];
+
+function SortableExamples() {
+  const [agenda, setAgenda] = useState(AGENDA);
+  return (
+    <Example
+      title="Etkinlik akışı"
+      description="Tutamaktan sürükle ya da tutamağa odaklanıp ok tuşlarına bas. Sürüklerken Esc vazgeçer."
+      align="start"
+    >
+      <SortableList
+        aria-label="Etkinlik akışı"
+        className="w-full max-w-md"
+        items={agenda}
+        getId={(step) => step.id}
+        getLabel={(step) => step.title}
+        onReorder={setAgenda}
+        renderItem={(step) => (
+          <span className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="truncate text-foreground">{step.title}</span>
+            <span className="shrink-0 text-xs text-subtle-foreground tabular-nums">
+              {step.time}
+            </span>
+          </span>
+        )}
+      />
+    </Example>
+  );
+}
+
+// Made-up attendance: busier on weekday evenings and in the weeks of the term's events
+function attendance(weeks: number) {
+  const today = new Date();
+  return Array.from({ length: weeks * 7 }, (_, i) => {
+    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+    const weekday = date.getDay();
+    const base = weekday === 0 || weekday === 6 ? 0 : (date.getDate() * 7 + weekday * 3) % 9;
+    const eventWeek = Math.floor(i / 7) % 5 === 1 ? 4 : 0;
+    return { date, count: base > 4 ? base - 4 + eventWeek : 0 };
+  });
+}
+
+function HeatmapExamples() {
+  const [data] = useState(() => attendance(26));
+  return (
+    <>
+      <Example
+        title="Dönem boyu katılım"
+        description="Bir güne gel ya da odaklanıp ok tuşlarıyla gez: altındaki satır o günü okur."
+        align="start"
+      >
+        <ActivityHeatmap
+          aria-label="Son 26 haftada atölye katılımı"
+          data={data}
+          formatCount={(n) => `${n} katılım`}
+          className="max-w-full"
+        />
+      </Example>
+      <Example title="Üye sayfasında" description="weeks ile kısa bir dönem." align="start">
+        <ActivityHeatmap
+          aria-label="Deniz Aydın'ın son 12 haftası"
+          data={data}
+          weeks={12}
+          formatCount={(n) => `${n} etkinlik`}
+        />
+      </Example>
+    </>
+  );
+}
+
+const BEFORE = `export default function Page() {
+  const [events, setEvents] = useState([]);
+  useEffect(() => {
+    fetch('/api/etkinlikler')
+      .then((res) => res.json())
+      .then(setEvents);
+  }, []);
+  return <EventList events={events} />;
+}`;
+
+const AFTER = `export default async function Page() {
+  // Veri sunucuda alınır, sayfa hazır gelir
+  const events = await getEvents();
+  return <EventList events={events} />;
+}`;
+
+const SAMPLES = [
+  {
+    filename: 'components/event-card.tsx',
+    language: 'tsx',
+    code: `export function EventCard({ event }: { event: Event }) {
+  return (
+    <Card href={\`/etkinlikler/\${event.slug}\`}>
+      <CardTitle>{event.title}</CardTitle>
+      <Badge tone="brand">{event.seats} kişi</Badge>
+    </Card>
+  );
+}`,
+  },
+  {
+    filename: 'package.json',
+    language: 'json',
+    code: `{
+  "name": "gece-kodu",
+  "private": true,
+  "scripts": { "dev": "next dev", "test": "vitest" },
+  "dependencies": { "@skylab-kulubu/skylcn-ui": "^0.3.0" }
+}`,
+  },
+  {
+    filename: 'app/globals.css',
+    language: 'css',
+    code: `@import '@skylab-kulubu/skylcn-ui/theme.css' source(none);
+
+/* Etkinlik kartının kapağı */
+.event-cover {
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+  background: #1a1a1a;
+}`,
+  },
+  {
+    filename: 'kurulum.sh',
+    language: 'bash',
+    code: `# Projeyi kur ve çalıştır
+git clone https://github.com/skylab-kulubu/gece-kodu.git
+cd gece-kodu && pnpm install --frozen-lockfile
+PORT=3000 pnpm dev`,
+  },
+  {
+    filename: 'sorgular/katilim.sql',
+    language: 'sql',
+    code: `-- Son 30 günde en çok katılan üyeler
+SELECT m.name, COUNT(*) AS katilim
+FROM attendance a
+JOIN members m ON m.id = a.member_id
+WHERE a.created_at > now() - interval '30 days'
+GROUP BY m.name
+ORDER BY katilim DESC
+LIMIT 10;`,
+  },
+  {
+    filename: 'bot/duyuru.py',
+    language: 'python',
+    code: `@app.command()
+def duyur(baslik: str, kanal: str = "genel") -> None:
+    """Duyuruyu Discord kanalına gönderir."""
+    mesaj = f"📣 {baslik}"
+    gonder(kanal, mesaj, tekrar=3)`,
+  },
+];
+
+function CodeExamples() {
+  return (
+    <>
+      <Example
+        title="Dile göre renklendirme"
+        description="tsx, json, css, bash, sql, python, go, yaml ve html kendi kurallarıyla renklenir; bilinmeyen dilde yorum, metin ve sayı kalır."
+        align="start"
+      >
+        <div className="grid w-full gap-3 lg:grid-cols-2">
+          {SAMPLES.map((sample) => (
+            <CodeBlock key={sample.filename} {...sample} />
+          ))}
+        </div>
+      </Example>
+      <Example
+        title="Kod bloğu"
+        description="Dosya adı, satır numarası, vurgulanan satırlar ve kopyalama. Renklendirme paket getirmez."
+        align="start"
+      >
+        <CodeBlock
+          className="w-full max-w-2xl"
+          filename="app/etkinlikler/page.tsx"
+          language="tsx"
+          highlightLines={[3]}
+          code={AFTER}
+        />
+        <CodeBlock
+          className="w-full max-w-2xl"
+          language="bash"
+          code={'pnpm add @skylab-kulubu/skylcn-ui # kütüphane\npnpm dev'}
+        />
+      </Example>
+      <Example
+        title="Önce ve sonra"
+        description="Silinen ve eklenen satırlar kendiliğinden bulunur; telefonda alt alta dizilir."
+        align="start"
+      >
+        <CodeComparison
+          className="w-full"
+          filename="app/etkinlikler/page.tsx"
+          language="tsx"
+          before={BEFORE}
+          after={AFTER}
+        />
+      </Example>
+    </>
+  );
+}
+
 export const DISPLAY_EXTRA_EXAMPLES = {
+  'code-block': CodeExamples,
+  'activity-heatmap': HeatmapExamples,
+  'sortable-list': SortableExamples,
+  'relative-time': RelativeTimeExamples,
   kanban: KanbanExamples,
   carousel: CarouselExamples,
   'data-table': DataTableExamples,

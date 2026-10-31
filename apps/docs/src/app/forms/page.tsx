@@ -35,6 +35,7 @@ import {
   Stat,
   StatusDot,
   type DataListColumn,
+  nextDataListSort,
   type DataListSort,
 } from '@skylab-kulubu/skylcn-ui';
 import {
@@ -208,7 +209,10 @@ function Sidebar() {
 export default function FormsDemo() {
   const [query, setQuery] = useState('');
   const [state, setState] = useState<'all' | 'open' | 'closed'>('all');
-  const [sort, setSort] = useState<DataListSort>({ field: 'updatedAt', direction: 'desc' });
+  const [sort, setSort] = useState<DataListSort | null>({
+    field: 'updatedAt',
+    direction: 'desc',
+  });
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
@@ -219,6 +223,7 @@ export default function FormsDemo() {
         (state === 'all' || (state === 'open') === r.open) &&
         (!q || r.name.toLocaleLowerCase('tr-TR').includes(q)),
     );
+    if (!sort) return filtered;
     const dir = sort.direction === 'asc' ? 1 : -1;
     return [...filtered].sort((a, b) => {
       const key = sort.field as keyof Row;
@@ -280,13 +285,7 @@ export default function FormsDemo() {
           aria-label="Formlar"
           columns={COLUMNS}
           sort={sort}
-          onSortChange={(field) =>
-            setSort((prev) =>
-              prev.field === field
-                ? { field, direction: prev.direction === 'asc' ? 'desc' : 'asc' }
-                : { field, direction: 'desc' },
-            )
-          }
+          onSortChange={(field) => setSort((prev) => nextDataListSort(prev, field, 'desc'))}
         >
           <DataListHeader>
             <DataListColumnHeader column="status" sortable label="Durum" />
@@ -312,7 +311,7 @@ export default function FormsDemo() {
               description="Aramayı ya da filtreyi değiştir."
             />
           ) : (
-            <DataListBody key={`${query}-${state}-${sort.field}-${sort.direction}`}>
+            <DataListBody key={`${query}-${state}-${sort?.field}-${sort?.direction}`}>
               {rows.map((row) => (
                 <ContextMenu key={row.id}>
                   <ContextMenuTrigger

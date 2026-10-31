@@ -12,6 +12,7 @@ import {
   NumberField,
   OTPField,
   Slider,
+  TimePicker,
 } from '@skylab-kulubu/skylcn-ui';
 import { useState } from 'react';
 import { Example } from '../doc';
@@ -23,6 +24,11 @@ const TEAM_ITEMS = TEAMS.map((t) => ({ value: t, label: t }));
 function ComboboxExamples() {
   const [person, setPerson] = useState<string | null>(null);
   const [teams, setTeams] = useState<string[]>(['WebLab']);
+  const [tags, setTags] = useState([
+    { value: 'react', label: 'React' },
+    { value: 'oyun', label: 'Oyun' },
+  ]);
+  const [picked, setPicked] = useState<string[]>(['react']);
   return (
     <>
       <Example title="Kişi seç" description="Yazdıkça liste daralır." align="start">
@@ -50,6 +56,35 @@ function ComboboxExamples() {
           />
         </Field>
       </Example>
+      <Example
+        title="Yazılanı ekle"
+        description="Listede olmayanı yazınca Oluştur satırı çıkar; yeni etiket hemen seçilir."
+        align="start"
+      >
+        <Field label="Etiketler" className="max-w-sm">
+          <Combobox
+            multiple
+            items={tags}
+            value={picked}
+            onValueChange={setPicked}
+            placeholder="Etiket yaz"
+            onCreate={(label) => {
+              const value = label.toLocaleLowerCase('tr-TR');
+              setTags((prev) => [...prev, { value, label }]);
+              setPicked((prev) => [...prev, value]);
+            }}
+          />
+        </Field>
+      </Example>
+      <Example
+        title="Salt okunur"
+        description="Değer kilitli ama okunur ve kopyalanır."
+        align="start"
+      >
+        <Field label="Etkinliği açan" className="max-w-sm">
+          <Combobox readOnly items={PEOPLE} value={PEOPLE[0]!.value} onValueChange={() => {}} />
+        </Field>
+      </Example>
     </>
   );
 }
@@ -67,6 +102,13 @@ function NumberExamples() {
         <div className="flex max-w-sm flex-col gap-6">
           <Slider label="Kontenjan" defaultValue={60} max={120} />
           <Slider label="Yaş aralığı" defaultValue={[18, 26]} min={16} max={35} />
+          <Slider
+            label="Atölye ne kadar zordu?"
+            defaultValue={3}
+            min={1}
+            max={5}
+            ends={['Çok kolay', 'Çok zor']}
+          />
         </div>
       </Example>
     </>
@@ -90,6 +132,7 @@ function DateExamples() {
   const [range, setRange] = useState<DateRange | undefined>();
   const [inline, setInline] = useState<Date | undefined>(new Date());
   const [start, setStart] = useState<Date | null>(null);
+  const [time, setTime] = useState<string | null>('18:30');
   return (
     <>
       <Example title="Tarih alanı" align="start">
@@ -114,6 +157,11 @@ function DateExamples() {
       >
         <Field label="Başlangıç" className="max-w-xs">
           <DateTimePicker value={start} onValueChange={setStart} aria-label="Başlangıç" />
+        </Field>
+      </Example>
+      <Example title="Saat" description="Saat ve dakika iki sütundan seçilir." align="start">
+        <Field label="Kapı açılışı" className="max-w-xs">
+          <TimePicker value={time} onValueChange={setTime} minuteStep={15} />
         </Field>
       </Example>
       <Example title="Takvim">

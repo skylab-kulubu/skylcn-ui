@@ -18,6 +18,8 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  ActiveFilters,
+  FilterButton,
   FilterPills,
   IconButton,
   MenuCheckboxItem,
@@ -495,8 +497,62 @@ function PageHeaderExamples() {
   return (
     <>
       <PageHeaderListExample />
+      <PageHeaderFilterExample />
       <PageHeaderTabsExample />
     </>
+  );
+}
+
+const FILTER_TEAMS = ['WebLab', 'GameLab', 'AILab'];
+
+function PageHeaderFilterExample() {
+  const [teams, setTeams] = useState<string[]>(['WebLab']);
+  const [mine, setMine] = useState(true);
+  const active = [
+    ...teams.map((team) => ({
+      key: team,
+      label: `Ekip: ${team}`,
+      onRemove: () => setTeams((prev) => prev.filter((t) => t !== team)),
+    })),
+    ...(mine ? [{ key: 'mine', label: 'Yalnız benimkiler', onRemove: () => setMine(false) }] : []),
+  ];
+  return (
+    <Example
+      title="Filtre paneli"
+      description="Buton açık filtre sayısını söyler; açık filtreler altında tek tek kaldırılan çipler olur."
+      align="start"
+    >
+      <div className="flex w-full max-w-xl flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger render={<FilterButton count={active.length} />} />
+            <PopoverContent className="flex w-64 flex-col gap-1">
+              <PopoverTitle className="mb-1 text-sm font-semibold text-foreground">
+                Filtreler
+              </PopoverTitle>
+              {FILTER_TEAMS.map((team) => (
+                <ToggleRow
+                  key={team}
+                  title={team}
+                  checked={teams.includes(team)}
+                  onCheckedChange={(on) =>
+                    setTeams((prev) => (on ? [...prev, team] : prev.filter((t) => t !== team)))
+                  }
+                />
+              ))}
+              <ToggleRow title="Yalnız benimkiler" checked={mine} onCheckedChange={setMine} />
+            </PopoverContent>
+          </Popover>
+        </div>
+        <ActiveFilters
+          filters={active}
+          onClear={() => {
+            setTeams([]);
+            setMine(false);
+          }}
+        />
+      </div>
+    </Example>
   );
 }
 

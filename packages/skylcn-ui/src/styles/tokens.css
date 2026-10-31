@@ -61,6 +61,17 @@
   --warning: #fbbf24;
   --info: #93c5fd;
 
+  /* Code. Each colour keeps 4.5:1 on a code block's surface, highlighted lines included */
+  --code-comment: #8f8f8f;
+  --code-keyword: #c7a8f5;
+  --code-string: #8fdbaf;
+  --code-number: #f2a97a;
+  --code-type: #93c5fd;
+  --code-call: #e8c77d;
+  --code-tag: #f59ab6;
+  --code-attr: #8bd8e8;
+  --code-property: #8bd8e8;
+
   /*
    * Charts. One lilac family, light and deep in turn so neighbouring series and slices stay
    * apart: forms-frontend's answer colours first, then three more of the same family. The
@@ -156,6 +167,16 @@
   --success: #047857;
   --warning: #a44a07;
   --info: #1d4ed8;
+
+  --code-comment: #686868;
+  --code-keyword: #7433d6;
+  --code-string: #18743c;
+  --code-number: #a84c09;
+  --code-type: #1c5db3;
+  --code-call: #845500;
+  --code-tag: #b3175a;
+  --code-attr: #0c6b84;
+  --code-property: #0c6b84;
 
   --chart-1: #8c5fc7;
   --chart-2: #4338ca;

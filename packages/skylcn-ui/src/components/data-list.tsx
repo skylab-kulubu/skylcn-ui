@@ -77,6 +77,21 @@ export type DataListColumn<T = never> = {
 export type DataListSort = { field: string; direction: 'asc' | 'desc' };
 export type DataListSortValue = string | number | Date | null | undefined;
 
+/**
+ * The sort after a header press: a new column takes `first`, a second press turns it
+ * over and a third leaves the rows unsorted, in the order they came.
+ */
+export function nextDataListSort(
+  current: DataListSort | null | undefined,
+  field: string,
+  first: DataListSort['direction'] = 'asc',
+): DataListSort | null {
+  if (current?.field !== field) return { field, direction: first };
+  return current.direction === first
+    ? { field, direction: first === 'asc' ? 'desc' : 'asc' }
+    : null;
+}
+
 /*
  * The columns and the sort live in separate contexts, each value kept stable,
  * so a sort change redraws the headers only and a parent's render redraws no
@@ -91,7 +106,7 @@ type ColumnsContextValue = {
 
 const ColumnsContext = createContext<ColumnsContextValue | null>(null);
 
-type SortContextValue = { sort?: DataListSort; onSortChange?: (field: string) => void };
+type SortContextValue = { sort?: DataListSort | null; onSortChange?: (field: string) => void };
 
 const SortContext = createContext<SortContextValue>({});
 
@@ -177,8 +192,8 @@ const ROW_GRID =
   'grid items-center gap-3 grid-cols-(--dl-base) sm:grid-cols-(--dl-sm) md:grid-cols-(--dl-md) lg:grid-cols-(--dl-lg) xl:grid-cols-(--dl-xl)';
 
 type DataListOwnProps = Omit<ComponentProps<'div'>, 'children'> & {
-  /** The current sort, read by sortable column headers. */
-  sort?: DataListSort;
+  /** The current sort, read by sortable column headers; `null` for none. */
+  sort?: DataListSort | null;
   /** Called with a column id when its header is pressed. */
   onSortChange?: (field: string) => void;
   /**
@@ -308,7 +323,7 @@ function DataListRows<T>({
   ...props
 }: DataListRowsProps<T>) {
   const { messages, locale } = useSkylcn();
-  const [ownSort, setOwnSort] = useState(defaultSort);
+  const [ownSort, setOwnSort] = useState<DataListSort | null>(defaultSort ?? null);
   const [ownOpenId, setOwnOpenId] = useState<string | null>(null);
   const openId = expandedId !== undefined ? expandedId : ownOpenId;
 
@@ -332,18 +347,14 @@ function DataListRows<T>({
     [hasPanel, rowsAct, messages.details, columns],
   );
 
-  const current = sort ?? ownSort;
+  const current = sort !== undefined ? sort : ownSort;
   const changeSort = useStableCallback((field: string) => {
     onSortChange?.(field);
     if (sort !== undefined) return;
     const value = columns.find((column) => column.id === field)?.sortValue;
     // Text goes A to Z first; figures and dates go largest and latest first
     const sample = value ? rows.map(value).find((key) => key != null) : undefined;
-    setOwnSort(
-      current?.field === field
-        ? { field, direction: current.direction === 'asc' ? 'desc' : 'asc' }
-        : { field, direction: typeof sample === 'string' ? 'asc' : 'desc' },
-    );
+    setOwnSort(nextDataListSort(current, field, typeof sample === 'string' ? 'asc' : 'desc'));
   });
   const sortBy = current && columns.find((column) => column.id === current.field)?.sortValue;
   const direction = current?.direction ?? 'asc';

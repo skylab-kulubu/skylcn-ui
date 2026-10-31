@@ -442,6 +442,19 @@ const MINIS: Record<string, () => ReactNode> = {
   button: ButtonMini,
   'icon-swap': IconSwapMini,
   'copy-button': CopyMini,
+  'overflow-actions': () => (
+    <span className="flex items-center gap-1.5">
+      <span className="rounded-md border border-border px-2 py-1 text-2xs text-secondary-foreground">
+        Düzenle
+      </span>
+      <span className="rounded-md border border-border px-2 py-1 text-2xs text-secondary-foreground">
+        Kopyala
+      </span>
+      <span className="rounded-md border border-border px-1.5 py-1 text-2xs text-secondary-foreground">
+        ⋯
+      </span>
+    </span>
+  ),
   'segmented-control': SegmentedMini,
   switch: SwitchMini,
   field: () => <Input icon={Search} placeholder="Ara…" aria-label="Ara" className="w-48" />,
@@ -577,6 +590,16 @@ const MINIS: Record<string, () => ReactNode> = {
       <Avatar name="WebLab" shape="square" size="sm" />
     </div>
   ),
+  'activity-heatmap': () => (
+    <span className="grid grid-flow-col grid-rows-7 gap-0.5">
+      {Array.from({ length: 70 }, (_, i) => (
+        <span
+          key={i}
+          className={`size-2 rounded-[2px] ${['bg-muted', 'bg-chart-1/25', 'bg-chart-1/50', 'bg-chart-1/75', 'bg-chart-1'][(i * 7 + (i % 5) * 3) % 11 > 5 ? ((i * 3) % 4) + 1 : 0]}`}
+        />
+      ))}
+    </span>
+  ),
   'bar-list': () => (
     <BarList
       className="w-48"
@@ -676,6 +699,16 @@ const MINIS: Record<string, () => ReactNode> = {
       </span>
     </span>
   ),
+  'relative-time': () => (
+    <span className="flex flex-col gap-1 text-2xs text-muted-foreground">
+      <span>
+        Deniz düzenledi · <span className="text-secondary-foreground">3 dakika önce</span>
+      </span>
+      <span>
+        Form açıldı · <span className="text-secondary-foreground">dün</span>
+      </span>
+    </span>
+  ),
   'description-list': () => (
     <span className="grid w-44 grid-cols-2 gap-2 text-2xs">
       <span>
@@ -684,6 +717,29 @@ const MINIS: Record<string, () => ReactNode> = {
       <span>
         <span className="block text-3xs text-subtle-foreground uppercase">Rol</span>Lider
       </span>
+    </span>
+  ),
+  'sortable-list': () => (
+    <span className="flex w-40 flex-col gap-1 text-2xs text-secondary-foreground">
+      {['Kayıt', 'Atölye', 'Sunumlar'].map((title, i) => (
+        <span
+          key={title}
+          className={`flex items-center gap-1.5 rounded border px-1.5 py-1 ${i === 1 ? 'translate-x-1 border-border-strong bg-popover shadow-lg' : 'border-border-subtle'}`}
+        >
+          <span className="text-subtle-foreground">⋮⋮</span>
+          {title}
+        </span>
+      ))}
+    </span>
+  ),
+  'code-block': () => (
+    <span className="flex w-44 flex-col gap-0.5 rounded-md border border-border bg-muted/40 p-2 font-mono text-3xs leading-4">
+      <span>
+        <span className="text-skylab-300">const</span> <span className="text-info">Kart</span> ={' '}
+        <span className="text-success">'web'</span>
+      </span>
+      <span className="bg-destructive/10 text-subtle-foreground">− eski();</span>
+      <span className="bg-success/10 text-secondary-foreground">+ yeni();</span>
     </span>
   ),
   tree: () => (

@@ -106,6 +106,18 @@ export const ENTRIES: Entry[] = [
     a11y: ['Kopyalandığında ekran okuyucuya bir kez "Kopyalandı" söyler.'],
   },
   {
+    slug: 'overflow-actions',
+    name: 'OverflowActions',
+    category: 'actions',
+    description:
+      'Sığdığı kadar eylemi buton olarak tutar, kalanları satırın sonundaki “⋯” menüsüne alır.',
+    imports: ['OverflowActions'],
+    a11y: [
+      'Satır bir araç çubuğudur ve adını aria-label ile alır.',
+      'Menüye geçen eylemler aynı adla menü satırı olur; hiçbir eylem görünmez olmaz.',
+    ],
+  },
+  {
     slug: 'segmented-control',
     name: 'SegmentedControl',
     category: 'actions',
@@ -119,8 +131,8 @@ export const ENTRIES: Entry[] = [
     name: 'Field ve Input',
     category: 'forms',
     description:
-      'Etiket, alan, açıklama ve hata tek yerde; alanlar ikonlu ve küçük boyutlu olabilir.',
-    imports: ['Field', 'Input', 'Textarea', 'Label'],
+      'Etiket, alan, açıklama ve hata tek yerde; üç boy, numaralı soru görünümü ve karakter sayacı.',
+    imports: ['Field', 'Input', 'Textarea', 'Label', 'ControlSizeProvider'],
     a11y: [
       'Etiket, açıklama ve hata alana bağlıdır; hata varken alan geçersiz olarak işaretlenir.',
       'Dokunmatik ekranda yazı 16px olur, iOS alana yakınlaşmaz.',
@@ -131,17 +143,18 @@ export const ENTRIES: Entry[] = [
     slug: 'select',
     name: 'Select',
     category: 'forms',
-    description: 'Kutu ya da satır içi görünümde, ipuçlu ve devre dışı seçenekli açılır liste.',
+    description:
+      'Kutu, hap ya da satır içi görünümde açılır liste; çoklu seçim ve listenin sonunda bir eylem.',
     imports: ['Select'],
     a11y: ['Görünür etiketi olmayan her Select aria-label alır.'],
   },
   {
     slug: 'checkbox',
-    name: 'Checkbox',
+    name: 'Checkbox ve seçenek kartları',
     category: 'forms',
     description:
-      'Seçili, seçili değil ve kısmen seçili durumlarıyla onay kutusu; dokunma alanı büyütülmüş.',
-    imports: ['Checkbox'],
+      'Onay kutusu, seçenekleri kart olarak dizen ChoiceList ve satırlara aynı soruyu soran ChoiceMatrix.',
+    imports: ['Checkbox', 'CheckboxCard', 'ChoiceList', 'ChoiceMatrix'],
     a11y: [
       'Onay kutuları hiçbir zaman izin ya da abonelik için varsayılan olarak işaretli gelmez.',
     ],
@@ -150,7 +163,8 @@ export const ENTRIES: Entry[] = [
     slug: 'switch',
     name: 'Switch ve ToggleRow',
     category: 'forms',
-    description: 'Aç/kapa anahtarı ve başlığı, açıklaması olan ayar satırı.',
+    description:
+      'Aç/kapa anahtarı ve başlığı, açıklaması olan ayar satırı; açınca altında bağlı ayarlar.',
     imports: ['Switch', 'ToggleRow'],
     a11y: ['Tek başına kullanılan Switch aria-label alır; ToggleRow başlığını ad olarak verir.'],
   },
@@ -158,8 +172,8 @@ export const ENTRIES: Entry[] = [
     slug: 'radio-group',
     name: 'RadioGroup',
     category: 'forms',
-    description: 'Birbirini dışlayan birkaç seçenek, açıklamalarıyla alt alta.',
-    imports: ['RadioGroup', 'Radio'],
+    description: 'Birbirini dışlayan birkaç seçenek, açıklamalarıyla alt alta ya da kart olarak.',
+    imports: ['RadioGroup', 'Radio', 'RadioCard'],
     a11y: ['Grup bir ad alır; ok tuşları seçenekler arasında gezer, satırın tamamı tıklanır.'],
   },
   {
@@ -167,7 +181,7 @@ export const ENTRIES: Entry[] = [
     name: 'Combobox ve MultiSelect',
     category: 'forms',
     description:
-      'Uzun listeden yazarak seçim; çoklu seçimde seçilenler kaldırılabilir çipler olur.',
+      'Uzun listeden yazarak seçim; çoklu seçimde çipler, listede olmayanı ekleme ve salt okunur değer.',
     imports: ['Combobox', 'MultiSelect'],
     a11y: [
       'Liste yazdıkça daralır; ok tuşları gezinir, Enter seçer, Esc kapatır.',
@@ -179,7 +193,8 @@ export const ENTRIES: Entry[] = [
     slug: 'number-field',
     name: 'NumberField ve Slider',
     category: 'forms',
-    description: 'Adımlı sayı alanı; tek değer ya da iki uçlu aralık için kaydırıcı.',
+    description:
+      'Adımlı sayı alanı; tek değer ya da iki uçlu aralık için kaydırıcı, uçlarında ölçeğin sözleri.',
     imports: ['NumberField', 'Slider'],
     a11y: [
       'Ok tuşları bir, Shift ile on adım değiştirir; yazılan değer sınırlar içinde tutulur.',
@@ -192,7 +207,7 @@ export const ENTRIES: Entry[] = [
     category: 'forms',
     description:
       'Takvimle gün, gün ve saat ya da aralık seçimi; aralıkta hazır seçenekler önce gelir. Başlığa basınca aylar, yıllar ve on yıllar açılır.',
-    imports: ['DatePicker', 'DateTimePicker', 'DateRangePicker', 'Calendar'],
+    imports: ['DatePicker', 'DateTimePicker', 'DateRangePicker', 'TimePicker', 'Calendar'],
     a11y: [
       'Ok tuşları günler, PageUp ve PageDown aylar arasında gezer.',
       'Ay, yıl ve on yıl ızgaralarında ok tuşları hücreler, PageUp ve PageDown dönemler arasında gezer; seçim bir alt seviyeye iner ve odak orada kalır.',
@@ -202,10 +217,11 @@ export const ENTRIES: Entry[] = [
   },
   {
     slug: 'dropzone',
-    name: 'Dropzone',
+    name: 'FileUpload ve Dropzone',
     category: 'forms',
-    description: 'Dosya bırakma alanı; tıklayınca dosya seçici açılır.',
-    imports: ['Dropzone'],
+    description:
+      'Dosya bırakma alanı ve her dosyanın yolu: yükleniyor, taranıyor, hazır ya da hata, yeniden deneme ile.',
+    imports: ['FileUpload', 'FileRow', 'Dropzone'],
     a11y: ['Sürükleyip bırakmak tek yol değildir; alan bir dosya seçicisine bağlı etiket taşır.'],
     motion: ['Dosya üstünde tutulunca çerçeve ve ikon canlanır.'],
   },
@@ -318,6 +334,10 @@ export const ENTRIES: Entry[] = [
       'MenuItem',
     ],
     a11y: ['Ok tuşlarıyla gezilir; yıkıcı öğeler renginin yanında ikonuyla da ayrılır.'],
+    motion: [
+      'Vurgu tek bir zemin olarak fareyle ya da ok tuşlarıyla satırdan satıra kayar; ilk satıra yerinde gelir.',
+      'Hareketi azalt tercihinde zemin kaymadan yer değiştirir.',
+    ],
   },
   {
     slug: 'app-shell',
@@ -331,6 +351,8 @@ export const ENTRIES: Entry[] = [
       'Ctrl/⌘+B kenar çubuğunu daraltır; yazı alanlarında kalın yazı kısayoluna dokunmaz.',
     ],
     motion: [
+      'Fareyle satırlar arasında gezerken tek bir zemin satırdan satıra kayar; dar hâle geçerken yazılar hafifçe sola kayarak solar.',
+      'Kenar çubuğunun kenarına tıklamak onu açar ya da kapatır; kenar işaretsizdir, tutamaç gibi görünmez.',
       'Aktif öğenin vurgusu sayfa değişince yeni öğeye süzülür.',
       'Daralırken önce yazılar söner, sonra genişlik daralır; açılırken genişlik önce gelir, yazılar ardından belirir. İkonlar yerinden oynamaz.',
       'Hareketi azaltınca genişlik bir anda değişir, yazılar yalnızca solar.',
@@ -428,7 +450,7 @@ export const ENTRIES: Entry[] = [
     category: 'navigation',
     description:
       'Başlık, açıklama, eylemler ve arama, filtre hapları gibi araçlar; ayrıntı sayfalarında geri bağlantısı, kapak ve sekmeler.',
-    imports: ['PageHeader', 'SearchInput', 'FilterPills', 'Stat'],
+    imports: ['PageHeader', 'SearchInput', 'FilterPills', 'FilterButton', 'ActiveFilters', 'Stat'],
     motion: ['Filtre hapının dolgusu seçime doğru kayar, sayılar akar.'],
   },
   {
@@ -521,6 +543,19 @@ export const ENTRIES: Entry[] = [
     imports: ['Avatar'],
   },
   {
+    slug: 'activity-heatmap',
+    name: 'ActivityHeatmap',
+    category: 'data',
+    description:
+      'Günler hafta sütunlarında küçük karelerle; yoğun gün daha koyu. Dönem boyu katılım, bir üyenin hareketliliği.',
+    imports: ['ActivityHeatmap'],
+    a11y: [
+      'Ekran okuyucu toplamı ve en yoğun günü tek cümlede duyar.',
+      'Odaklanınca ok tuşları günler, sağ ve sol haftalar arasında gezer; altındaki satır o günü okur.',
+      'Renk tek başına kalmaz: üzerine gelinen ya da odaktaki günün sayısı yazıyla görünür.',
+    ],
+  },
+  {
     slug: 'bar-list',
     name: 'BarList',
     category: 'data',
@@ -552,10 +587,52 @@ export const ENTRIES: Entry[] = [
     imports: ['DescriptionList', 'AvatarGroup'],
   },
   {
+    slug: 'relative-time',
+    name: 'RelativeTime',
+    category: 'data',
+    description:
+      'Bir anı şimdiye göre söyler: “3 saat önce”, “dün”. Zaman geçtikçe kendiliğinden güncellenir.',
+    imports: ['RelativeTime', 'formatRelativeTime'],
+    a11y: [
+      'Tam tarih ve saat üzerine gelince ipucunda görünür; time öğesi kesin anı makineler için taşır.',
+      'Metin her 30 saniyede bir yenilenir ama canlı bölge değildir; ekran okuyucu okurken araya girmez.',
+    ],
+  },
+  {
+    slug: 'sortable-list',
+    name: 'SortableList',
+    category: 'data',
+    description:
+      'Tutamağından sürüklenerek ya da ok tuşlarıyla sıralanan liste: form soruları, etkinlik akışı.',
+    imports: ['SortableList'],
+    a11y: [
+      'Her satırın tutamağı bir butondur; odaktayken yukarı ve aşağı ok tuşları satırı taşır.',
+      'Yeni sıra ekran okuyucuya söylenir: “Atölye: 5 öğeden 2. sırada”.',
+      'Sürüklerken Esc satırı eski yerine bırakır.',
+    ],
+    motion: [
+      'Sürüklenen satır işaretçiyi izler, diğerleri yolundan kayar; bırakınca yerine oturur.',
+      'Hareketi azalt tercihinde satırlar kaymadan yer değiştirir.',
+    ],
+  },
+  {
+    slug: 'code-block',
+    name: 'CodeBlock ve CodeComparison',
+    category: 'data',
+    description:
+      'Atölye, duyuru ve belgelerde kod: dosya adı, satır numarası, vurgulu satırlar, kopyalama; iki sürümü yan yana karşılaştırma.',
+    imports: ['CodeBlock', 'CodeComparison'],
+    a11y: [
+      'Yatay kayan kod alanı klavyeyle odak alır ve dosya adıyla adlandırılır.',
+      'Karşılaştırmada silinen ve eklenen satırlar ekran okuyucuya yazıyla söylenir; renk tek başına kalmaz.',
+      'Kopyala butonu hangi dosyayı kopyaladığını adında taşır.',
+    ],
+  },
+  {
     slug: 'tree',
     name: 'Tree',
     category: 'data',
-    description: 'İç içe öğeler: Keycloak grupları, klasörler, ekip yapısı.',
+    description: 'İç içe öğeler: Keycloak grupları, ekip yapısı, bir projenin klasör ve dosyaları.',
     imports: ['Tree'],
     a11y: [
       'Sekmeyle tek satır odak alır; oklar gezer, sağ ok açar ya da içeri girer, sol ok kapatır ya da üste çıkar.',
@@ -650,10 +727,11 @@ export const ENTRIES: Entry[] = [
     category: 'data',
     description:
       'Sayfa içi uyarılar, bir işin ilerlemesi ve sınırları belli bir düzey; kısayollar için Kbd.',
-    imports: ['Notice', 'Progress', 'Meter', 'Kbd', 'Separator'],
+    imports: ['Notice', 'Progress', 'Meter', 'SaveStatus', 'Kbd', 'Separator'],
     a11y: [
       'Notice tonunu ikonla da söyler; tehlike tonu ekran okuyucuya hemen duyurulur. icon ile verilen ikon da tonun rengini alır, ikon hiç kalkmaz. Özel ikon verilince ton artık ikonun şekliyle anlatılmaz; tonu metin söylemeli.',
       'Meter değerini her zaman yazar; eşik renkleri tek başına anlam taşımaz.',
+      'SaveStatus bir durum bölgesidir: kaydın gidişi ekran okuyucuya sakin bir dille söylenir.',
     ],
     motion: ['Dolgular yeni değerlerine uzar.'],
   },

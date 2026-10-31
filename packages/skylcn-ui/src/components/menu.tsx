@@ -3,26 +3,64 @@
 import { ContextMenu as ContextMenuPrimitive } from '@base-ui/react/context-menu';
 import { Menu as MenuPrimitive } from '@base-ui/react/menu';
 import { Check, ChevronRight, type LucideIcon } from 'lucide-react';
-import type { ComponentProps, ReactNode } from 'react';
+import { useEffect, useRef, type ComponentProps, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { createGlide, glideClass } from '../lib/glide.js';
 import { popupMotionFast } from '../lib/motion.js';
 
 const popupClass = cn(
-  'min-w-44 rounded-lg border border-border bg-popover p-1 text-foreground shadow-overlay outline-hidden',
+  'relative min-w-44 rounded-lg border border-border bg-popover p-1 text-foreground shadow-overlay outline-hidden',
   popupMotionFast,
 );
 
 const itemClass = cn(
   'group/menu-item relative flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-xs text-secondary-foreground outline-hidden select-none',
   'transition-colors duration-(--motion-duration-instant)',
-  'data-highlighted:bg-accent data-highlighted:text-foreground-strong',
+  'data-highlighted:bg-accent data-highlighted:text-foreground-strong in-data-glide:data-highlighted:bg-transparent',
   'data-disabled:cursor-not-allowed data-disabled:text-faint-foreground',
   'pointer-coarse:py-2.5 pointer-coarse:text-sm',
   "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
 );
 
 const destructiveClass =
-  'text-destructive data-highlighted:bg-destructive/10 data-highlighted:text-destructive';
+  'text-destructive data-highlighted:bg-destructive/10 data-highlighted:text-destructive in-data-glide:data-highlighted:bg-transparent';
+
+/**
+ * Menus light the highlighted row with one background that slides to it. It reads the
+ * highlight Base UI sets on the rows, so it needs no wiring from them; the rows go clear.
+ */
+function Glide() {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const glide = ref.current;
+    const popup = glide?.parentElement;
+    if (!glide || !popup || typeof MutationObserver === 'undefined') return;
+    popup.dataset.glide = '';
+    const move = createGlide(glide);
+    const place = () => {
+      const row = popup.querySelector<HTMLElement>('[data-highlighted]');
+      move(row, row?.dataset.destructive === undefined ? '' : 'destructive');
+    };
+    const observer = new MutationObserver(place);
+    observer.observe(popup, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-highlighted'],
+    });
+    place();
+    return () => {
+      observer.disconnect();
+      delete popup.dataset.glide;
+    };
+  }, []);
+  return (
+    <span
+      ref={ref}
+      aria-hidden
+      className={cn(glideClass, 'bg-accent data-[tone=destructive]:bg-destructive/10')}
+    />
+  );
+}
 
 type ItemExtras = {
   icon?: LucideIcon;
@@ -70,6 +108,7 @@ export function MenuItem({
   return (
     <MenuPrimitive.Item
       data-slot="menu-item"
+      data-destructive={destructive || undefined}
       className={cn(itemClass, destructive && destructiveClass, inset && 'pl-7.5', className)}
       {...props}
     >
@@ -95,6 +134,7 @@ export function MenuLinkItem({
   return (
     <MenuPrimitive.LinkItem
       data-slot="menu-item"
+      data-destructive={destructive || undefined}
       className={cn(itemClass, destructive && destructiveClass, inset && 'pl-7.5', className)}
       {...props}
     >
@@ -231,6 +271,7 @@ type ContentPlacement = Pick<
 
 function MenuContent({
   className,
+  children,
   side,
   align,
   sideOffset,
@@ -250,7 +291,10 @@ function MenuContent({
           data-slot="menu-content"
           className={cn(popupClass, className)}
           {...props}
-        />
+        >
+          <Glide />
+          {children}
+        </MenuPrimitive.Popup>
       </MenuPrimitive.Positioner>
     </MenuPrimitive.Portal>
   );
@@ -302,7 +346,7 @@ export function ContextMenuTrigger({ className, ...props }: ContextMenuPrimitive
   );
 }
 
-export function ContextMenuContent({ className, ...props }: MenuPrimitive.Popup.Props) {
+export function ContextMenuContent({ className, children, ...props }: MenuPrimitive.Popup.Props) {
   return (
     <ContextMenuPrimitive.Portal>
       <ContextMenuPrimitive.Positioner className="z-50 outline-hidden">
@@ -310,7 +354,10 @@ export function ContextMenuContent({ className, ...props }: MenuPrimitive.Popup.
           data-slot="context-menu-content"
           className={cn(popupClass, className)}
           {...props}
-        />
+        >
+          <Glide />
+          {children}
+        </ContextMenuPrimitive.Popup>
       </ContextMenuPrimitive.Positioner>
     </ContextMenuPrimitive.Portal>
   );

@@ -3,11 +3,17 @@
 import {
   Button,
   Checkbox,
+  CheckboxCard,
+  ChoiceList,
+  ChoiceMatrix,
+  ControlSizeProvider,
   CopyButton,
   Field,
   IconButton,
   IconSwap,
   Input,
+  OverflowActions,
+  type OverflowAction,
   SegmentedControl,
   Select,
   Switch,
@@ -210,7 +216,70 @@ function FieldExamples() {
           />
         </div>
       </Example>
+      <Example
+        title="Üç boy"
+        description="sm 32, md 36, lg 38 piksel. ControlSizeProvider bir formun hepsini birden ayarlar."
+        align="start"
+      >
+        <div className="grid max-w-xl gap-3">
+          {(['sm', 'md', 'lg'] as const).map((size) => (
+            <ControlSizeProvider key={size} size={size}>
+              <div className="grid grid-cols-[2rem_1fr_1fr] items-center gap-3">
+                <span className="font-mono text-2xs text-subtle-foreground">{size}</span>
+                <Input placeholder="Ad soyad" aria-label={`Ad soyad, ${size}`} />
+                <Select
+                  aria-label={`Ekip, ${size}`}
+                  placeholder="Ekip"
+                  value={null}
+                  onValueChange={() => {}}
+                  options={['WebLab', 'GameLab', 'AILab']}
+                />
+              </div>
+            </ControlSizeProvider>
+          ))}
+        </div>
+      </Example>
+      <QuestionExample />
     </>
+  );
+}
+
+function QuestionExample() {
+  const [why, setWhy] = useState('');
+  return (
+    <Example
+      title="Soru"
+      description="Doldurulan formlarda alan numaralı bir soru olur; metin kutusu karakterlerini sayar."
+      align="start"
+    >
+      <ControlSizeProvider size="lg">
+        <div className="flex max-w-xl flex-col gap-8">
+          <Field
+            variant="question"
+            number={1}
+            required
+            label="Adın ve soyadın"
+            hint="Sertifikada bu ad yazar."
+          >
+            <Input required placeholder="Deniz Yıldırım" />
+          </Field>
+          <Field
+            variant="question"
+            number={2}
+            label="Neden katılmak istiyorsun?"
+            description="Birkaç cümle yeter."
+          >
+            <Textarea
+              showCount
+              maxLength={280}
+              rows={3}
+              value={why}
+              onChange={(event) => setWhy(event.target.value)}
+            />
+          </Field>
+        </div>
+      </ControlSizeProvider>
+    </Example>
   );
 }
 
@@ -218,6 +287,8 @@ function SelectExamples() {
   const [role, setRole] = useState<string | null>('editor');
   const [type, setType] = useState<string | null>(null);
   const [state, setState] = useState('open');
+  const [days, setDays] = useState<string[]>(['Salı', 'Perşembe']);
+  const [period, setPeriod] = useState('30');
   return (
     <>
       <Example title="Kutu" description="İpuçlu ve devre dışı seçenekler.">
@@ -261,11 +332,121 @@ function SelectExamples() {
           />
         </span>
       </Example>
+      <Example
+        title="Çoklu ve eylemli"
+        description="multiple birkaç seçeneği işaretler, liste açık kalır. action listenin sonuna bir komut ekler."
+      >
+        <div className="w-64">
+          <Select
+            multiple
+            aria-label="Toplantı günleri"
+            placeholder="Gün seç"
+            value={days}
+            onValueChange={setDays}
+            options={['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma']}
+          />
+        </div>
+        <div className="w-56">
+          <Select
+            aria-label="Etiket"
+            placeholder="Etiket seç"
+            value={type}
+            onValueChange={setType}
+            options={['Etkinlik', 'Duyuru', 'Atölye']}
+            action={{ label: 'Yeni etiket oluştur', onSelect: () => {} }}
+          />
+        </div>
+      </Example>
+      <Example
+        title="Hap"
+        description="Yoğun satırlar ve araç çubukları için 26 piksellik görünüm."
+      >
+        <Select
+          variant="pill"
+          aria-label="Dönem"
+          value={period}
+          onValueChange={setPeriod}
+          options={[
+            { value: '7', label: 'Son 7 gün' },
+            { value: '30', label: 'Son 30 gün' },
+            { value: '90', label: 'Son 90 gün' },
+          ]}
+        />
+      </Example>
     </>
   );
 }
 
+const TOPICS = [
+  { value: 'web', label: 'Web', description: 'React, Next.js, tasarım sistemleri' },
+  { value: 'game', label: 'Oyun', description: 'Unity, Godot, game jam' },
+  { value: 'ai', label: 'Yapay zekâ', description: 'Model eğitimi ve uygulamaları' },
+];
+const PARTS = [
+  { value: 'talks', label: 'Konuşmalar' },
+  { value: 'workshop', label: 'Atölye' },
+  { value: 'venue', label: 'Mekân' },
+];
+const SCORES = ['Zayıf', 'Orta', 'İyi', 'Çok iyi'].map((label) => ({ value: label, label }));
+
 function CheckboxExamples() {
+  const [topics, setTopics] = useState<string[]>(['web']);
+  const [level, setLevel] = useState<string | null>(null);
+  const [ratings, setRatings] = useState<Record<string, string>>({ talks: 'İyi' });
+  return (
+    <>
+      <CheckboxStates />
+      <Example
+        title="Seçenek kartları"
+        description="Yuvarlak işaret tek, kare işaret birden çok yanıt alır; şekil okura bunu baştan söyler."
+        align="start"
+      >
+        <div className="grid w-full max-w-2xl gap-6 sm:grid-cols-2">
+          <ChoiceList
+            multiple
+            aria-label="İlgi alanları"
+            options={TOPICS}
+            value={topics}
+            onValueChange={setTopics}
+          />
+          <ChoiceList
+            aria-label="Deneyim"
+            options={[
+              { value: 'new', label: 'Yeni başlıyorum' },
+              { value: 'some', label: 'Birkaç proje yaptım' },
+              { value: 'pro', label: 'İş deneyimim var' },
+            ]}
+            value={level}
+            onValueChange={setLevel}
+          />
+        </div>
+      </Example>
+      <Example title="Tek kart" align="start">
+        <CheckboxCard
+          className="max-w-md"
+          label="KVKK aydınlatma metnini okudum"
+          description="Bilgilerin yalnızca etkinlik için kullanılır."
+        />
+      </Example>
+      <Example
+        title="Matris"
+        description="Aynı yanıtlar birkaç satıra sorulur. Telefonda her satır kendi seçeneklerini alt alta dizer."
+        align="start"
+      >
+        <ChoiceMatrix
+          className="w-full max-w-2xl"
+          aria-label="Etkinliği puanla"
+          rows={PARTS}
+          columns={SCORES}
+          value={ratings}
+          onValueChange={setRatings}
+        />
+      </Example>
+    </>
+  );
+}
+
+function CheckboxStates() {
   return (
     <Example title="Durumlar">
       <label className="flex items-center gap-2 text-sm text-secondary-foreground">
@@ -302,11 +483,69 @@ function SwitchExamples() {
           <ToggleRow title="Elle onay" description="Yanıtlar onaydan sonra sayılır." />
         </div>
       </Example>
+      <Example
+        title="Açınca gelen ayarlar"
+        description="Anahtar açıkken satırın altında bağlı ayarlar görünür. checkedTitle durumu söyleyen satırlar için."
+        align="start"
+      >
+        <div className="flex max-w-md flex-col gap-2">
+          <ToggleRow title="Kontenjan sınırı" description="Dolunca başvuru kapanır." defaultChecked>
+            <Field label="Kişi sayısı">
+              <Input type="number" defaultValue={40} inputSize="sm" />
+            </Field>
+          </ToggleRow>
+          <ToggleRow
+            title="Fotoğraf iznini vermedim"
+            checkedTitle="Fotoğraf iznini verdim"
+            description="Etkinlik fotoğraflarında görünebilirsin."
+          />
+        </div>
+      </Example>
+    </>
+  );
+}
+
+const FORM_ACTIONS: OverflowAction[] = [
+  { key: 'share', label: 'Paylaş', icon: Share2, variant: 'primary', onSelect: () => {} },
+  { key: 'preview', label: 'Önizle', icon: Eye, onSelect: () => {} },
+  { key: 'refresh', label: 'Yanıtları yenile', icon: RefreshCw, onSelect: () => {} },
+  { key: 'notify', label: 'Bildirimleri kapat', icon: BellOff, onSelect: () => {} },
+  { key: 'delete', label: 'Sil', icon: Trash2, destructive: true, onSelect: () => {} },
+];
+
+function OverflowExamples() {
+  const [width, setWidth] = useState(100);
+  return (
+    <>
+      <Example
+        title="Daralan araç çubuğu"
+        description="Genişliği değiştir: en sondaki eylemler önce menüye geçer, yer açılınca geri gelir."
+        align="start"
+      >
+        <SegmentedControl
+          aria-label="Genişlik"
+          value={String(width)}
+          onValueChange={(value) => setWidth(Number(value))}
+          options={[
+            { value: '100', label: 'Geniş' },
+            { value: '60', label: 'Orta' },
+            { value: '35', label: 'Dar' },
+          ]}
+        />
+        <div
+          className="flex items-center gap-3 rounded-lg border border-border-subtle p-3 transition-[width] duration-(--motion-duration-base) ease-enter"
+          style={{ width: `${width}%` }}
+        >
+          <span className="shrink-0 text-sm font-medium text-foreground">Kayıt formu</span>
+          <OverflowActions aria-label="Form eylemleri" size="sm" actions={FORM_ACTIONS} />
+        </div>
+      </Example>
     </>
   );
 }
 
 export const ACTION_FORM_EXAMPLES = {
+  'overflow-actions': OverflowExamples,
   button: ButtonExamples,
   'icon-swap': IconSwapExamples,
   'copy-button': CopyExamples,
