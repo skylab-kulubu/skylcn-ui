@@ -240,6 +240,7 @@ function AppShellExamples() {
         <li>Telefonda üst çubuktaki menü, kenar çubuğunu soldan kayan bir çekmecede açar.</li>
         <li>
           Sayfa eylemleri AppShellActions ile başlığa taşınır; sağ üstteki ayar düğmesi böyle geldi.
+          Telefon çubuğu sığmayanların yerine başka eylemler alacaksa onlar phone ile verilir.
         </li>
       </ul>
     </Example>

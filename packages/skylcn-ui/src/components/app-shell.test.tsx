@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { AppShell } from './app-shell.js';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { AppShell, AppShellActions } from './app-shell.js';
 
 describe('AppShell', () => {
   it('positions the scrolling content area, so absolute children scroll with it', () => {
@@ -23,5 +23,41 @@ describe('AppShell', () => {
     const page = getByText('İçerik').parentElement;
     expect(page).toHaveClass('w-full');
     expect(page?.className).not.toMatch(/max-w-|mx-auto/);
+  });
+});
+
+describe('AppShellActions', () => {
+  const shell = (
+    <AppShell sidebar={<nav />} header={<span />}>
+      <AppShellActions phone={<button type="button">Diğer işlemler</button>}>
+        <button type="button">Kaydet</button>
+      </AppShellActions>
+    </AppShell>
+  );
+
+  it('puts its actions in the header row on desktop', () => {
+    render(shell);
+    expect(screen.getByRole('button', { name: 'Kaydet' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Diğer işlemler' })).toBeNull();
+  });
+
+  it('gives the phone bar its phone actions instead, mounting only those', () => {
+    const phone = vi.spyOn(window, 'matchMedia').mockImplementation(
+      (query) =>
+        ({
+          matches: false,
+          media: query,
+          onchange: null,
+          addEventListener: () => undefined,
+          removeEventListener: () => undefined,
+          addListener: () => undefined,
+          removeListener: () => undefined,
+          dispatchEvent: () => false,
+        }) as MediaQueryList,
+    );
+    render(shell);
+    expect(screen.getByRole('button', { name: 'Diğer işlemler' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Kaydet' })).toBeNull();
+    phone.mockRestore();
   });
 });

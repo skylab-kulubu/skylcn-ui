@@ -403,12 +403,16 @@ export function AppShellFill({ className, ...props }: ComponentProps<'div'>) {
   );
 }
 
-/** Renders page actions into the shell header, on desktop and on phones alike. */
-export function AppShellActions({ children }: { children: ReactNode }) {
+/**
+ * Renders page actions into the shell header, on desktop and on phones alike. `phone` takes their
+ * place in the phone bar, such as one menu for the actions that do not fit; `null` leaves it empty.
+ * Only the bar on screen mounts its actions.
+ */
+export function AppShellActions({ children, phone }: { children: ReactNode; phone?: ReactNode }) {
   const { desktopSlot, mobileSlot } = useShell();
   const desktop = useIsDesktop();
   const target = desktop ? desktopSlot : mobileSlot;
-  return target ? createPortal(children, target) : null;
+  return target ? createPortal(desktop || phone === undefined ? children : phone, target) : null;
 }
 
 /*
