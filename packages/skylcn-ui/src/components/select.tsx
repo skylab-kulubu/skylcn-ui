@@ -2,7 +2,7 @@
 
 import { Select as SelectPrimitive } from '@base-ui/react/select';
 import { Check, ChevronDown } from 'lucide-react';
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { popupMotionBase, useSettled } from '../lib/motion.js';
 import { useSkylcn } from '../lib/provider.js';
@@ -46,6 +46,8 @@ type SelectCommonProps = {
   action?: { label: ReactNode; onSelect: () => void; destructive?: boolean };
   disabled?: boolean;
   name?: string;
+  /** At most this many rows show before the list scrolls; about seven by default. */
+  maxRows?: number;
   className?: string;
   'aria-label'?: string;
 };
@@ -72,12 +74,19 @@ const chipClass =
   'inline-flex shrink-0 items-center rounded-md border border-skylab-600/30 bg-skylab-600/20 px-1.5 py-px font-normal text-foreground';
 
 // Its own part, so the rows' opening rise starts over each time the popup mounts
-function OptionList({ children }: { children: ReactNode }) {
+function OptionList({ children, maxRows }: { children: ReactNode; maxRows?: number }) {
   const settled = useSettled();
   return (
     <SelectPrimitive.List
       data-settled={settled || undefined}
-      className="scrollbar max-h-60 list-rows overflow-y-auto p-1"
+      style={maxRows ? ({ '--skylcn-rows': maxRows } as CSSProperties) : undefined}
+      className={cn(
+        'scrollbar list-rows overflow-y-auto p-1',
+        // A row is 2rem, 2.5rem on touch, with the list's padding on top
+        maxRows
+          ? 'max-h-[calc(var(--skylcn-rows)*2rem+0.5rem)] pointer-coarse:max-h-[calc(var(--skylcn-rows)*2.5rem+0.5rem)]'
+          : 'max-h-60',
+      )}
     >
       {children}
     </SelectPrimitive.List>
@@ -266,7 +275,7 @@ export function Select(props: SelectProps) {
               inline || pill ? 'max-w-72 min-w-44' : 'w-(--anchor-width) min-w-40',
             )}
           >
-            <OptionList key={opening}>
+            <OptionList key={opening} maxRows={props.maxRows}>
               {options.length === 0 ? (
                 <div className="px-2 py-3 text-center text-xs text-subtle-foreground">
                   {messages.noOptions}

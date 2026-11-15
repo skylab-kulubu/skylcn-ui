@@ -62,10 +62,15 @@ function ComboboxExamples() {
   const [picked, setPicked] = useState<string[]>(['react']);
   return (
     <>
-      <Example title="Kişi seç" description="Yazdıkça liste daralır." align="start">
+      <Example
+        title="Kişi seç"
+        description="Yazdıkça liste daralır; maxRows ile en çok altı satır görünür, gerisi kayar."
+        align="start"
+      >
         <Field label="Etkinlik sorumlusu" className="max-w-sm">
           <Combobox
             items={PEOPLE}
+            maxRows={6}
             value={person}
             onValueChange={setPerson}
             placeholder="İsim yaz"

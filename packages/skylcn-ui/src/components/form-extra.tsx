@@ -5,7 +5,7 @@ import { NumberField as NumberFieldPrimitive } from '@base-ui/react/number-field
 import { OTPField as OTPPrimitive } from '@base-ui/react/otp-field';
 import { Slider as SliderPrimitive } from '@base-ui/react/slider';
 import { Check, ChevronsUpDown, Lock, Minus, Plus, Search, X } from 'lucide-react';
-import { useId, useRef, useState, type ReactNode } from 'react';
+import { useId, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { popupMotionBase, useFitHeight, useSettled } from '../lib/motion.js';
 import { useSkylcn } from '../lib/provider.js';
@@ -49,6 +49,7 @@ type OptionsProps = {
   empty: ReactNode;
   loading?: boolean;
   multiple?: boolean;
+  maxRows?: number;
 };
 
 function Options(props: OptionsProps) {
@@ -62,7 +63,7 @@ function Options(props: OptionsProps) {
 }
 
 // Its own part, so the popup's motion starts over each time it mounts on opening
-function OptionsPopup({ empty, loading = false, multiple = false }: OptionsProps) {
+function OptionsPopup({ empty, loading = false, multiple = false, maxRows }: OptionsProps) {
   const { messages } = useSkylcn();
   const popup = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -72,8 +73,13 @@ function OptionsPopup({ empty, loading = false, multiple = false }: OptionsProps
     <ComboboxPrimitive.Popup
       ref={popup}
       aria-busy={loading || undefined}
+      style={maxRows ? ({ '--skylcn-rows': maxRows } as CSSProperties) : undefined}
       className={cn(
-        'scrollbar max-h-[min(20rem,var(--available-height))] w-(--anchor-width) min-w-48 overflow-y-auto rounded-lg border border-border bg-popover p-1 text-foreground shadow-overlay outline-hidden',
+        'scrollbar w-(--anchor-width) min-w-48 overflow-y-auto rounded-lg border border-border bg-popover p-1 text-foreground shadow-overlay outline-hidden',
+        // A row is 2rem, 2.5rem on touch; the padding and the border come on top
+        maxRows
+          ? 'max-h-[min(calc(var(--skylcn-rows)*2rem+0.5rem+2px),var(--available-height))] pointer-coarse:max-h-[min(calc(var(--skylcn-rows)*2.5rem+0.5rem+2px),var(--available-height))]'
+          : 'max-h-[min(20rem,var(--available-height))]',
         popupMotionBase,
         // The height eases as a search narrows or widens the list; reduced motion lets it jump
         'transition-[opacity,scale,translate,height] motion-reduce:transition-[opacity]',
@@ -154,6 +160,8 @@ type CommonProps = {
   disabled?: boolean;
   /** sm 32px, md 36px (the default) or lg 38px. */
   size?: ControlSize;
+  /** At most this many rows show before the list scrolls; about nine by default. */
+  maxRows?: number;
   className?: string;
 };
 
@@ -334,6 +342,7 @@ export function Combobox(props: ComboboxProps) {
         empty={emptyText ?? messages.noResults}
         loading={loading}
         multiple={props.multiple}
+        maxRows={props.maxRows}
       />
     </ComboboxPrimitive.Root>
   );

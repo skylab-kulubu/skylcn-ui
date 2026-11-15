@@ -206,3 +206,21 @@ describe('Slider', () => {
     expect(screen.getByText('Çok')).toBeInTheDocument();
   });
 });
+
+describe('Combobox maxRows', () => {
+  it('caps the list at maxRows rows before it scrolls', async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox
+        aria-label="Üniversite"
+        items={universities}
+        value={null}
+        onValueChange={() => undefined}
+        maxRows={3}
+      />,
+    );
+    await user.type(screen.getByRole('combobox', { name: 'Üniversite' }), 'i');
+    const popup = (await screen.findByRole('listbox')).closest('[style]');
+    expect(popup?.getAttribute('style')).toContain('--skylcn-rows: 3');
+  });
+});
