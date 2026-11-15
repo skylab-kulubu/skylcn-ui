@@ -3,11 +3,13 @@
 import {
   Calendar,
   Combobox,
+  ControlSizeProvider,
   DatePicker,
   type DateRange,
   DateRangePicker,
   DateTimePicker,
   Field,
+  Input,
   MultiSelect,
   NumberField,
   OTPField,
@@ -153,6 +155,25 @@ function NumberExamples() {
             ends={['Çok kolay', 'Çok zor']}
           />
         </div>
+      </Example>
+      <Example
+        title="Soru olarak"
+        description='variant="control": kaydırıcı, yanındaki kutularla aynı boyda ve aynı zeminde; değeri kutunun sonunda.'
+        align="start"
+      >
+        <ControlSizeProvider size="lg">
+          <div className="flex w-full max-w-md flex-col gap-2">
+            <Input aria-label="Proje adı" placeholder="Proje adı" />
+            <Slider
+              variant="control"
+              defaultValue={6}
+              min={1}
+              max={10}
+              thumbLabels={['Yazılım deneyimi']}
+              ends={['1', '10']}
+            />
+          </div>
+        </ControlSizeProvider>
       </Example>
     </>
   );

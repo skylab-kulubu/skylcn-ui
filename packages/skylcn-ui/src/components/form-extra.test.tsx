@@ -224,3 +224,22 @@ describe('Combobox maxRows', () => {
     expect(popup?.getAttribute('style')).toContain('--skylcn-rows: 3');
   });
 });
+
+describe('Slider control', () => {
+  it('sets the track and its value in a box like the Input’s', () => {
+    render(
+      <Slider
+        variant="control"
+        defaultValue={6}
+        min={1}
+        max={10}
+        thumbLabels={['Deneyim']}
+        ends={['1', '10']}
+      />,
+    );
+    const box = screen.getAllByRole('slider')[0]?.closest('.border-input');
+    expect(box).not.toBeNull();
+    expect(box).toHaveTextContent('6');
+    expect(screen.getByText('10')).toBeInTheDocument();
+  });
+});

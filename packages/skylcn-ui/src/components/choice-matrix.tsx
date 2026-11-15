@@ -18,7 +18,7 @@ import { cn } from '../lib/cn.js';
 import { useSkylcn } from '../lib/provider.js';
 import { IconButton } from './button.js';
 import { Checkbox, CheckboxCard } from './checkbox.js';
-import { useControlSize, type ControlSize } from './control.js';
+import { controlRadius, useControlSize, type ControlSize } from './control.js';
 import { RadioCard, radioClass, radioDotClass, repressClears } from './radio-group.js';
 
 export type MatrixRow = { value: string; label: ReactNode; description?: ReactNode };
@@ -37,6 +37,11 @@ type MatrixBase = {
    * 32, 36 or 38px. Defaults to the ControlSizeProvider's, then md.
    */
   size?: ControlSize;
+  /**
+   * `control` frames the table on the box controls' surface, for a matrix among form fields.
+   * The cells and cards a narrow matrix turns into are boxes already and stay as they are.
+   */
+  variant?: 'plain' | 'control';
   'aria-label'?: string;
   'aria-labelledby'?: string;
   className?: string;
@@ -198,6 +203,13 @@ const GRID_MULTIPLE =
   'grid-cols-[minmax(9rem,1.5fr)_repeat(var(--matrix-columns),minmax(min-content,1fr))]';
 
 const tableClass = 'grid overflow-x-auto border-y border-border-subtle';
+const tableFrame = (variant: 'plain' | 'control' = 'plain', size: ControlSize) =>
+  variant === 'control'
+    ? cn('grid overflow-x-auto border border-input bg-background/60', controlRadius[size])
+    : tableClass;
+// Inside the frame a row's name keeps off its edge as a field's text does
+const rowNamePad = (variant: 'plain' | 'control' = 'plain') =>
+  variant === 'control' ? 'pr-3 pl-3' : 'pr-3 pl-2';
 const headerClass =
   'col-span-full grid grid-cols-subgrid items-end border-b border-border-subtle py-2 text-xs text-muted-foreground';
 const headCellClass = 'min-w-14 px-1 text-center leading-snug';
@@ -380,10 +392,11 @@ function ClearRow({
 
 function QuestionTable(props: QuestionProps & { tableRef: Ref<HTMLDivElement> }) {
   const { rows, columns, required = false, invalid = false, disabled = false, id } = props;
+  const size = useControlSize(props.size);
   return (
     <div
       ref={props.tableRef}
-      className={cn(tableClass, props.multiple ? GRID_MULTIPLE : GRID_SINGLE)}
+      className={cn(tableFrame(props.variant, size), props.multiple ? GRID_MULTIPLE : GRID_SINGLE)}
     >
       {/* Every control is named by its column, so the header is for the eye only */}
       <div aria-hidden className={headerClass}>
@@ -416,7 +429,7 @@ function QuestionTable(props: QuestionProps & { tableRef: Ref<HTMLDivElement> })
                 row={row}
                 labelId={labelId}
                 descriptionId={descriptionId}
-                className="pr-3 pl-2"
+                className={rowNamePad(props.variant)}
               />
               {columns.map((column) => (
                 <label key={column.value} className={tableCellClass}>
@@ -460,7 +473,7 @@ function QuestionTable(props: QuestionProps & { tableRef: Ref<HTMLDivElement> })
               row={row}
               labelId={labelId}
               descriptionId={descriptionId}
-              className="pr-3 pl-2"
+              className={rowNamePad(props.variant)}
             />
             {columns.map((column) => (
               <label key={column.value} className={tableCellClass}>
@@ -665,8 +678,13 @@ function AnswerMark({ multiple, chosen }: { multiple: boolean; chosen: boolean }
 function AnswerTable(props: ReadOnlyMatrix & { tableRef: Ref<HTMLDivElement> }) {
   const { rows, columns, value, multiple = false } = props;
   const { messages } = useSkylcn();
+  const size = useControlSize(props.size);
   return (
-    <div ref={props.tableRef} role="table" className={cn(tableClass, GRID_MULTIPLE)}>
+    <div
+      ref={props.tableRef}
+      role="table"
+      className={cn(tableFrame(props.variant, size), GRID_MULTIPLE)}
+    >
       <div role="row" className={headerClass}>
         <span role="cell" />
         {columns.map((column) => (
@@ -679,7 +697,7 @@ function AnswerTable(props: ReadOnlyMatrix & { tableRef: Ref<HTMLDivElement> }) 
         const chosen = chosenOf(value, row.value);
         return (
           <div key={row.value} role="row" className={tableRowClass(false)}>
-            <span role="rowheader" className="min-w-0 pr-3 pl-2">
+            <span role="rowheader" className={cn('min-w-0', rowNamePad(props.variant))}>
               <span className="text-sm text-foreground">{row.label}</span>
               {row.description ? (
                 <span className="mt-0.5 block text-xs text-muted-foreground">

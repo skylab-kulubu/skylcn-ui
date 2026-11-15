@@ -292,3 +292,23 @@ describe('rowLayout', () => {
     expect(rowLayout([90, 90], 0, always)).toEqual({ mode: 'list' });
   });
 });
+
+describe('ChoiceMatrix control', () => {
+  it('frames the table on the box controls’ surface', () => {
+    widen(800);
+    const { container } = render(
+      <ChoiceMatrix
+        variant="control"
+        aria-label="Etkinliği değerlendir"
+        rows={rows}
+        columns={columns}
+        value={{}}
+        onValueChange={() => undefined}
+      />,
+    );
+    expect(layoutOf(container)).toBe('table');
+    const table = screen.getByRole('radiogroup', { name: 'Ulaşım' }).parentElement;
+    expect(table).toHaveClass('border', 'border-input', 'bg-background/60');
+    expect(table).not.toHaveClass('border-y');
+  });
+});

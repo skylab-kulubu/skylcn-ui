@@ -462,6 +462,7 @@ function CheckboxExamples() {
   const [ratings, setRatings] = useState<Record<string, string>>({ talks: 'İyi' });
   const [size, setSize] = useState<string | null>('M');
   const [levels, setLevels] = useState<Record<string, string>>({ talks: 'İyi' });
+  const [skills, setSkills] = useState<Record<string, string>>({ workshop: 'İyi' });
   const [width, setWidth] = useState('100%');
   return (
     <>
@@ -525,6 +526,25 @@ function CheckboxExamples() {
           value={ratings}
           onValueChange={setRatings}
         />
+      </Example>
+      <Example
+        title="Soru olarak matris"
+        description='variant="control": tablo, yanındaki kutularla aynı zeminde ve çerçevede. Daraldığında hücreler ve kartlar zaten kutu.'
+        align="start"
+      >
+        <ControlSizeProvider size="lg">
+          <div className="flex w-full max-w-2xl flex-col gap-2">
+            <Input aria-label="Ad soyad" placeholder="Ad soyad" />
+            <ChoiceMatrix
+              variant="control"
+              aria-label="Etkinliği puanla, kutuda"
+              rows={PARTS}
+              columns={SCORES}
+              value={skills}
+              onValueChange={setSkills}
+            />
+          </div>
+        </ControlSizeProvider>
       </Example>
       <Example
         title="Daralan matris"

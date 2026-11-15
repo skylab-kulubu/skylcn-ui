@@ -14,6 +14,7 @@ import {
   controlHeight,
   controlIcon,
   controlMinHeight,
+  controlPadding,
   controlRadius,
   controlSurface,
   controlText,
@@ -434,6 +435,13 @@ export type SliderProps = SliderPrimitive.Root.Props & {
   thumbLabels?: readonly string[];
   /** Words under the two ends of the track, such as a scale's lowest and highest answer. */
   ends?: readonly [ReactNode, ReactNode];
+  /**
+   * `control` sets the track in a box as tall as the Input beside it, on the same surface, with
+   * the value at the box's end: a slider among form fields. The bare track by default.
+   */
+  variant?: 'plain' | 'control';
+  /** The box's height under `control`, as the box controls'. Defaults to the ControlSizeProvider's. */
+  size?: ControlSize;
 };
 
 /** A value, or a range with two thumbs, picked along a track: a budget, a team size. */
@@ -442,42 +450,91 @@ export function Slider({
   showValue = true,
   thumbLabels,
   ends,
+  variant = 'plain',
+  size: sizeProp,
   className,
   ...props
 }: SliderProps) {
+  const size = useControlSize(sizeProp);
   const values = props.value ?? props.defaultValue;
   const count = Array.isArray(values) ? values.length : 1;
+  const boxed = variant === 'control';
+  const track = (
+    <SliderPrimitive.Control
+      className={cn(
+        'flex h-5 touch-none items-center pointer-coarse:h-8',
+        boxed ? 'min-w-0 flex-1' : 'w-full',
+      )}
+    >
+      <SliderPrimitive.Track className="relative h-1.5 w-full rounded-full bg-muted">
+        <SliderPrimitive.Indicator className="rounded-full bg-skylab-500" />
+        {Array.from({ length: count }, (_, i) => (
+          <SliderPrimitive.Thumb
+            key={i}
+            index={i}
+            aria-label={thumbLabels?.[i]}
+            className="size-4 rounded-full border-2 border-skylab-400 bg-background shadow-sm outline-hidden transition-[scale] duration-(--motion-duration-fast) focus-visible:ring-4 focus-visible:ring-ring active:scale-110 data-dragging:scale-110 pointer-coarse:size-6"
+          />
+        ))}
+      </SliderPrimitive.Track>
+    </SliderPrimitive.Control>
+  );
   return (
-    <SliderPrimitive.Root className={cn('flex w-full flex-col gap-2', className)} {...props}>
-      {label || showValue ? (
-        <div className="flex items-baseline justify-between gap-3 text-xs">
+    <SliderPrimitive.Root
+      className={cn('flex w-full flex-col', boxed ? 'gap-1.5' : 'gap-2', className)}
+      {...props}
+    >
+      {boxed ? (
+        <>
           {label ? (
-            <SliderPrimitive.Label className="text-secondary-foreground">
+            <SliderPrimitive.Label className="text-xs text-secondary-foreground">
               {label}
             </SliderPrimitive.Label>
-          ) : (
-            <span />
-          )}
-          {showValue ? (
-            <SliderPrimitive.Value className="text-subtle-foreground tabular-nums" />
           ) : null}
-        </div>
-      ) : null}
-      <SliderPrimitive.Control className="flex h-5 w-full touch-none items-center pointer-coarse:h-8">
-        <SliderPrimitive.Track className="relative h-1.5 w-full rounded-full bg-muted">
-          <SliderPrimitive.Indicator className="rounded-full bg-skylab-500" />
-          {Array.from({ length: count }, (_, i) => (
-            <SliderPrimitive.Thumb
-              key={i}
-              index={i}
-              aria-label={thumbLabels?.[i]}
-              className="size-4 rounded-full border-2 border-skylab-400 bg-background shadow-sm outline-hidden transition-[scale] duration-(--motion-duration-fast) focus-visible:ring-4 focus-visible:ring-ring active:scale-110 data-dragging:scale-110 pointer-coarse:size-6"
-            />
-          ))}
-        </SliderPrimitive.Track>
-      </SliderPrimitive.Control>
+          <div
+            className={cn(
+              controlSurface,
+              controlHeight[size],
+              controlRadius[size],
+              controlPadding[size],
+              controlFocusWithin,
+              'flex items-center gap-3',
+            )}
+          >
+            {track}
+            {showValue ? (
+              <SliderPrimitive.Value
+                className={cn('shrink-0 font-medium tabular-nums', controlText[size])}
+              />
+            ) : null}
+          </div>
+        </>
+      ) : (
+        <>
+          {label || showValue ? (
+            <div className="flex items-baseline justify-between gap-3 text-xs">
+              {label ? (
+                <SliderPrimitive.Label className="text-secondary-foreground">
+                  {label}
+                </SliderPrimitive.Label>
+              ) : (
+                <span />
+              )}
+              {showValue ? (
+                <SliderPrimitive.Value className="text-subtle-foreground tabular-nums" />
+              ) : null}
+            </div>
+          ) : null}
+          {track}
+        </>
+      )}
       {ends ? (
-        <div className="-mt-1 flex justify-between gap-3 text-2xs text-subtle-foreground">
+        <div
+          className={cn(
+            'flex justify-between gap-3 text-2xs text-subtle-foreground',
+            !boxed && '-mt-1',
+          )}
+        >
           <span>{ends[0]}</span>
           <span className="text-right">{ends[1]}</span>
         </div>
