@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { ToggleRow } from './switch.js';
+import { Switch, ToggleRow } from './switch.js';
 
 describe('ToggleRow', () => {
   it('shows its nested settings while on, under the title for that state', async () => {
@@ -26,5 +26,18 @@ describe('ToggleRow', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Ayarla' }));
     expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+  });
+});
+
+describe('Switch', () => {
+  it('comes in a small size for dense lists', () => {
+    render(
+      <>
+        <Switch aria-label="Zorunlu" size="sm" />
+        <Switch aria-label="Bildirimler" />
+      </>,
+    );
+    expect(screen.getByRole('switch', { name: 'Zorunlu' })).toHaveClass('h-5', 'w-9');
+    expect(screen.getByRole('switch', { name: 'Bildirimler' })).toHaveClass('h-6', 'w-10');
   });
 });

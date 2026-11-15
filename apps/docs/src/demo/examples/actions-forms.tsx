@@ -473,6 +473,23 @@ function SwitchExamples() {
         <Switch aria-label="Otomatik kaydet" />
         <Switch disabled aria-label="Devre dışı" />
       </Example>
+      <Example
+        title="Küçük anahtar"
+        description='Her satırında bir anahtar olan sık listelerde size="sm": 20px yüksek.'
+        align="start"
+      >
+        <ul className="flex max-w-xs flex-col divide-y divide-border-subtle rounded-lg border border-border">
+          {['Ad soyad', 'Okul', 'Bölüm'].map((field, index) => (
+            <li
+              key={field}
+              className="flex items-center justify-between gap-3 px-3 py-2 text-sm text-secondary-foreground"
+            >
+              {field}
+              <Switch size="sm" defaultChecked={index === 0} aria-label={`${field} zorunlu`} />
+            </li>
+          ))}
+        </ul>
+      </Example>
       <Example title="Ayar satırı" align="start">
         <div className="flex max-w-md flex-col gap-2">
           <ToggleRow

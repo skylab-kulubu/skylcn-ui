@@ -5,14 +5,24 @@ import { useState, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { Collapse } from './motion.js';
 
-export type SwitchProps = SwitchPrimitive.Root.Props;
+export type SwitchProps = SwitchPrimitive.Root.Props & {
+  /** sm for a switch in a dense list, such as one per field of a group; md by default. */
+  size?: 'sm' | 'md';
+};
 
-export function Switch({ className, ...props }: SwitchProps) {
+const SWITCH_SIZES = {
+  sm: { track: 'h-5 w-9', thumb: 'size-3.5' },
+  md: { track: 'h-6 w-10', thumb: 'size-4.5' },
+} as const;
+
+export function Switch({ className, size = 'md', ...props }: SwitchProps) {
   return (
     <SwitchPrimitive.Root
       data-slot="switch"
+      data-size={size}
       className={cn(
-        'relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border border-border bg-muted px-0.5 outline-hidden after:absolute after:-inset-2',
+        'relative inline-flex shrink-0 cursor-pointer items-center rounded-full border border-border bg-muted px-0.5 outline-hidden after:absolute after:-inset-2',
+        SWITCH_SIZES[size].track,
         'transition-[background-color,border-color] duration-(--motion-duration-base) ease-enter',
         'focus-visible:ring-2 focus-visible:ring-ring',
         'data-checked:border-skylab-400/50 data-checked:bg-skylab-400/20',
@@ -23,7 +33,8 @@ export function Switch({ className, ...props }: SwitchProps) {
     >
       <SwitchPrimitive.Thumb
         className={cn(
-          'size-4.5 rounded-full bg-white shadow-sm shadow-black/30',
+          'rounded-full bg-white shadow-sm shadow-black/30',
+          SWITCH_SIZES[size].thumb,
           'transition-transform duration-(--motion-duration-base) ease-enter data-checked:translate-x-4',
         )}
       />
