@@ -393,6 +393,7 @@ function CheckboxExamples() {
   const [topics, setTopics] = useState<string[]>(['web']);
   const [level, setLevel] = useState<string | null>(null);
   const [ratings, setRatings] = useState<Record<string, string>>({ talks: 'İyi' });
+  const [size, setSize] = useState<string | null>('M');
   return (
     <>
       <CheckboxStates />
@@ -420,6 +421,20 @@ function CheckboxExamples() {
             onValueChange={setLevel}
           />
         </div>
+      </Example>
+      <Example
+        title="Boş bırakılabilir tek seçim"
+        description="clearable ile seçili seçeneğe yeniden basmak ya da Space cevabı geri alır; isteğe bağlı soru yeniden boş kalabilir."
+        align="start"
+      >
+        <ChoiceList
+          clearable
+          className="max-w-xs"
+          aria-label="Tişört bedeni"
+          options={['S', 'M', 'L', 'XL'].map((label) => ({ value: label, label }))}
+          value={size}
+          onValueChange={setSize}
+        />
       </Example>
       <Example title="Tek kart" align="start">
         <CheckboxCard

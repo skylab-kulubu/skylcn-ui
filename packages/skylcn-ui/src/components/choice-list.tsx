@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { CheckboxCard } from './checkbox.js';
 import type { ControlSize } from './control.js';
-import { RadioCard, RadioGroup } from './radio-group.js';
+import { RadioCard, RadioGroup, repressClears } from './radio-group.js';
 
 export type ChoiceListOption = {
   value: string;
@@ -28,7 +28,22 @@ type ChoiceListCommon = {
 
 export type ChoiceListProps = ChoiceListCommon &
   (
-    | { multiple?: false; value: string | null; onValueChange: (value: string) => void }
+    | {
+        multiple?: false;
+        clearable?: false;
+        value: string | null;
+        onValueChange: (value: string) => void;
+      }
+    | {
+        multiple?: false;
+        /**
+         * A press on the chosen option, or Space on it, takes the answer back, so an optional
+         * question can be left empty again.
+         */
+        clearable: true;
+        value: string | null;
+        onValueChange: (value: string | null) => void;
+      }
     | { multiple: true; value: readonly string[]; onValueChange: (value: string[]) => void }
   );
 
@@ -71,12 +86,14 @@ export function ChoiceList(props: ChoiceListProps) {
   }
 
   const { onValueChange } = props;
+  const clear = props.clearable ? props.onValueChange : undefined;
   return (
     <RadioGroup
       {...name}
       aria-invalid={invalid || undefined}
       value={props.value}
       onValueChange={(next) => onValueChange(next as string)}
+      onClick={clear ? repressClears(() => clear(null)) : undefined}
       disabled={disabled}
       className={className}
     >

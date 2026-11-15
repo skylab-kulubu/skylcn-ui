@@ -2,7 +2,7 @@
 
 import { Radio as RadioPrimitive } from '@base-ui/react/radio';
 import { RadioGroup as RadioGroupPrimitive } from '@base-ui/react/radio-group';
-import type { ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { choiceCardClass, choiceCardSize, choiceControlPlace, useChoiceText } from './checkbox.js';
 import { useControlSize, type ControlSize } from './control.js';
@@ -18,6 +18,22 @@ export const radioClass = cn(
 );
 export const radioDotClass =
   'size-1.5 rounded-full bg-white transition-[scale,opacity] duration-(--motion-duration-fast) ease-enter data-ending-style:scale-0 data-starting-style:scale-0';
+
+/**
+ * A click handler for a group of radios that lets a press on the chosen radio clear it, as an
+ * optional question can be left empty again; Space on it does the same.
+ */
+export function repressClears(clear: () => void) {
+  return (event: MouseEvent<HTMLElement>) => {
+    const radio = (event.target as Element).closest('label')?.querySelector('[role="radio"]');
+    if (radio?.getAttribute('aria-checked') !== 'true' || radio.hasAttribute('data-disabled')) {
+      return;
+    }
+    // The label would otherwise check its radio again once the press ends
+    event.preventDefault();
+    clear();
+  };
+}
 
 export function RadioGroup({ className, ...props }: RadioGroupPrimitive.Props) {
   return (

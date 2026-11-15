@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../test/axe.js';
 import { ChoiceList } from './choice-list.js';
@@ -26,6 +27,53 @@ describe('ChoiceList', () => {
     expect(screen.getAllByRole('radio')).toHaveLength(3);
     await user.click(screen.getByText('Unity ya da Godot'));
     expect(onValueChange).toHaveBeenCalledWith('game');
+  });
+
+  it('takes the answer back on a second press or Space when clearable', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    function Clearable() {
+      const [value, setValue] = useState<string | null>(null);
+      return (
+        <ChoiceList
+          clearable
+          aria-label="İlgi alanı"
+          options={options}
+          value={value}
+          onValueChange={(next) => {
+            setValue(next);
+            onValueChange(next);
+          }}
+        />
+      );
+    }
+    render(<Clearable />);
+    await user.click(screen.getByText('Yapay zekâ'));
+    expect(onValueChange).toHaveBeenLastCalledWith('ai');
+    await user.click(screen.getByText('Yapay zekâ'));
+    expect(onValueChange).toHaveBeenLastCalledWith(null);
+    expect(screen.getByRole('radio', { name: 'Yapay zekâ' })).not.toBeChecked();
+
+    await user.click(screen.getByRole('radio', { name: 'Web geliştirme' }));
+    expect(screen.getByRole('radio', { name: 'Web geliştirme' })).toHaveFocus();
+    await user.keyboard(' ');
+    expect(onValueChange).toHaveBeenLastCalledWith(null);
+  });
+
+  it('keeps the answer on a second press unless clearable', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <ChoiceList
+        aria-label="İlgi alanı"
+        options={options}
+        value="ai"
+        onValueChange={onValueChange}
+      />,
+    );
+    await user.click(screen.getByText('Yapay zekâ'));
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(screen.getByRole('radio', { name: 'Yapay zekâ' })).toBeChecked();
   });
 
   it('takes several answers with square checkboxes, kept in the options’ order', async () => {
