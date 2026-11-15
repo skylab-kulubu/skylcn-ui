@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { AppShell, AppShellActions } from './app-shell.js';
+import { AppShell, AppShellActions, SidebarBrand } from './app-shell.js';
 
 describe('AppShell', () => {
   it('positions the scrolling content area, so absolute children scroll with it', () => {
@@ -59,5 +59,21 @@ describe('AppShellActions', () => {
     expect(screen.getByRole('button', { name: 'Diğer işlemler' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Kaydet' })).toBeNull();
     phone.mockRestore();
+  });
+});
+
+describe('SidebarBrand', () => {
+  it('sets the club as a small line over the name and a credit beside the name', () => {
+    render(<SidebarBrand eyebrow="SKY LAB" name="Forms" credit="by Deniz Aydın" href="/forms" />);
+    expect(screen.getByText('SKY LAB')).toHaveClass('uppercase', 'tracking-label');
+    const credit = screen.getByText('by Deniz Aydın');
+    expect(credit).toHaveClass('text-subtle-foreground', 'font-normal');
+    expect(credit.parentElement).toHaveTextContent(/^Forms\s*by Deniz Aydın$/);
+  });
+
+  it('keeps one strong title and its subtitle without an eyebrow', () => {
+    render(<SidebarBrand name="SKY LAB Forms" subtitle="Form yönetimi" href="/forms" />);
+    expect(screen.getByText('SKY LAB Forms')).toHaveClass('font-semibold');
+    expect(screen.getByText('Form yönetimi')).toBeInTheDocument();
   });
 });

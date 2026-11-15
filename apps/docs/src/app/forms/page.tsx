@@ -175,8 +175,9 @@ function Sidebar() {
   return (
     <>
       <SidebarBrand
-        name="SKY LAB Forms"
-        subtitle="Form yönetimi"
+        eyebrow="SKY LAB"
+        name="Forms"
+        credit="by Deniz Aydın"
         current="forms"
         consoles={CONSOLES}
       />

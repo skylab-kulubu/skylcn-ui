@@ -532,23 +532,67 @@ function ConsoleRow({ app, current }: { app: ClubConsole; current: boolean }) {
 
 export type SidebarBrandProps = {
   name: ReactNode;
-  subtitle?: ReactNode;
   href?: string;
+  /** A note beside the name, such as "by" and the developer's name. */
+  credit?: ReactNode;
   /** The club consoles; the brand becomes a switcher with the current one ticked. */
   consoles?: readonly ClubConsole[];
   /** The id of this console among `consoles`. */
   current?: string;
-};
+} & (
+  | { subtitle?: ReactNode; eyebrow?: never }
+  | {
+      /**
+       * A small spaced line above the name, such as the club's: the brand reads as two quiet
+       * lines beside a muted mark as tall as both, instead of one strong title. It takes the
+       * subtitle's place.
+       */
+      eyebrow: ReactNode;
+      subtitle?: never;
+    }
+);
 
 /** The console's name with the SKY LAB mark, at the head of the sidebar; a switcher when given `consoles`. */
-export function SidebarBrand({ name, subtitle, href, consoles, current }: SidebarBrandProps) {
+export function SidebarBrand({
+  name,
+  subtitle,
+  eyebrow,
+  credit,
+  href,
+  consoles,
+  current,
+}: SidebarBrandProps) {
   const { Link, messages } = useSkylcn();
+  const title = credit ? (
+    <>
+      {name}
+      <span className="ml-1.5 text-2xs font-normal text-subtle-foreground">{credit}</span>
+    </>
+  ) : (
+    name
+  );
   const body = (
     <>
-      <span className="grid size-7 shrink-0 place-items-center text-foreground-strong">
-        <SkylabMark size={20} />
+      <span
+        className={cn(
+          'grid size-7 shrink-0 place-items-center',
+          eyebrow ? 'text-muted-foreground' : 'text-foreground-strong',
+        )}
+      >
+        <SkylabMark size={eyebrow ? 28 : 20} />
       </span>
-      <RowText title={name} subtitle={subtitle} strong />
+      {eyebrow ? (
+        <span className={cn('min-w-0 flex-1', FULL_ONLY)}>
+          <span className="block truncate text-3xs leading-3 tracking-label text-subtle-foreground uppercase">
+            {eyebrow}
+          </span>
+          <span className="block truncate text-sm leading-4 font-medium text-foreground">
+            {title}
+          </span>
+        </span>
+      ) : (
+        <RowText title={title} subtitle={subtitle} strong />
+      )}
     </>
   );
 
