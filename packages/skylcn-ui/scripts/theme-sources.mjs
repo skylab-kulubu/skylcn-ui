@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { dirname, join, relative, resolve, sep } from 'node:path';
 
 const RELATIVE_IMPORT = /(?:from|import)\s*['"](\.{1,2}\/[^'"]+\.js)['"]/g;
 
@@ -15,7 +15,8 @@ export function moduleClosure(root, entry) {
       (candidate) => existsSync(candidate),
     );
     if (!actual) return;
-    const key = relative(root, file);
+    // @source takes forward slashes, whatever the OS builds with
+    const key = relative(root, file).split(sep).join('/');
     if (seen.has(key)) return;
     seen.add(key);
     for (const [, spec] of readFileSync(actual, 'utf8').matchAll(RELATIVE_IMPORT)) {

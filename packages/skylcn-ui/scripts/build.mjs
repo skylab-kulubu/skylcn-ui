@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sourcesStylesheet, themeSources } from './theme-sources.mjs';
@@ -12,7 +13,9 @@ const old = join(root, 'dist.old');
 // Build beside dist and swap it in at the end, so a running docs server never
 // finds the package half built.
 rmSync(next, { recursive: true, force: true });
-execFileSync('tsc', ['-p', 'tsconfig.build.json', '--outDir', next], {
+// tsc is started through node: Windows cannot spawn the tsc.cmd shim without a shell
+const tsc = createRequire(import.meta.url).resolve('typescript/bin/tsc');
+execFileSync(process.execPath, [tsc, '-p', 'tsconfig.build.json', '--outDir', next], {
   cwd: root,
   stdio: 'inherit',
 });
@@ -34,5 +37,13 @@ try {
 } catch {
   // First build: there is no dist yet.
 }
-renameSync(next, dist);
+try {
+  renameSync(next, dist);
+} catch (error) {
+  // Windows keeps a folder that a docs server or editor watches from moving, so dist stayed put:
+  // the new build is copied over it instead
+  if (error.code !== 'EPERM' && error.code !== 'EBUSY') throw error;
+  cpSync(next, dist, { recursive: true, force: true });
+  rmSync(next, { recursive: true, force: true });
+}
 rmSync(old, { recursive: true, force: true });
