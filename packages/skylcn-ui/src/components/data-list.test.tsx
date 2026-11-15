@@ -7,6 +7,7 @@ import { SkylcnProvider } from '../lib/provider.js';
 import { StatusDot } from './badge.js';
 import {
   DataList,
+  DataListActions,
   DataListBody,
   DataListCell,
   DataListColumnHeader,
@@ -472,5 +473,21 @@ describe('DataList drawn from rows', () => {
     expect(chevron).toHaveAttribute('aria-expanded', 'true');
     expect(screen.getByText('Gece Kodu paneli')).toBeInTheDocument();
     expect(await axeViolations()).toEqual([]);
+  });
+});
+
+describe('DataListActions', () => {
+  it('opens on hover and keyboard focus, not for the focus a press leaves or an expanded row', () => {
+    const { container } = render(
+      <DataListActions>
+        <button type="button">Düzenle</button>
+      </DataListActions>,
+    );
+    const actions = container.querySelector('[data-slot="data-list-actions"]');
+    expect(actions).toHaveClass(
+      'group-hover/row:opacity-100',
+      'group-has-[:focus-visible]/row:opacity-100',
+    );
+    expect(actions?.className).not.toMatch(/focus-within|data-expanded/);
   });
 });

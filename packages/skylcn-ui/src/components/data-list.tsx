@@ -926,8 +926,9 @@ export function DataListActions({
         'grid grid-cols-[1fr] transition-[grid-template-columns,opacity] duration-(--motion-duration-base) ease-enter',
         HOVER_FROM[hoverFrom ?? 'base'],
         'group-hover/row:grid-cols-[1fr] group-hover/row:opacity-100',
-        'group-focus-within/row:grid-cols-[1fr] group-focus-within/row:opacity-100',
-        'group-data-expanded/row:grid-cols-[1fr] group-data-expanded/row:opacity-100',
+        // Keyboard focus opens them as hover does; the focus a press leaves behind, such as on the
+        // row's expand button, does not, so they never stay pinned open
+        'group-has-[:focus-visible]/row:grid-cols-[1fr] group-has-[:focus-visible]/row:opacity-100',
         className,
       )}
       {...props}
