@@ -2,6 +2,7 @@ export { cn } from './lib/cn.js';
 export {
   SkylcnProvider,
   useSkylcn,
+  type AvatarTone,
   type LinkComponentProps,
   type SkylcnLocale,
   type SkylcnMessages,

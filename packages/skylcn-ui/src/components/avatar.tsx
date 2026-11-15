@@ -3,6 +3,7 @@
 import { Avatar as AvatarPrimitive } from '@base-ui/react/avatar';
 import { User2 } from 'lucide-react';
 import { cn } from '../lib/cn.js';
+import { useSkylcn, type AvatarTone } from '../lib/provider.js';
 
 const SIZES = {
   sm: { box: 'size-7 text-3xs', icon: 'size-3' },
@@ -49,8 +50,10 @@ export type AvatarProps = {
   email?: string | null;
   src?: string | null;
   size?: keyof typeof SIZES;
-  /** A rounded square by default, as the admin panels draw people and teams; `circle` for a round face. */
+  /** A circle for a person, `square` for a team or a service. */
   shape?: 'circle' | 'square';
+  /** `person` tints initials by person; `neutral` draws every person alike. Defaults to SkylcnProvider's `avatarTone`. */
+  tone?: AvatarTone;
   className?: string;
 };
 
@@ -61,17 +64,21 @@ export function Avatar({
   src,
   size = 'md',
   shape = 'circle',
+  tone: toneProp,
   className,
 }: AvatarProps) {
+  const { avatarTone: appTone } = useSkylcn();
+  const tinted = (toneProp ?? appTone) === 'person';
   const s = SIZES[size];
   const initials = initialsOf(name, email);
-  const tone = avatarTone(name, email);
+  const tone = tinted ? avatarTone(name, email) : -1;
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
       className={cn(
         'inline-grid shrink-0 place-items-center overflow-hidden border font-semibold text-foreground select-none',
-        tone < 0 ? 'border-border bg-muted' : TONES[tone],
+        tone >= 0 ? TONES[tone] : 'border-border bg-muted',
+        !tinted && 'text-secondary-foreground',
         shape === 'circle' ? 'rounded-full' : 'rounded-lg',
         s.box,
         className,

@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { SkylcnProvider } from '../lib/provider.js';
 import { Avatar, avatarTone } from './avatar.js';
 
 describe('avatarTone', () => {
@@ -41,5 +42,20 @@ describe('Avatar shape', () => {
     rerender(<Avatar name="WebLab" shape="square" />);
     expect(root()).toHaveClass('rounded-lg');
     expect(root()).not.toHaveClass('rounded-full');
+  });
+});
+
+describe('Avatar tone', () => {
+  it('draws every person alike when the provider or the avatar asks for neutral', () => {
+    const { container } = render(
+      <SkylcnProvider avatarTone="neutral">
+        <Avatar name="Mert Kaya" />
+        <Avatar name="Mert Kaya" tone="person" />
+      </SkylcnProvider>,
+    );
+    const [plain, tinted] = container.querySelectorAll('[data-slot="avatar"]');
+    expect(plain).toHaveClass('bg-muted');
+    expect(plain!.className).not.toMatch(/bg-chart-/);
+    expect(tinted!.className).toMatch(/bg-chart-\d\/20/);
   });
 });

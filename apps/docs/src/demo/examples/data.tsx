@@ -3,6 +3,7 @@
 import {
   AnimatedNumber,
   Avatar,
+  AvatarGroup,
   Badge,
   BarList,
   Button,
@@ -31,6 +32,7 @@ import {
   Section,
   SegmentedControl,
   Skeleton,
+  SkylcnProvider,
   Sparkline,
   StatCard,
   StateCard,
@@ -509,15 +511,33 @@ function BadgeExamples() {
 
 function AvatarExamples() {
   return (
-    <Example title="Kişiler ve ekipler">
-      <Avatar name="Mira Tunç" size="sm" />
-      <Avatar name="İlayda Şahin" />
-      <Avatar email="ozan@example.com" size="lg" />
-      <Avatar />
-      <Avatar name="Mira Tunç" />
-      <Avatar name="WebLab" shape="square" />
-      <Avatar name="Sky Sec" shape="square" size="lg" />
-    </Example>
+    <>
+      <Example title="Kişiler ve ekipler">
+        <Avatar name="Mira Tunç" size="sm" />
+        <Avatar name="İlayda Şahin" />
+        <Avatar email="ozan@example.com" size="lg" />
+        <Avatar />
+        <Avatar name="Mira Tunç" />
+        <Avatar name="WebLab" shape="square" />
+        <Avatar name="Sky Sec" shape="square" size="lg" />
+      </Example>
+      <Example
+        title="Uygulamanın tamamında sade"
+        description='Kişilerin içeriğin yanında durduğu bir uygulama bunu SkylcnProvider’da bir kez söyler: avatarTone="neutral" baş harfleri kişiye göre renklendirmez. Hesap satırı ve AvatarGroup da uyar; kendi tone’u olan avatar bunu ezer.'
+      >
+        <SkylcnProvider avatarTone="neutral">
+          <Avatar name="Mira Tunç" size="sm" />
+          <Avatar name="İlayda Şahin" />
+          <Avatar email="ozan@example.com" size="lg" />
+          <AvatarGroup
+            people={['Mira Tunç', 'İlayda Şahin', 'Ozan Er', 'Deniz Aydın', 'Can Demir'].map(
+              (name) => ({ name }),
+            )}
+            max={3}
+          />
+        </SkylcnProvider>
+      </Example>
+    </>
   );
 }
 

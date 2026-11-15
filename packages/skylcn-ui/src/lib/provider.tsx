@@ -261,16 +261,20 @@ export type LinkComponentProps = {
   onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
+export type AvatarTone = 'person' | 'neutral';
+
 type SkylcnContextValue = {
   locale: SkylcnLocale;
   messages: SkylcnMessages;
   Link: ComponentType<LinkComponentProps> | 'a';
+  avatarTone: AvatarTone;
 };
 
 const SkylcnContext = createContext<SkylcnContextValue>({
   locale: 'tr',
   messages: MESSAGES.tr,
   Link: 'a',
+  avatarTone: 'person',
 });
 
 /**
@@ -282,16 +286,24 @@ const SkylcnContext = createContext<SkylcnContextValue>({
 export function SkylcnProvider({
   locale = 'tr',
   linkComponent = 'a',
+  avatarTone = 'person',
   children,
 }: {
   locale?: SkylcnLocale;
   linkComponent?: ComponentType<LinkComponentProps> | 'a';
+  /**
+   * Whether initials take a tone of their own per person (`person`) or every avatar is the
+   * same quiet tile (`neutral`), for an app where people sit beside the content, not as it.
+   */
+  avatarTone?: AvatarTone;
   children: ReactNode;
 }) {
   // Reduced motion (system or in-product) keeps fades and drops travel, scaling and layout moves.
   const reduced = useReducedMotion();
   return (
-    <SkylcnContext.Provider value={{ locale, messages: MESSAGES[locale], Link: linkComponent }}>
+    <SkylcnContext.Provider
+      value={{ locale, messages: MESSAGES[locale], Link: linkComponent, avatarTone }}
+    >
       <LazyMotion features={loadMotionFeatures}>
         <MotionConfig reducedMotion={reduced ? 'always' : 'never'} transition={transitions.enter}>
           {children}
