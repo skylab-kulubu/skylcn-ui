@@ -537,6 +537,23 @@ function BarListExamples() {
         />
       </Example>
       <Example
+        title="Çoklu seçimin cevapları"
+        description='variant="fill": her seçenek kendi kutusunda, payı kadar dolu; payların toplamı %100’ü aşabilir.'
+        align="start"
+      >
+        <BarList
+          className="max-w-lg"
+          variant="fill"
+          max={184}
+          items={[
+            { key: 'web', label: 'Web', value: 54 },
+            { key: 'mobile', label: 'Mobil', value: 59 },
+            { key: 'ai', label: 'Yapay zekâ', value: 64 },
+            { key: 'robotics', label: 'Robotik', value: 78 },
+          ]}
+        />
+      </Example>
+      <Example
         title="Seçilebilir oranlar"
         description="Satıra dokun: seçim açılır ya da kapanır."
         align="start"

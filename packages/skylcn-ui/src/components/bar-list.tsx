@@ -28,6 +28,13 @@ export type BarListProps = {
   onSelect?: (key: string) => void;
   /** Keys of the rows that are chosen. */
   selected?: readonly string[];
+  /** Draws the longest row in the stronger colour; off by default, as its bar already says it. */
+  highlightTop?: boolean;
+  /**
+   * `bars` puts a thin bar under each label; `fill` fills each row's box to its share with the
+   * label inside, for answers that each stand on their own, such as a multiple choice's.
+   */
+  variant?: 'bars' | 'fill';
   formatValue?: (value: number) => string;
   className?: string;
 };
@@ -43,6 +50,8 @@ export function BarList({
   showPercent = true,
   onSelect,
   selected = [],
+  highlightTop = false,
+  variant = 'bars',
   formatValue,
   className,
 }: BarListProps) {
@@ -51,7 +60,10 @@ export function BarList({
   const total = max ?? items.reduce((sum, item) => sum + item.value, 0);
   const top = Math.max(0, ...items.filter((item) => !item.disabled).map((item) => item.value));
   const leader =
-    top > 0 ? items.find((item) => !item.disabled && item.value === top)?.key : undefined;
+    highlightTop && top > 0
+      ? items.find((item) => !item.disabled && item.value === top)?.key
+      : undefined;
+  const fill = variant === 'fill';
   const number = formatValue ?? ((value: number) => numberFormat(tag).format(value));
   const percent = (value: number) => {
     const share = total ? (value / total) * 100 : 0;
@@ -60,11 +72,54 @@ export function BarList({
   };
 
   return (
-    <ul data-slot="bar-list" className={cn('flex flex-col gap-0.5', className)}>
+    <ul
+      data-slot="bar-list"
+      data-variant={variant}
+      className={cn('flex flex-col', fill ? 'gap-2' : 'gap-0.5', className)}
+    >
       {items.map((item) => {
         const share = total ? Math.min((item.value / total) * 100, 100) : 0;
         const chosen = selected.includes(item.key);
-        const body = (
+        const detail = item.detail ?? (
+          <>
+            <span className={fill ? 'text-foreground' : 'text-secondary-foreground'}>
+              {number(item.value)}
+            </span>
+            {showPercent ? ` · ${percent(item.value)}` : null}
+          </>
+        );
+        const body = fill ? (
+          <span
+            className={cn(
+              'relative flex items-center gap-3 overflow-hidden rounded-md border bg-background/60 px-2.5 py-2',
+              chosen
+                ? 'border-skylab-400/40'
+                : item.key === leader
+                  ? 'border-skylab-400/25'
+                  : 'border-border',
+            )}
+          >
+            <span
+              aria-hidden
+              className={cn(
+                'absolute inset-y-0 left-0 transition-[width] duration-(--motion-duration-slow) ease-enter',
+                item.disabled ? 'bg-faint-foreground/15' : 'bg-skylab-500/14',
+              )}
+              style={{ width: `${share}%` }}
+            />
+            <span
+              className={cn(
+                'relative min-w-0 flex-1 truncate text-sm',
+                chosen ? 'text-foreground-strong' : 'text-secondary-foreground',
+              )}
+            >
+              {item.label}
+            </span>
+            <span className="relative shrink-0 text-2xs text-subtle-foreground tabular-nums">
+              {detail}
+            </span>
+          </span>
+        ) : (
           <>
             <span className="flex items-baseline justify-between gap-3">
               <span
@@ -81,12 +136,7 @@ export function BarList({
                   chosen ? 'text-muted-foreground' : 'text-subtle-foreground',
                 )}
               >
-                {item.detail ?? (
-                  <>
-                    <span className="text-secondary-foreground">{number(item.value)}</span>
-                    {showPercent ? ` · ${percent(item.value)}` : null}
-                  </>
-                )}
+                {detail}
               </span>
             </span>
             <span aria-hidden className="mt-1.5 block h-2 overflow-hidden rounded-full bg-muted">
@@ -115,15 +165,19 @@ export function BarList({
                 aria-pressed={chosen}
                 onClick={() => onSelect(item.key)}
                 className={cn(
-                  'block w-full rounded-lg px-2.5 py-2 text-left outline-hidden transition-colors duration-(--motion-duration-fast)',
+                  'block w-full text-left outline-hidden transition-colors duration-(--motion-duration-fast)',
                   'focus-visible:ring-2 focus-visible:ring-ring',
-                  chosen ? 'bg-skylab-500/10' : 'hover:bg-accent',
+                  fill
+                    ? 'rounded-md'
+                    : ['rounded-lg px-2.5 py-2', chosen ? 'bg-skylab-500/10' : 'hover:bg-accent'],
                 )}
               >
                 {body}
               </button>
             ) : (
-              <div className={cn('px-2.5 py-2', item.disabled && 'opacity-60')}>{body}</div>
+              <div className={cn(!fill && 'px-2.5 py-2', item.disabled && 'opacity-60')}>
+                {body}
+              </div>
             )}
           </li>
         );
