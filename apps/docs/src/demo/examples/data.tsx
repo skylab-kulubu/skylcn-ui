@@ -766,12 +766,13 @@ function ChartExamples({ kind }: { kind: 'area' | 'line' | 'bar' | 'donut' }) {
   return (
     <Example
       title="Parça bütün"
-      description="Göstergede paylar yazılıdır; halka en fazla altı parça alır."
+      description="Göstergede paylar yazılıdır; halka en fazla altı parça alır. Başlığı üstündeki bir başlıkta yazılı olduğundan hideTitle ile yalnız ekran okuyuculara kalır."
       align="start"
     >
       <div className="max-w-md">
         <DonutChart
           title="Üye durumu"
+          hideTitle
           data={[
             { key: 'active', label: 'Aktif', value: 85 },
             { key: 'inactive', label: 'Pasif', value: 16 },

@@ -24,6 +24,11 @@ export type ChartTable = {
 
 export type ChartFrameProps = {
   title: ReactNode;
+  /**
+   * Keeps the title for screen readers and the table's caption only, where the chart sits
+   * under a heading that already says what it shows.
+   */
+  hideTitle?: boolean;
   /** Next to the title, such as a TrendBadge. */
   badge?: ReactNode;
   description?: ReactNode;
@@ -58,6 +63,7 @@ export type ChartFrameProps = {
  */
 export function ChartFrame({
   title,
+  hideTitle = false,
   badge,
   description,
   actions,
@@ -89,10 +95,14 @@ export function ChartFrame({
     <div className="flex min-w-0 items-center gap-2">
       <p
         className={cn(
-          'truncate',
-          framed
-            ? 'text-sm font-semibold text-foreground'
-            : 'text-xs font-medium text-muted-foreground',
+          hideTitle
+            ? 'sr-only'
+            : [
+                'truncate',
+                framed
+                  ? 'text-sm font-medium text-foreground'
+                  : 'text-xs font-medium text-muted-foreground',
+              ],
         )}
       >
         {title}
@@ -147,7 +157,7 @@ export function ChartFrame({
             <span
               aria-hidden
               data-slot="chart-rule"
-              className="h-px min-w-4 flex-1 bg-border-subtle"
+              className={cn('h-px min-w-4 flex-1', !hideTitle && 'bg-border-subtle')}
             />
             {controls}
           </div>

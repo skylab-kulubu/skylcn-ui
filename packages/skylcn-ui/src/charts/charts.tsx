@@ -73,6 +73,8 @@ type CartesianProps = {
   xLabel?: string;
   series: ChartSeries;
   title: ReactNode;
+  /** Keeps the title off screen, for screen readers and the table, under a heading of its own. */
+  hideTitle?: boolean;
   /** Next to the title, such as a TrendBadge. */
   badge?: ReactNode;
   description?: ReactNode;
@@ -172,6 +174,7 @@ type SharedProps = CartesianProps & {
 function frameProps(props: SharedProps, resolved: Resolved[], format: (value: number) => string) {
   return {
     title: props.title,
+    hideTitle: props.hideTitle,
     badge: props.badge,
     framed: props.framed,
     description: props.description,
@@ -479,6 +482,8 @@ export type DonutChartProps = {
   /** Up to six slices in a fixed order; the rest are folded into "Other". */
   data: readonly DonutSlice[];
   title: ReactNode;
+  /** Keeps the title off screen, for screen readers and the table, under a heading of its own. */
+  hideTitle?: boolean;
   description?: ReactNode;
   actions?: ReactNode;
   /** The figure in the hole; the total by default. */
@@ -551,6 +556,7 @@ export function DonutChart({ height = 200, palette = 'tones', ...props }: DonutC
   return (
     <ChartFrame
       title={props.title}
+      hideTitle={props.hideTitle}
       description={props.description}
       actions={props.actions}
       height={height}

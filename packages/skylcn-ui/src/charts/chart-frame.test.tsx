@@ -43,3 +43,25 @@ describe('ChartFrame', () => {
     expect(screen.getByText('Son 8 hafta').closest('figcaption')).not.toBeNull();
   });
 });
+
+describe('ChartFrame hideTitle', () => {
+  it('keeps the title for screen readers only, beside the table switch', () => {
+    render(
+      <SkylcnProvider locale="tr">
+        <ChartFrame
+          title="Pasta grafiği"
+          hideTitle
+          framed={false}
+          height={120}
+          legend={[]}
+          legendShape="rect"
+          table={{ head: ['', 'Toplam'], rows: [['A', '1']] }}
+        >
+          {() => <div />}
+        </ChartFrame>
+      </SkylcnProvider>,
+    );
+    expect(screen.getAllByText('Pasta grafiği')[0]).toHaveClass('sr-only');
+    expect(screen.getByRole('button', { name: 'Tablo olarak göster' })).toBeInTheDocument();
+  });
+});
