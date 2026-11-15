@@ -600,23 +600,38 @@ function BarListExamples() {
 
 function ProportionExamples() {
   return (
-    <Example title="Kaynak" align="start">
-      <ProportionBar
-        className="max-w-md"
-        segments={[
-          { key: 'registered', label: 'Kayıtlı', value: 301 },
-          { key: 'anonymous', label: 'Anonim', value: 111 },
-        ]}
-      />
-      <ProportionBar
-        className="max-w-md"
-        segments={[
-          { key: 'active', label: 'Aktif', value: 85 },
-          { key: 'inactive', label: 'Pasif', value: 16 },
-          { key: 'alumni', label: 'Mezun', value: 23 },
-        ]}
-      />
-    </Example>
+    <>
+      <Example title="Kaynak" align="start">
+        <ProportionBar
+          className="max-w-md"
+          segments={[
+            { key: 'registered', label: 'Kayıtlı', value: 301 },
+            { key: 'anonymous', label: 'Anonim', value: 111 },
+          ]}
+        />
+        <ProportionBar
+          className="max-w-md"
+          segments={[
+            { key: 'active', label: 'Aktif', value: 85 },
+            { key: 'inactive', label: 'Pasif', value: 16 },
+            { key: 'alumni', label: 'Mezun', value: 23 },
+          ]}
+        />
+      </Example>
+      <Example
+        title="Yanındaki grafiğin renkleriyle"
+        description="color: bir parça, sayfadaki başka bir grafikte aynı şeyi gösteren rengi alır."
+        align="start"
+      >
+        <ProportionBar
+          className="max-w-md"
+          segments={[
+            { key: 'registered', label: 'Kayıtlı', value: 301, color: 'var(--skylab-500)' },
+            { key: 'anonymous', label: 'Anonim', value: 111, color: 'var(--skylab-800)' },
+          ]}
+        />
+      </Example>
+    </>
   );
 }
 

@@ -4,13 +4,25 @@ import { cn } from '../lib/cn.js';
 import { numberFormat } from '../lib/number-format.js';
 import { useSkylcn } from '../lib/provider.js';
 
-export type ProportionSegment = { key: string; label: string; value: number };
+export type ProportionSegment = {
+  key: string;
+  label: string;
+  value: number;
+  /**
+   * The part's colour, such as a token another chart on the page already uses for the same
+   * kind of thing. Without it the part takes the chart colour of its position.
+   */
+  color?: string;
+};
 
 export type ProportionBarProps = {
-  /** Two to six parts in a fixed order; each keeps its chart colour by position. */
+  /** Two to six parts in a fixed order; each keeps its chart colour by position unless given one. */
   segments: readonly ProportionSegment[];
   className?: string;
 };
+
+const colorOf = (segment: ProportionSegment, index: number) =>
+  segment.color ?? `var(--chart-${index + 1})`;
 
 /**
  * One whole split into a few parts along a thin bar, such as registered and
@@ -40,7 +52,7 @@ export function ProportionBar({ segments, className }: ProportionBarProps) {
             <span
               key={segment.key}
               className="h-full transition-[width] duration-(--motion-duration-slow) ease-enter first:rounded-l-full last:rounded-r-full"
-              style={{ width: `${share(segment.value)}%`, background: `var(--chart-${i + 1})` }}
+              style={{ width: `${share(segment.value)}%`, background: colorOf(segment, i) }}
             />
           ) : null,
         )}
@@ -51,7 +63,7 @@ export function ProportionBar({ segments, className }: ProportionBarProps) {
             <span
               aria-hidden
               className="size-2 shrink-0 rounded-xs"
-              style={{ background: `var(--chart-${i + 1})` }}
+              style={{ background: colorOf(segment, i) }}
             />
             <span className="text-secondary-foreground">{segment.label}</span>
             <span className="text-subtle-foreground tabular-nums">
