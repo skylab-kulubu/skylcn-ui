@@ -388,12 +388,24 @@ const PARTS = [
   { value: 'venue', label: 'Mekân' },
 ];
 const SCORES = ['Zayıf', 'Orta', 'İyi', 'Çok iyi'].map((label) => ({ value: label, label }));
+const LEVELS = ['Çok kötü', 'Kötü', 'İdare eder', 'İyi', 'Çok iyi'].map((label) => ({
+  value: label,
+  label,
+}));
+const MATRIX_WIDTHS = [
+  { value: '100%', label: 'Geniş' },
+  { value: '24rem', label: 'Orta' },
+  { value: '17.5rem', label: 'Dar' },
+  { value: '12.5rem', label: 'Çok dar' },
+];
 
 function CheckboxExamples() {
   const [topics, setTopics] = useState<string[]>(['web']);
   const [level, setLevel] = useState<string | null>(null);
   const [ratings, setRatings] = useState<Record<string, string>>({ talks: 'İyi' });
   const [size, setSize] = useState<string | null>('M');
+  const [levels, setLevels] = useState<Record<string, string>>({ talks: 'İyi' });
+  const [width, setWidth] = useState('100%');
   return (
     <>
       <CheckboxStates />
@@ -445,7 +457,7 @@ function CheckboxExamples() {
       </Example>
       <Example
         title="Matris"
-        description="Aynı yanıtlar birkaç satıra sorulur. Telefonda her satır kendi seçeneklerini alt alta dizer."
+        description="Aynı yanıtlar birkaç satıra sorulur. Sığdığı yerde tablo; sığmadığı yerde her satır cevaplarını adının altına dizer."
         align="start"
       >
         <ChoiceMatrix
@@ -456,6 +468,30 @@ function CheckboxExamples() {
           value={ratings}
           onValueChange={setRatings}
         />
+      </Example>
+      <Example
+        title="Daralan matris"
+        description="Genişliği matrisin kendisi belirler, ekran değil. Cevaplar tek satıra sığarsa yan yana, sığmazsa en çok iki satırlık eşit kutularda, o da olmazsa kartlarda. Seçili cevaba yeniden basmak satırı temizler."
+        align="start"
+      >
+        <SegmentedControl
+          aria-label="Genişlik"
+          value={width}
+          onValueChange={setWidth}
+          options={MATRIX_WIDTHS}
+        />
+        <div
+          className="max-w-2xl rounded-sm outline outline-offset-8 outline-border-subtle"
+          style={{ width }}
+        >
+          <ChoiceMatrix
+            aria-label="Etkinliği değerlendir"
+            rows={PARTS}
+            columns={LEVELS}
+            value={levels}
+            onValueChange={setLevels}
+          />
+        </div>
       </Example>
     </>
   );
