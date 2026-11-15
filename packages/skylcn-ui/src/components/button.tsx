@@ -16,7 +16,8 @@ const buttonVariants = cva(
     // The offset keeps the ring off a filled button's edge, so it reads against the page
     'outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'active:not-aria-[haspopup]:translate-y-px',
-    'disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-wait aria-busy:opacity-100',
+    // data-disabled also marks a disabled button kept focusable for its tooltip; a busy one keeps its colour
+    'data-disabled:not-aria-busy:cursor-not-allowed data-disabled:not-aria-busy:opacity-40 aria-busy:cursor-wait',
     '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
   {
@@ -135,7 +136,7 @@ export function Button({
         'data-slot': 'button',
         className: cn(
           buttonVariants({ variant, size }),
-          'aria-disabled:pointer-events-none aria-disabled:opacity-60',
+          'aria-disabled:pointer-events-none aria-disabled:opacity-40',
           HoverIcon && 'overflow-hidden',
           link.props.className,
           typeof className === 'string' ? className : undefined,

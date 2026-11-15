@@ -107,3 +107,21 @@ describe('Button xs', () => {
     expect(button).not.toHaveClass('gap-2');
   });
 });
+
+describe('Button disabled', () => {
+  it('dims a disabled button the same whether or not it stays focusable', () => {
+    render(
+      <>
+        <Button disabled>Kapalı</Button>
+        <Button disabled focusableWhenDisabled>
+          Odaklanır
+        </Button>
+      </>,
+    );
+    for (const name of ['Kapalı', 'Odaklanır']) {
+      const button = screen.getByRole('button', { name });
+      expect(button).toHaveAttribute('data-disabled');
+      expect(button).toHaveClass('data-disabled:not-aria-busy:opacity-40');
+    }
+  });
+});
