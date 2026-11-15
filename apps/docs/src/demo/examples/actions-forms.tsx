@@ -583,6 +583,23 @@ function SwitchExamples() {
           ))}
         </ul>
       </Example>
+      <Example
+        title="Soru olarak"
+        description='variant="control": evet-hayır sorusu, yanındaki kutularla aynı boyda ve aynı zeminde.'
+        align="start"
+      >
+        <ControlSizeProvider size="lg">
+          <div className="flex max-w-md flex-col gap-2">
+            <Input aria-label="Proje adı" placeholder="Proje adı" />
+            <ToggleRow
+              variant="control"
+              title="Hayır"
+              checkedTitle="Evet"
+              aria-label="Devam ediyor"
+            />
+          </div>
+        </ControlSizeProvider>
+      </Example>
       <Example title="Ayar satırı" align="start">
         <div className="flex max-w-md flex-col gap-2">
           <ToggleRow

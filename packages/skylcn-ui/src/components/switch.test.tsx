@@ -1,3 +1,4 @@
+import { ControlSizeProvider } from './control.js';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
@@ -39,5 +40,23 @@ describe('Switch', () => {
     );
     expect(screen.getByRole('switch', { name: 'Zorunlu' })).toHaveClass('h-5', 'w-9');
     expect(screen.getByRole('switch', { name: 'Bildirimler' })).toHaveClass('h-6', 'w-10');
+  });
+});
+
+describe('ToggleRow control', () => {
+  it('stands as tall as a box control of the provider’s size, on the same surface', () => {
+    const { container } = render(
+      <ControlSizeProvider size="lg">
+        <ToggleRow variant="control" title="Hayır" checkedTitle="Evet" />
+      </ControlSizeProvider>,
+    );
+    const row = container.querySelector('[data-slot="toggle-row"]');
+    expect(row).toHaveClass('min-h-9.5', 'bg-background/60');
+    expect(screen.getByText('Hayır')).not.toHaveClass('font-semibold');
+  });
+
+  it('shows no pointer while it only shows an answer', () => {
+    const { container } = render(<ToggleRow variant="control" title="Evet" checked readOnly />);
+    expect(container.querySelector('[data-slot="toggle-row"]')).toHaveClass('cursor-default');
   });
 });

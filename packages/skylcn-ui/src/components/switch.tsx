@@ -3,6 +3,7 @@
 import { Switch as SwitchPrimitive } from '@base-ui/react/switch';
 import { useState, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
+import { controlMinHeight, controlRadius, controlText, useControlSize } from './control.js';
 import { Collapse } from './motion.js';
 
 export type SwitchProps = SwitchPrimitive.Root.Props & {
@@ -53,6 +54,11 @@ export type ToggleRowProps = Omit<SwitchProps, 'children'> & {
   checkedTitle?: ReactNode;
   /** Shown under the row while it is on, such as the settings the switch unlocks. */
   children?: ReactNode;
+  /**
+   * `control` draws the row as one of a form's box controls, as tall as an Input of the
+   * ControlSizeProvider's size and on the same surface, for a yes or no question.
+   */
+  variant?: 'row' | 'control';
 };
 
 /** A bordered row with a title, a hint and a switch; the settings panels' toggle. */
@@ -62,10 +68,13 @@ export function ToggleRow({
   description,
   dimmed = false,
   adornment,
+  variant = 'row',
   className,
   children,
   ...props
 }: ToggleRowProps) {
+  const controlSize = useControlSize();
+  const control = variant === 'control';
   const [innerChecked, setInnerChecked] = useState(Boolean(props.defaultChecked));
   const checked = props.checked ?? innerChecked;
   const grouped = children !== undefined && children !== null;
@@ -73,16 +82,26 @@ export function ToggleRow({
     <label
       data-slot="toggle-row"
       className={cn(
-        'flex cursor-pointer items-center justify-between gap-3 px-3 py-2.5',
+        'flex items-center justify-between gap-3 px-3',
+        props.readOnly ? 'cursor-default' : 'cursor-pointer',
+        control ? ['py-1', controlMinHeight[controlSize]] : 'py-2.5',
         !grouped && [
-          'rounded-lg border border-border transition-opacity duration-(--motion-duration-slow)',
+          'border transition-opacity duration-(--motion-duration-slow)',
+          control
+            ? ['border-input bg-background/60', controlRadius[controlSize]]
+            : 'rounded-lg border-border',
           dimmed && 'opacity-40',
           className,
         ],
       )}
     >
       <span className="min-w-0">
-        <span className="block text-sm font-semibold text-foreground">
+        <span
+          className={cn(
+            'block text-foreground',
+            control ? controlText[controlSize] : 'text-sm font-medium',
+          )}
+        >
           {checked && checkedTitle ? checkedTitle : title}
         </span>
         {description ? (
