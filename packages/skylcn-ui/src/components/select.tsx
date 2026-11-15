@@ -12,6 +12,7 @@ import {
   controlOpen,
   controlPadding,
   controlPill,
+  controlPillBox,
   controlRadius,
   controlSurface,
   controlText,
@@ -121,6 +122,18 @@ function MultiValue({ labels, signature }: { labels: readonly ReactNode[]; signa
       ) : (
         <span className="truncate">{messages.selected(count)}</span>
       )}
+    </span>
+  );
+}
+
+/**
+ * A value in the same 26px box as Select's pill, for a row where it cannot change, such as
+ * the owner's role in a list of editors whose roles can; the rows line up either way.
+ */
+export function ValuePill({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <span data-slot="value-pill" className={cn(controlPillBox, 'justify-center', className)}>
+      <span className="truncate">{children}</span>
     </span>
   );
 }

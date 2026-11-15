@@ -1,3 +1,4 @@
+import { ValuePill } from './select.js';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
@@ -111,4 +112,13 @@ describe('Select', () => {
       expect(await axeViolations(document.body)).toEqual([]);
     },
   );
+});
+
+describe('ValuePill', () => {
+  it('shows a value that cannot change in the box of Select’s pill', () => {
+    const { container } = render(<ValuePill>Sahip</ValuePill>);
+    const pill = container.querySelector('[data-slot="value-pill"]');
+    expect(pill).toHaveTextContent('Sahip');
+    expect(pill).toHaveClass('h-6.5', 'min-w-22');
+  });
 });

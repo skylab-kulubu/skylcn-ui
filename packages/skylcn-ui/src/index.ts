@@ -243,7 +243,7 @@ export {
   type SegmentedControlProps,
   type SegmentedOption,
 } from './components/segmented-control.js';
-export { Select, type SelectOption, type SelectProps } from './components/select.js';
+export { Select, ValuePill, type SelectOption, type SelectProps } from './components/select.js';
 export {
   SideNav,
   SideNavLayout,

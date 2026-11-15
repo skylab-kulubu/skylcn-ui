@@ -19,6 +19,7 @@ import {
   Switch,
   Textarea,
   ToggleRow,
+  ValuePill,
 } from '@skylab-kulubu/skylcn-ui';
 import {
   ArrowDown,
@@ -303,6 +304,7 @@ function QuestionExample() {
 
 function SelectExamples() {
   const [role, setRole] = useState<string | null>('editor');
+  const [pillRole, setPillRole] = useState('editor');
   const [type, setType] = useState<string | null>(null);
   const [state, setState] = useState('open');
   const [days, setDays] = useState<string[]>(['Salı', 'Perşembe']);
@@ -390,6 +392,31 @@ function SelectExamples() {
             { value: '90', label: 'Son 90 gün' },
           ]}
         />
+      </Example>
+      <Example
+        title="Değişmeyen değer"
+        description="ValuePill, değiştirilemeyen bir değeri Select hapıyla aynı kutuda gösterir; satırlar hizalı kalır."
+        align="start"
+      >
+        <ul className="flex max-w-sm flex-col divide-y divide-border-subtle text-sm text-secondary-foreground">
+          <li className="flex items-center justify-between gap-3 py-2">
+            Deniz Aydın
+            <ValuePill>Sahip</ValuePill>
+          </li>
+          <li className="flex items-center justify-between gap-3 py-2">
+            Ayşe Koç
+            <Select
+              variant="pill"
+              aria-label="Ayşe Koç rolü"
+              value={pillRole}
+              onValueChange={(next) => setPillRole(next ?? 'editor')}
+              options={[
+                { value: 'editor', label: 'Editör' },
+                { value: 'reader', label: 'Okuyucu' },
+              ]}
+            />
+          </li>
+        </ul>
       </Example>
     </>
   );

@@ -67,10 +67,12 @@ export const controlInvalid =
 
 /**
  * The compact pill of dense rows, such as a role or a closing time beside a label: forms'
- * MenuPill, 26px with a quiet border.
+ * MenuPill, 26px with a quiet border. The box alone is for a value that cannot change.
  */
+export const controlPillBox =
+  'inline-flex h-6.5 max-w-36 min-w-22 shrink-0 items-center justify-between gap-1 rounded-lg border border-border bg-muted px-2.5 text-2xs text-secondary-foreground outline-hidden pointer-coarse:h-8';
 export const controlPill = cn(
-  'inline-flex h-6.5 max-w-36 min-w-22 shrink-0 items-center justify-between gap-1 rounded-lg border border-border bg-muted px-2.5 text-2xs text-secondary-foreground outline-hidden pointer-coarse:h-8',
+  controlPillBox,
   'transition-colors duration-(--motion-duration-fast) hover:border-border-strong hover:bg-accent-strong hover:text-foreground',
   'focus-visible:ring-2 focus-visible:ring-skylab-600/25 data-popup-open:border-border-strong data-popup-open:bg-popover data-popup-open:text-foreground',
   'disabled:cursor-not-allowed disabled:opacity-60',
