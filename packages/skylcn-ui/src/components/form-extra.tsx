@@ -4,7 +4,7 @@ import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
 import { NumberField as NumberFieldPrimitive } from '@base-ui/react/number-field';
 import { OTPField as OTPPrimitive } from '@base-ui/react/otp-field';
 import { Slider as SliderPrimitive } from '@base-ui/react/slider';
-import { Check, ChevronsUpDown, Lock, Minus, Plus, X } from 'lucide-react';
+import { Check, ChevronsUpDown, Lock, Minus, Plus, Search, X } from 'lucide-react';
 import { useId, useRef, useState, type ReactNode } from 'react';
 import { cn } from '../lib/cn.js';
 import { popupMotionBase, useFitHeight, useSettled } from '../lib/motion.js';
@@ -162,9 +162,13 @@ export type ComboboxProps = CommonProps & {
   onCreate?: (label: string) => void;
   /**
    * Called as the reader types, to search on the server and pass the answer back as
-   * `items`; the list then shows `items` as given instead of filtering them itself.
+   * `items`; the list then shows `items` as given instead of filtering them itself. The
+   * field reads as a search box: a search icon in place of the button that opens the list,
+   * since there is nothing to browse before the reader types.
    */
   onSearch?: (query: string) => void;
+  /** With onSearch, how many typed characters open the list, such as the server's minimum; 1 by default. */
+  minSearch?: number;
   /** While a search is out: the list says so and keeps the last results. */
   loading?: boolean;
   /** Shows the value without letting it change, such as one filled in from the profile. */
@@ -189,6 +193,7 @@ export function Combobox(props: ComboboxProps) {
     items,
     onCreate,
     onSearch,
+    minSearch = 1,
     loading = false,
     readOnly = false,
     placeholder,
@@ -199,10 +204,14 @@ export function Combobox(props: ComboboxProps) {
   const { messages, locale } = useSkylcn();
   const size = useControlSize(sizeProp);
   const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
   const picked = props.multiple
     ? items.filter((item) => props.value.includes(item.value))
     : (items.find((item) => item.value === props.value) ?? null);
   const typed = query.trim();
+  const searchBox = onSearch !== undefined;
+  // Below the minimum the list stays shut rather than saying nothing matched a search not yet made
+  const tooShort = searchBox && typed.length < minSearch;
   const tag = locale === 'tr' ? 'tr-TR' : 'en-US';
   const taken = items.some(
     (item) => item.label.toLocaleLowerCase(tag) === typed.toLocaleLowerCase(tag),
@@ -218,6 +227,8 @@ export function Combobox(props: ComboboxProps) {
   return (
     <ComboboxPrimitive.Root
       multiple={props.multiple}
+      open={open && !tooShort}
+      onOpenChange={setOpen}
       items={list}
       value={picked as never}
       onValueChange={(next: unknown) => {
@@ -254,12 +265,18 @@ export function Combobox(props: ComboboxProps) {
           size === 'lg' ? 'pl-3' : 'pl-2.5',
           props.multiple && 'py-0.5',
           // gap-2 lines the text up with an Input's after its icon; the focus ring stays for keyboard readers
-          readOnly && 'gap-2 border-border bg-muted hover:border-border',
+          (readOnly || searchBox) && 'gap-2',
+          readOnly && 'border-border bg-muted hover:border-border',
           className,
         )}
       >
         {readOnly ? (
           <Lock className={cn('shrink-0 text-subtle-foreground', controlIcon[size])} aria-hidden />
+        ) : searchBox ? (
+          <Search
+            className={cn('shrink-0 text-subtle-foreground', controlIcon[size])}
+            aria-hidden
+          />
         ) : null}
         {props.multiple ? (
           // The chips wrap in their own box, so the open button keeps its place at the end
@@ -305,9 +322,11 @@ export function Combobox(props: ComboboxProps) {
                 <X className={buttonIcon} />
               </ComboboxPrimitive.Clear>
             )}
-            <ComboboxPrimitive.Trigger aria-label={messages.openList} className={button}>
-              <ChevronsUpDown className={buttonIcon} />
-            </ComboboxPrimitive.Trigger>
+            {searchBox ? null : (
+              <ComboboxPrimitive.Trigger aria-label={messages.openList} className={button}>
+                <ChevronsUpDown className={buttonIcon} />
+              </ComboboxPrimitive.Trigger>
+            )}
           </>
         )}
       </ComboboxPrimitive.InputGroup>

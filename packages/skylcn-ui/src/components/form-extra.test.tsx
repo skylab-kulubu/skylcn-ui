@@ -95,6 +95,27 @@ describe('Combobox', () => {
     expect(screen.getByRole('option', { name: 'Ayşe Demir' })).toBeInTheDocument();
   });
 
+  it('reads as a search box with a server search and opens the list from minSearch letters', async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox
+        aria-label="Kişi"
+        items={[{ value: 'a', label: 'Ayşe Demir' }]}
+        value={null}
+        onValueChange={() => undefined}
+        onSearch={() => undefined}
+        minSearch={2}
+      />,
+    );
+    expect(screen.queryByRole('button', { name: 'Listeyi aç' })).toBeNull();
+    const input = screen.getByRole('combobox', { name: 'Kişi' });
+    await user.type(input, 'a');
+    expect(screen.queryByRole('option', { name: 'Ayşe Demir' })).toBeNull();
+    expect(screen.queryByText('Sonuç yok')).toBeNull();
+    await user.type(input, 'y');
+    expect(await screen.findByRole('option', { name: 'Ayşe Demir' })).toBeInTheDocument();
+  });
+
   it('shows a read-only value without the clear and open buttons', () => {
     render(
       <Combobox

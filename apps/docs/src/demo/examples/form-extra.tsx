@@ -14,12 +14,43 @@ import {
   Slider,
   TimePicker,
 } from '@skylab-kulubu/skylcn-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Example } from '../doc';
 import { MEMBERS, TEAMS } from '../members';
 
 const PEOPLE = MEMBERS.slice(0, 40).map((m) => ({ value: m.id, label: m.name, hint: m.team }));
 const TEAM_ITEMS = TEAMS.map((t) => ({ value: t, label: t }));
+
+// Stands in for a server that searches people from two letters on
+function ServerSearchExample() {
+  const [person, setPerson] = useState<string | null>(null);
+  const [found, setFound] = useState<typeof PEOPLE>([]);
+  const [loading, setLoading] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const search = (query: string) => {
+    clearTimeout(timer.current);
+    const typed = query.trim().toLocaleLowerCase('tr-TR');
+    if (typed.length < 2) return;
+    setLoading(true);
+    timer.current = setTimeout(() => {
+      setFound(PEOPLE.filter((p) => p.label.toLocaleLowerCase('tr-TR').includes(typed)));
+      setLoading(false);
+    }, 400);
+  };
+  return (
+    <Field label="Yeni sahip" className="max-w-sm">
+      <Combobox
+        items={found}
+        value={person}
+        onValueChange={setPerson}
+        onSearch={search}
+        minSearch={2}
+        loading={loading}
+        placeholder="İsimle ara"
+      />
+    </Field>
+  );
+}
 
 function ComboboxExamples() {
   const [person, setPerson] = useState<string | null>(null);
@@ -41,6 +72,13 @@ function ComboboxExamples() {
             emptyText="Bu isimde üye yok"
           />
         </Field>
+      </Example>
+      <Example
+        title="Sunucuda ara"
+        description="onSearch ile alan bir arama kutusu olur: liste düğmesi yerine arama ikonu; liste minSearch harften sonra açılır."
+        align="start"
+      >
+        <ServerSearchExample />
       </Example>
       <Example
         title="Çoklu seçim"
