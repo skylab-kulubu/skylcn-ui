@@ -9,15 +9,16 @@ import { useControlSize, type ControlSize } from './control.js';
 
 /**
  * A radio's ring and its dot, shared with parts that draw bare radios, such as ChoiceMatrix.
- * Checked, it fills like a checked Checkbox: skylab-800 stays purple in dark, where 300 to 500 turn white.
+ * Checked, it fills like a checked Checkbox and a solid Button, in primary with the dot in
+ * primary-foreground: a darker purple sinks into dark surfaces.
  */
 export const radioClass = cn(
   'mt-0.5 grid size-4 shrink-0 place-items-center rounded-full border border-input-strong bg-input-background outline-hidden pointer-coarse:size-5',
   'transition-[border-color,background-color] duration-(--motion-duration-fast) focus-visible:ring-2 focus-visible:ring-ring',
-  'data-checked:border-skylab-800 data-checked:bg-skylab-800 data-disabled:opacity-50',
+  'data-checked:border-primary data-checked:bg-primary data-disabled:opacity-50',
 );
 export const radioDotClass =
-  'size-1.5 rounded-full bg-white transition-[scale,opacity] duration-(--motion-duration-fast) ease-enter data-ending-style:scale-0 data-starting-style:scale-0';
+  'size-1.5 rounded-full bg-primary-foreground transition-[scale,opacity] duration-(--motion-duration-fast) ease-enter data-ending-style:scale-0 data-starting-style:scale-0';
 
 /**
  * A click handler for a group of radios that lets a press on the chosen radio clear it, as an

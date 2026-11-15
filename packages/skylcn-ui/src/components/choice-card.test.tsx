@@ -81,3 +81,23 @@ describe('Unchecked edges', () => {
     expect(box).not.toHaveClass('border-border-strong');
   });
 });
+
+describe('Checked marks', () => {
+  it('fill with the primary colour and draw the tick and the dot in its foreground', () => {
+    const { container } = render(
+      <>
+        <CheckboxCard label="Haberdar et" defaultChecked />
+        <RadioGroup aria-label="Bölüm" defaultValue="bm">
+          <RadioCard value="bm" label="Bilgisayar" />
+        </RadioGroup>
+      </>,
+    );
+    const box = container.querySelector('[role="checkbox"]');
+    expect(box).toHaveClass('data-checked:bg-primary');
+    expect(box).not.toHaveClass('data-checked:bg-skylab-800');
+    expect(box?.firstElementChild).toHaveClass('text-primary-foreground');
+    const radio = screen.getByRole('radio', { name: 'Bilgisayar' });
+    expect(radio).toHaveClass('data-checked:bg-primary');
+    expect(radio.firstElementChild).toHaveClass('bg-primary-foreground');
+  });
+});

@@ -647,7 +647,7 @@ function AnswerMark({ multiple, chosen }: { multiple: boolean; chosen: boolean }
         'grid size-4 shrink-0 place-items-center border',
         multiple ? 'rounded-sm' : 'rounded-full',
         chosen
-          ? 'border-skylab-800 bg-skylab-800 text-white'
+          ? 'border-primary bg-primary text-primary-foreground'
           : 'border-input-strong bg-input-background',
       )}
     >
@@ -655,7 +655,7 @@ function AnswerMark({ multiple, chosen }: { multiple: boolean; chosen: boolean }
         multiple ? (
           <Check className="size-3" strokeWidth={3} />
         ) : (
-          <span className="size-1.5 rounded-full bg-white" />
+          <span className="size-1.5 rounded-full bg-primary-foreground" />
         )
       ) : null}
     </span>

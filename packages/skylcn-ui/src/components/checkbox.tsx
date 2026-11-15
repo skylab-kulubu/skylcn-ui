@@ -14,7 +14,7 @@ export function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) 
         'relative grid size-4 shrink-0 cursor-pointer place-content-center rounded-sm border border-input-strong bg-input-background outline-hidden after:absolute after:-inset-3',
         'transition-[background-color,border-color] duration-(--motion-duration-fast) ease-enter',
         'focus-visible:ring-2 focus-visible:ring-ring',
-        'data-indeterminate:border-skylab-800 data-indeterminate:bg-skylab-800 data-checked:border-skylab-800 data-checked:bg-skylab-800',
+        'data-indeterminate:border-primary data-indeterminate:bg-primary data-checked:border-primary data-checked:bg-primary',
         'data-disabled:cursor-not-allowed data-disabled:opacity-50',
         className,
       )}
@@ -22,7 +22,7 @@ export function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) 
     >
       <CheckboxPrimitive.Indicator
         keepMounted
-        className="text-white transition-transform duration-(--motion-duration-fast) ease-enter data-unchecked:scale-0"
+        className="text-primary-foreground transition-transform duration-(--motion-duration-fast) ease-enter data-unchecked:scale-0"
         render={(indicatorProps, state) => (
           <span {...indicatorProps}>
             {state.indeterminate ? (
