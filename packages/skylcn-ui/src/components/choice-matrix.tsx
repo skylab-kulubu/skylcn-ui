@@ -3,8 +3,9 @@
 import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox';
 import { Radio as RadioPrimitive } from '@base-ui/react/radio';
 import { RadioGroup as RadioGroupPrimitive } from '@base-ui/react/radio-group';
-import { X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import {
+  Fragment,
   useId,
   useLayoutEffect,
   useRef,
@@ -44,6 +45,7 @@ type MatrixBase = {
 type SingleMatrix = MatrixBase & {
   /** One column per row, as radios; a chosen row can be cleared again. */
   multiple?: false;
+  readOnly?: false;
   /** The chosen column of each row, by row value; a row without one is unanswered. */
   value: Readonly<Partial<Record<string, string>>>;
   onValueChange: (value: Record<string, string>) => void;
@@ -52,11 +54,24 @@ type SingleMatrix = MatrixBase & {
 type MultipleMatrix = MatrixBase & {
   /** Any number of columns per row, as checkboxes. */
   multiple: true;
+  readOnly?: false;
   value: Readonly<Partial<Record<string, readonly string[]>>>;
   onValueChange: (value: Record<string, string[]>) => void;
 };
 
-export type ChoiceMatrixProps = SingleMatrix | MultipleMatrix;
+type ReadOnlyMatrix = MatrixBase & {
+  /**
+   * Shows answers already given, such as a submitted response, with no controls: the table
+   * where it fits, else each row beside its answer.
+   */
+  readOnly: true;
+  /** Draws square marks, as for a matrix that took several columns per row. */
+  multiple?: boolean;
+  value: Readonly<Partial<Record<string, string | readonly string[]>>>;
+  onValueChange?: undefined;
+};
+
+export type ChoiceMatrixProps = SingleMatrix | MultipleMatrix | ReadOnlyMatrix;
 
 export type MatrixLayout =
   { mode: 'table' } | { mode: 'inline' } | { mode: 'grid'; perRow: number } | { mode: 'list' };
@@ -125,7 +140,7 @@ function sameLayout(current: MatrixLayout | null, next: MatrixLayout) {
  * of a wide page still turns into rows. Until it is measured (on the server), a container
  * query draws the table or stacked cards.
  */
-function useMatrixLayout(signature: string) {
+function useMatrixLayout(signature: string, chips: boolean) {
   const root = useRef<HTMLDivElement>(null);
   const table = useRef<HTMLDivElement>(null);
   const ruler = useRef<HTMLDivElement>(null);
@@ -148,7 +163,7 @@ function useMatrixLayout(signature: string) {
       const next =
         room >= TABLE_REM * rem && room >= need
           ? TABLE
-          : ruler.current
+          : chips && ruler.current
             ? measureRows(ruler.current, room)
             : LIST;
       setLayout((current) => (sameLayout(current, next) ? current : next));
@@ -169,7 +184,7 @@ function useMatrixLayout(signature: string) {
       fonts?.removeEventListener('loadingdone', remeasure);
       observer?.disconnect();
     };
-  }, [signature, mode]);
+  }, [signature, chips, mode]);
 
   return { root, table, ruler, layout };
 }
@@ -239,17 +254,24 @@ function answeredMultiples(value: MultipleMatrix['value']) {
  * A question asked of several rows with the same answers, such as rating each part of
  * an event: one column per row as radios, or any number with `multiple`. A table where it
  * fits; where it does not, each row lists its answers under its name, on one line, in
- * equal cells or as cards, whichever fits.
+ * equal cells or as cards, whichever fits. `readOnly` shows given answers the same way.
  */
 export function ChoiceMatrix(props: ChoiceMatrixProps) {
   const { columns, className } = props;
   const signature = columns
     .map((column) => `${column.value}:${typeof column.label === 'string' ? column.label : ''}`)
     .join('|');
-  const { root, table, ruler, layout } = useMatrixLayout(signature);
+  const { root, table, ruler, layout } = useMatrixLayout(signature, !props.readOnly);
   const id = useId();
 
   const draw = (shape: MatrixLayout, key: string) => {
+    if (props.readOnly) {
+      return shape.mode === 'table' ? (
+        <AnswerTable {...props} tableRef={table} />
+      ) : (
+        <AnswerList {...props} />
+      );
+    }
     return shape.mode === 'table' ? (
       <QuestionTable {...props} id={`${id}-${key}`} tableRef={table} />
     ) : (
@@ -276,17 +298,22 @@ export function ChoiceMatrix(props: ChoiceMatrixProps) {
           <div className="@md:hidden">{draw(LIST, 'r')}</div>
         </>
       )}
-      <div
-        ref={ruler}
-        aria-hidden
-        className="pointer-events-none invisible absolute inset-x-0 top-0 flex h-0 gap-1 overflow-hidden"
-      >
-        {columns.map((column) => (
-          <span key={column.value} className={cn(chipFace, 'min-w-8 shrink-0 border-transparent')}>
-            <span className="block leading-tight text-balance">{column.label}</span>
-          </span>
-        ))}
-      </div>
+      {props.readOnly ? null : (
+        <div
+          ref={ruler}
+          aria-hidden
+          className="pointer-events-none invisible absolute inset-x-0 top-0 flex h-0 gap-1 overflow-hidden"
+        >
+          {columns.map((column) => (
+            <span
+              key={column.value}
+              className={cn(chipFace, 'min-w-8 shrink-0 border-transparent')}
+            >
+              <span className="block leading-tight text-balance">{column.label}</span>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -604,4 +631,110 @@ function toggled(
   if (picked.length) next[row] = picked;
   else delete next[row];
   return next;
+}
+
+function chosenOf(value: ReadOnlyMatrix['value'], row: string): readonly string[] {
+  const answer = value[row];
+  if (answer === undefined) return [];
+  return typeof answer === 'string' ? [answer] : answer;
+}
+
+function AnswerMark({ multiple, chosen }: { multiple: boolean; chosen: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'grid size-4 shrink-0 place-items-center border',
+        multiple ? 'rounded-sm' : 'rounded-full',
+        chosen
+          ? 'border-skylab-800 bg-skylab-800 text-white'
+          : 'border-border-strong bg-input-background',
+      )}
+    >
+      {chosen ? (
+        multiple ? (
+          <Check className="size-3" strokeWidth={3} />
+        ) : (
+          <span className="size-1.5 rounded-full bg-white" />
+        )
+      ) : null}
+    </span>
+  );
+}
+
+function AnswerTable(props: ReadOnlyMatrix & { tableRef: Ref<HTMLDivElement> }) {
+  const { rows, columns, value, multiple = false } = props;
+  const { messages } = useSkylcn();
+  return (
+    <div ref={props.tableRef} role="table" className={cn(tableClass, GRID_MULTIPLE)}>
+      <div role="row" className={headerClass}>
+        <span role="cell" />
+        {columns.map((column) => (
+          <span key={column.value} role="columnheader" className={headCellClass}>
+            {column.label}
+          </span>
+        ))}
+      </div>
+      {rows.map((row) => {
+        const chosen = chosenOf(value, row.value);
+        return (
+          <div key={row.value} role="row" className={tableRowClass(false)}>
+            <span role="rowheader" className="min-w-0 pr-3 pl-2">
+              <span className="text-sm text-foreground">{row.label}</span>
+              {row.description ? (
+                <span className="mt-0.5 block text-xs text-muted-foreground">
+                  {row.description}
+                </span>
+              ) : null}
+            </span>
+            {columns.map((column) => {
+              const picked = chosen.includes(column.value);
+              return (
+                <span key={column.value} role="cell" className="flex justify-center py-1.5">
+                  <AnswerMark multiple={multiple} chosen={picked} />
+                  {picked ? <span className="sr-only">{messages.chosen}</span> : null}
+                </span>
+              );
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function AnswerList(props: ReadOnlyMatrix) {
+  const { rows, columns, value } = props;
+  const { messages } = useSkylcn();
+  return (
+    <dl className="divide-y divide-border-subtle rounded-lg border border-border">
+      {rows.map((row) => {
+        const chosen = chosenOf(value, row.value);
+        const labels = columns.filter((column) => chosen.includes(column.value));
+        return (
+          <div
+            key={row.value}
+            className="flex items-baseline justify-between gap-4 px-3 py-2 text-sm"
+          >
+            <dt className="min-w-0 text-muted-foreground">{row.label}</dt>
+            <dd
+              className={cn(
+                'max-w-[55%] shrink-0 text-right',
+                labels.length ? 'text-foreground' : 'text-subtle-foreground',
+              )}
+            >
+              {labels.length
+                ? labels.map((column, index) => (
+                    <Fragment key={column.value}>
+                      {index ? ', ' : null}
+                      {column.label}
+                    </Fragment>
+                  ))
+                : messages.noAnswer}
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
+  );
 }

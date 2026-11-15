@@ -493,6 +493,30 @@ function CheckboxExamples() {
           />
         </div>
       </Example>
+      <Example
+        title="Cevaplanmış matris"
+        description="readOnly verilen cevapları denetimsiz gösterir: sığdığı yerde tablo, sığmadığı yerde her satır cevabının yanında."
+        align="start"
+      >
+        <div className="flex w-full flex-col gap-6">
+          <ChoiceMatrix
+            readOnly
+            className="w-full max-w-2xl"
+            aria-label="Verilen puanlar"
+            rows={PARTS}
+            columns={LEVELS}
+            value={{ talks: 'İyi', workshop: 'Çok iyi' }}
+          />
+          <ChoiceMatrix
+            readOnly
+            className="w-64"
+            aria-label="Verilen puanlar, dar"
+            rows={PARTS}
+            columns={LEVELS}
+            value={{ talks: 'İyi', workshop: 'Çok iyi' }}
+          />
+        </div>
+      </Example>
     </>
   );
 }

@@ -207,6 +207,68 @@ describe('ChoiceMatrix', () => {
   });
 });
 
+describe('ChoiceMatrix readOnly', () => {
+  const answers = { yemek: 'iyi' };
+
+  it('lists each row beside its answer where the table does not fit', () => {
+    render(
+      <ChoiceMatrix readOnly aria-label="Puanlar" rows={rows} columns={columns} value={answers} />,
+    );
+    const terms = screen.getAllByRole('term').map((term) => term.textContent);
+    const answersRead = screen.getAllByRole('definition').map((answer) => answer.textContent);
+    expect(terms).toEqual(['Ulaşım', 'Yemek']);
+    expect(answersRead).toEqual(['Cevap yok', 'İyi']);
+    expect(screen.queryAllByRole('radio')).toHaveLength(0);
+  });
+
+  it('marks the chosen cell of a table and says so to screen readers', () => {
+    widen(800);
+    render(
+      <ChoiceMatrix readOnly aria-label="Puanlar" rows={rows} columns={columns} value={answers} />,
+    );
+    expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual([
+      'Kötü',
+      'Orta',
+      'İyi',
+    ]);
+    const food = screen.getAllByRole('row')[2]!;
+    expect(within(food).getByRole('rowheader')).toHaveTextContent('Yemek');
+    expect(within(food).getAllByRole('cell')[2]).toHaveTextContent('Seçili');
+    expect(screen.queryAllByRole('radio')).toHaveLength(0);
+  });
+
+  it('joins several answers of a row', () => {
+    render(
+      <ChoiceMatrix
+        readOnly
+        multiple
+        aria-label="Günler"
+        rows={rows}
+        columns={columns}
+        value={{ ulasim: ['kotu', 'iyi'] }}
+      />,
+    );
+    expect(screen.getAllByRole('definition')[0]).toHaveTextContent('Kötü, İyi');
+  });
+
+  it('breaks no accessibility rules in either layout', async () => {
+    for (const width of [0, 800]) {
+      widen(width);
+      const { container, unmount } = render(
+        <ChoiceMatrix
+          readOnly
+          aria-label="Puanlar"
+          rows={rows}
+          columns={columns}
+          value={answers}
+        />,
+      );
+      expect(await axeViolations(container)).toEqual([]);
+      unmount();
+    }
+  });
+});
+
 describe('rowLayout', () => {
   const always = () => true;
   const never = () => false;
