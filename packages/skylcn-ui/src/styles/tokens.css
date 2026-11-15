@@ -75,20 +75,21 @@
   --code-property: #8bd8e8;
 
   /*
-   * Charts. One lilac family, light and deep in turn so neighbouring series and slices stay
-   * apart: forms-frontend's answer colours first, then three more of the same family. The
-   * first, which a single series takes, leans halfway to the brand's own lilac.
+   * Charts. One hue, the brand's plum, light and deep in turn: neighbouring slices (1 to 6,
+   * round the ring) stay ΔE 16 or more apart in OKLab under normal vision, protanopia and
+   * deuteranopia. The first, which a single series takes, leans halfway to the brand's own
+   * lilac; the second is skylab-800, so a two-part chart matches a 500 and 800 pair.
    * Values are always written beside a chart (legend, list, table view), so the shade is
    * never the only cue.
    */
   --chart-1: #dcbef2;
-  --chart-2: #6366f1;
-  --chart-3: #c084fc;
-  --chart-4: #7c3aed;
-  --chart-5: #9d84f0;
-  --chart-6: #a5b4fc;
-  --chart-7: #a855f7;
-  --chart-8: #f0abfc;
+  --chart-2: #8f5e98;
+  --chart-3: #c7a0d7;
+  --chart-4: #f5d9ff;
+  --chart-5: #794781;
+  --chart-6: #ab7ebd;
+  --chart-7: #9b6aae;
+  --chart-8: #bc92cd;
   /*
    * Eight distinct colours for groups that must be told apart by hue alone
    * (palette="categorical"): brand lilac, orange, aqua, yellow, magenta, green, blue, red.
@@ -186,13 +187,13 @@
   --code-property: #0c6b84;
 
   --chart-1: #6c4485;
-  --chart-2: #4338ca;
-  --chart-3: #a855f7;
-  --chart-4: #5b21b6;
-  --chart-5: #7c6be0;
-  --chart-6: #6366f1;
-  --chart-7: #9333ea;
-  --chart-8: #c026d3;
+  --chart-2: #ae7eb6;
+  --chart-3: #442548;
+  --chart-4: #9366a5;
+  --chart-5: #5d3762;
+  --chart-6: #c5a2d3;
+  --chart-7: #805591;
+  --chart-8: #d0b0dd;
   /* Four of these sit under 3:1 on the light card, so every chart carries a legend and a table view */
   --chart-categorical-1: #8f5e98;
   --chart-categorical-2: #eb6834;
