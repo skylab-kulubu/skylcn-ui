@@ -136,10 +136,10 @@
 
   --sidebar: #ece8e3;
   --sidebar-active: var(--background);
-  --background: #fdfcfa;
-  --sheet: #fdfcfa;
+  --background: #f6f4f1;
+  --sheet: #ffffff;
   --popover: #ffffff;
-  --card: rgb(0 0 0 / 2%);
+  --card: #ffffff;
 
   --foreground: #1c1a18;
   --foreground-strong: #121014;
@@ -164,7 +164,9 @@
 
   --destructive: #b91c1c;
   --destructive-foreground: #7f1d1d;
-  --success: #047857;
+  /* Dark enough for success text on its own 10–15% tint, as in a badge, to keep 4.5:1 on the
+     page panel, a step darker than white */
+  --success: #036648;
   --warning: #a44a07;
   --info: #1d4ed8;
 
@@ -197,7 +199,7 @@
   --chart-categorical-8: #e34948;
   --chart-grid: rgb(0 0 0 / 8%);
   --chart-axis: rgb(0 0 0 / 20%);
-  --chart-surface: #f8f7f5;
+  --chart-surface: #ffffff;
 
   --elevation-overlay: 0 20px 40px -16px rgb(28 26 24 / 25%);
   --elevation-sidebar-active: 0 1px 2px rgb(28 26 24 / 8%), 0 0 0 1px rgb(28 26 24 / 6%);
