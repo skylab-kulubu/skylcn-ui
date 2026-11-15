@@ -98,3 +98,12 @@ describe('Button as a link', () => {
     expect(onClick).not.toHaveBeenCalled();
   });
 });
+
+describe('Button xs', () => {
+  it('comes in a 24px size for actions inside a row of text', () => {
+    render(<Button size="xs">Akışı aç</Button>);
+    const button = screen.getByRole('button', { name: 'Akışı aç' });
+    expect(button).toHaveClass('h-6', 'px-1.5', 'gap-1.5');
+    expect(button).not.toHaveClass('gap-2');
+  });
+});

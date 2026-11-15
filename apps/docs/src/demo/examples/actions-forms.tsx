@@ -76,12 +76,24 @@ function ButtonExamples() {
         </Button>
       </Example>
       <Example title="Boyutlar ve ikon butonları">
+        <Button size="xs">Satır içi</Button>
         <Button size="sm">Küçük</Button>
         <Button>Orta</Button>
         <Button size="lg">Büyük</Button>
         <IconButton icon={RefreshCw} label="Yenile" size="icon-sm" />
         <IconButton icon={Share2} label="Paylaş" variant="primary" />
         <IconButton icon={Trash2} label="Sil" variant="destructive" size="icon-lg" />
+      </Example>
+      <Example
+        title="Satır içi eylemler"
+        description='size="xs": 24px, açılan bir liste satırındaki gibi yazının arasında duran eylemler için.'
+      >
+        <Button variant="ghost" size="xs">
+          <Share2 /> Paylaş
+        </Button>
+        <Button variant="ghost" size="xs">
+          <Plus /> Ekle
+        </Button>
       </Example>
       <Example
         title="Bekleme"

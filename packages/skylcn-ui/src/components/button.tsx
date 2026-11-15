@@ -34,6 +34,7 @@ const buttonVariants = cva(
         link: 'border-transparent px-0 text-skylab-300 underline-offset-4 hover:underline',
       },
       size: {
+        xs: 'h-6 gap-1.5 rounded-md px-1.5 text-2xs pointer-coarse:h-9 pointer-coarse:px-2.5 pointer-coarse:text-xs [&_svg:not([class*=size-])]:size-3',
         sm: 'h-7 rounded-md px-2.5 text-2xs pointer-coarse:h-9 pointer-coarse:text-xs [&_svg:not([class*=size-])]:size-3.5',
         md: 'h-8 rounded-md px-3 text-2xs pointer-coarse:h-10 pointer-coarse:px-3.5 pointer-coarse:text-xs [&_svg:not([class*=size-])]:size-3.5',
         lg: 'h-9 rounded-lg px-3.5 text-xs pointer-coarse:h-11 pointer-coarse:text-sm [&_svg:not([class*=size-])]:size-4',
