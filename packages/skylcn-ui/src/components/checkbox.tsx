@@ -39,7 +39,7 @@ export function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) 
 
 /** The bordered row a checkbox or radio card is drawn as; it tints once its control is on. */
 export const choiceCardClass = cn(
-  'group/choice flex cursor-pointer rounded-md border border-border bg-input-background select-none',
+  'group/choice flex cursor-pointer rounded-md border border-input bg-background/60 select-none',
   'transition-colors duration-(--motion-duration-fast) hover:bg-accent',
   'has-data-checked:border-skylab-600/30 has-data-checked:bg-skylab-600/20',
   'has-data-disabled:cursor-not-allowed has-data-disabled:opacity-60',
