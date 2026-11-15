@@ -240,7 +240,7 @@ export function FilterPills<T extends string>({
                 'relative isolate inline-flex h-full items-center gap-1.5 rounded px-2.5 text-xs outline-hidden',
                 'transition-colors duration-(--motion-duration-fast) ease-enter focus-visible:ring-2 focus-visible:ring-ring',
                 active
-                  ? 'text-skylab-300'
+                  ? 'text-foreground'
                   : 'text-muted-foreground hover:text-secondary-foreground',
               )}
             >
@@ -249,7 +249,7 @@ export function FilterPills<T extends string>({
                 <m.span
                   layoutId="pill"
                   aria-hidden
-                  className="absolute inset-0 -z-10 rounded bg-skylab-500/20"
+                  className="absolute inset-0 -z-10 rounded border border-border bg-accent-strong"
                   transition={transitions.layout}
                 />
               ) : null}
@@ -258,7 +258,7 @@ export function FilterPills<T extends string>({
                 <span
                   className={cn(
                     'text-3xs tabular-nums',
-                    active ? 'text-skylab-300' : 'text-subtle-foreground',
+                    active ? 'text-muted-foreground' : 'text-subtle-foreground',
                   )}
                 >
                   <AnimatedNumber value={option.count} tabular />

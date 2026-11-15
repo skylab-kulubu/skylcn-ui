@@ -13,7 +13,7 @@ const TONES = {
 } as const;
 
 const badgeVariants = cva(
-  'inline-flex shrink-0 items-center gap-1 border font-medium whitespace-nowrap [&_svg]:size-3 [&_svg]:shrink-0',
+  'inline-flex shrink-0 items-center gap-1 border whitespace-nowrap [&_svg]:size-3 [&_svg]:shrink-0',
   {
     variants: {
       tone: TONES,

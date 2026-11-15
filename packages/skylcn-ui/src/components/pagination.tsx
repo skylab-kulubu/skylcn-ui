@@ -36,7 +36,7 @@ export type PaginationProps = {
 };
 
 const CURRENT =
-  'h-7 min-w-7 rounded-md border border-skylab-400/40 bg-skylab-500/15 px-1 text-xs font-semibold text-skylab-300 tabular-nums pointer-coarse:h-9 pointer-coarse:min-w-9';
+  'h-7 min-w-7 rounded-md border border-border-strong bg-accent-strong px-0 text-xs font-medium text-foreground tabular-nums pointer-coarse:h-9 pointer-coarse:min-w-9';
 
 /** Page steps with a window around the current page; hidden when there is one page. */
 export function Pagination({
@@ -99,7 +99,7 @@ export function Pagination({
               type="button"
               onClick={() => goTo(slot)}
               aria-label={messages.page(slot)}
-              className="size-7 rounded-md text-xs font-semibold text-secondary-foreground tabular-nums outline-hidden transition-colors duration-(--motion-duration-fast) hover:bg-accent-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring pointer-coarse:size-9"
+              className="size-7 rounded-md text-xs text-secondary-foreground tabular-nums outline-hidden transition-colors duration-(--motion-duration-fast) hover:bg-accent-strong hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring pointer-coarse:size-9"
             >
               {slot}
             </button>
@@ -177,7 +177,7 @@ function PageInput({
           setDraft(null);
         }
       }}
-      style={{ width: `calc(${digits}ch + 1rem)` }}
+      style={{ width: `max(1.75rem, calc(${digits}ch + 0.5rem))` }}
       className={cn(
         CURRENT,
         'cursor-text text-center outline-hidden transition-[border-color,background-color,color] duration-(--motion-duration-fast) selection:bg-skylab-400/30 selection:text-foreground-strong pointer-coarse:text-base',

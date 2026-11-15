@@ -17,7 +17,7 @@ const buttonVariants = cva(
     'outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'active:not-aria-[haspopup]:translate-y-px',
     'disabled:cursor-not-allowed disabled:opacity-60 aria-busy:cursor-wait aria-busy:opacity-100',
-    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+    '[&_svg]:pointer-events-none [&_svg]:shrink-0',
   ],
   {
     variants: {
@@ -26,7 +26,7 @@ const buttonVariants = cva(
           'border-skylab-400/40 bg-skylab-500/10 text-skylab-300 hover:border-skylab-300/60 hover:bg-skylab-400/20',
         solid: 'border-transparent bg-primary text-primary-foreground hover:bg-primary/85',
         outline:
-          'border-border bg-transparent text-secondary-foreground hover:border-border-strong hover:bg-accent',
+          'border-border bg-muted text-secondary-foreground hover:border-border-strong hover:bg-accent-strong',
         ghost:
           'border-transparent bg-transparent text-muted-foreground hover:bg-accent hover:text-foreground aria-expanded:bg-accent',
         destructive:
@@ -34,12 +34,16 @@ const buttonVariants = cva(
         link: 'border-transparent px-0 text-skylab-300 underline-offset-4 hover:underline',
       },
       size: {
-        sm: 'h-7 rounded-md px-2.5 text-2xs pointer-coarse:h-9 pointer-coarse:text-xs',
-        md: 'h-8 rounded-md px-3 text-2xs pointer-coarse:h-10 pointer-coarse:px-3.5 pointer-coarse:text-xs',
-        lg: 'h-9 rounded-lg px-3.5 text-xs pointer-coarse:h-11 pointer-coarse:text-sm',
-        'icon-sm': 'size-7 rounded-md text-2xs pointer-coarse:size-9',
-        icon: 'size-8 rounded-md text-2xs pointer-coarse:size-10',
-        'icon-lg': 'size-9 rounded-lg text-xs pointer-coarse:size-11',
+        sm: 'h-7 rounded-md px-2.5 text-2xs pointer-coarse:h-9 pointer-coarse:text-xs [&_svg:not([class*=size-])]:size-3.5',
+        md: 'h-8 rounded-md px-3 text-2xs pointer-coarse:h-10 pointer-coarse:px-3.5 pointer-coarse:text-xs [&_svg:not([class*=size-])]:size-3.5',
+        lg: 'h-9 rounded-lg px-3.5 text-xs pointer-coarse:h-11 pointer-coarse:text-sm [&_svg:not([class*=size-])]:size-4',
+        'icon-xs':
+          'size-6 rounded-md text-2xs pointer-coarse:size-9 [&_svg:not([class*=size-])]:size-3.5',
+        'icon-sm':
+          'size-7 rounded-md text-2xs pointer-coarse:size-9 [&_svg:not([class*=size-])]:size-4',
+        icon: 'size-8 rounded-md text-2xs pointer-coarse:size-10 [&_svg:not([class*=size-])]:size-4',
+        'icon-lg':
+          'size-9 rounded-lg text-xs pointer-coarse:size-11 [&_svg:not([class*=size-])]:size-4',
       },
     },
     defaultVariants: { variant: 'outline', size: 'md' },

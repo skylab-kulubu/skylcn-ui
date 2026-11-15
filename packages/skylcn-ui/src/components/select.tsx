@@ -185,7 +185,7 @@ export function Select(props: SelectProps) {
         data-size={inline || pill ? undefined : size}
         aria-label={ariaLabel}
         className={cn(
-          'group/select font-medium outline-hidden disabled:cursor-not-allowed disabled:opacity-60',
+          'group/select outline-hidden disabled:cursor-not-allowed disabled:opacity-60',
           inline &&
             'inline-flex max-w-full items-center gap-0.5 rounded px-1 py-0.5 text-2xs transition-colors duration-(--motion-duration-fast) hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring data-popup-open:bg-accent',
           pill && controlPill,

@@ -86,3 +86,12 @@ describe('Pagination', () => {
     expect(await axeViolations()).toEqual([]);
   });
 });
+
+describe('Pagination page box', () => {
+  it('keeps the typed page square up to three digits', () => {
+    render(<Pagination current={12} totalPages={120} onPageChange={() => undefined} />);
+    const width = screen.getAllByRole('textbox')[0]!.style.width;
+    expect(width).toContain('max(1.75rem');
+    expect(width).toContain('3ch + 0.5rem');
+  });
+});
