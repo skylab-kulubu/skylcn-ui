@@ -128,12 +128,14 @@
 [data-theme='light'] {
   color-scheme: light;
 
-  --skylab-300: #75447f;
-  --skylab-400: #8f5e98;
-  --skylab-500: #ae7eb6;
+  /* Mirrors dark: 300 to 500 sit deep by the text as dark's sit pale by it, and 800 is the
+     mid step, so a 500 and 800 pair stays apart in both themes */
+  --skylab-300: #49254f;
+  --skylab-400: #5b3363;
+  --skylab-500: #6e4576;
   --skylab-600: #c8a4ce;
   --skylab-700: #8f5e98;
-  --skylab-800: #75447f;
+  --skylab-800: #ae7eb6;
   --skylab-900: #5b3363;
 
   --sidebar: #ece8e3;
@@ -183,7 +185,7 @@
   --code-attr: #0c6b84;
   --code-property: #0c6b84;
 
-  --chart-1: #8c5fc7;
+  --chart-1: #6c4485;
   --chart-2: #4338ca;
   --chart-3: #a855f7;
   --chart-4: #5b21b6;
