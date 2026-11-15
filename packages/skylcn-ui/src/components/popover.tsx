@@ -12,7 +12,13 @@ export type PopoverContentProps = PopoverPrimitive.Popup.Props &
   Pick<
     PopoverPrimitive.Positioner.Props,
     'side' | 'align' | 'sideOffset' | 'alignOffset' | 'anchor'
-  >;
+  > & {
+    /**
+     * Steps the panel's direct children in one after another from the trigger's side and, on
+     * closing, back out the farthest first, for a panel of separate groups such as filters.
+     */
+    stagger?: boolean;
+  };
 
 /** A floating panel: filters, share options, pickers. Glassy like the admin filter shells. */
 export function PopoverContent({
@@ -22,6 +28,7 @@ export function PopoverContent({
   sideOffset = 8,
   alignOffset = 0,
   anchor,
+  stagger = false,
   ...props
 }: PopoverContentProps) {
   return (
@@ -39,6 +46,10 @@ export function PopoverContent({
           className={cn(
             'w-80 max-w-[calc(100vw-1rem)] rounded-xl border border-border-strong bg-popover/85 p-3 text-foreground shadow-overlay outline-hidden backdrop-blur',
             popupMotionBase,
+            // The groups' steps are the motion: the panel only fades, as a popup's growth on top
+            // reads as a zoom, and waits a stagger step before its exit so its children leave first
+            stagger &&
+              'stagger-items data-ending-style:scale-100 data-ending-style:delay-(--motion-stagger) data-starting-style:scale-100',
             className,
           )}
           {...props}

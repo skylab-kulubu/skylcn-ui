@@ -520,7 +520,7 @@ function PageHeaderFilterExample() {
   return (
     <Example
       title="Filtre paneli"
-      description="Buton açık filtre sayısını söyler; açık filtreler altında tek tek kaldırılan çipler olur."
+      description="Buton açık filtre sayısını söyler; açık filtreler altında tek tek kaldırılan çipler olur. Panel stagger ile basamak basamak açılır ve kapanır."
       align="start"
     >
       <div className="flex w-full max-w-xl flex-col gap-3">
@@ -528,7 +528,7 @@ function PageHeaderFilterExample() {
           <Popover>
             <PopoverTrigger render={<FilterButton count={active.length} />} />
             <PopoverTrigger render={<FilterButton iconOnly count={active.length} />} />
-            <PopoverContent className="flex w-64 flex-col gap-1">
+            <PopoverContent stagger className="flex w-64 flex-col gap-1">
               <PopoverTitle className="mb-1 text-sm font-semibold text-foreground">
                 Filtreler
               </PopoverTitle>
