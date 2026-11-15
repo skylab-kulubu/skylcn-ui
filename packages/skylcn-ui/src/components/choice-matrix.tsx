@@ -648,7 +648,7 @@ function AnswerMark({ multiple, chosen }: { multiple: boolean; chosen: boolean }
         multiple ? 'rounded-sm' : 'rounded-full',
         chosen
           ? 'border-skylab-800 bg-skylab-800 text-white'
-          : 'border-border-strong bg-input-background',
+          : 'border-input-strong bg-input-background',
       )}
     >
       {chosen ? (

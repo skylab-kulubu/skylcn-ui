@@ -294,7 +294,7 @@ export function Select(props: SelectProps) {
                       {props.multiple ? (
                         <span
                           aria-hidden
-                          className="grid size-4 shrink-0 place-items-center rounded-sm border border-border-strong text-white transition-colors duration-(--motion-duration-fast) group-data-selected/item:border-skylab-800 group-data-selected/item:bg-skylab-800"
+                          className="grid size-4 shrink-0 place-items-center rounded-sm border border-input-strong text-white transition-colors duration-(--motion-duration-fast) group-data-selected/item:border-skylab-800 group-data-selected/item:bg-skylab-800"
                         >
                           <SelectPrimitive.ItemIndicator>
                             <Check className="size-3" strokeWidth={3} />

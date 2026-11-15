@@ -117,7 +117,7 @@ function OptionsPopup({ empty, loading = false, multiple = false }: OptionsProps
                     // The checkbox of a list that keeps several picks, drawn like Checkbox
                     <span
                       aria-hidden
-                      className="grid size-4 shrink-0 place-items-center rounded-sm border border-border-strong text-white transition-colors duration-(--motion-duration-fast) group-data-selected:border-skylab-800 group-data-selected:bg-skylab-800"
+                      className="grid size-4 shrink-0 place-items-center rounded-sm border border-input-strong text-white transition-colors duration-(--motion-duration-fast) group-data-selected:border-skylab-800 group-data-selected:bg-skylab-800"
                     >
                       <ComboboxPrimitive.ItemIndicator>
                         <Check className="size-3" strokeWidth={3} />

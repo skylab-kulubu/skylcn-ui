@@ -72,3 +72,12 @@ describe('RadioCard', () => {
     expect(await axeViolations()).toEqual([]);
   });
 });
+
+describe('Unchecked edges', () => {
+  it('draws an unchecked checkbox card with the 3:1 edge, not the strong border', () => {
+    const { container } = render(<CheckboxCard label="Haberdar et" />);
+    const box = container.querySelector('[role="checkbox"]');
+    expect(box).toHaveClass('border-input-strong');
+    expect(box).not.toHaveClass('border-border-strong');
+  });
+});
