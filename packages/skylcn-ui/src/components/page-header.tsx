@@ -7,7 +7,7 @@ import { cn } from '../lib/cn.js';
 import { transitions } from '../lib/motion-tokens.js';
 import { useSkylcn } from '../lib/provider.js';
 import type { BreadcrumbItem } from './breadcrumbs.js';
-import { Button, type ButtonProps } from './button.js';
+import { Button, IconButton, type ButtonProps } from './button.js';
 import {
   controlFocus,
   controlHeight,
@@ -277,11 +277,27 @@ export type FilterButtonProps = Omit<ButtonProps, 'children'> & {
   count?: number;
   /** The words on the button; the locale's "Filtreler" by default. */
   label?: ReactNode;
+  /**
+   * Shows the icon alone, as a ghost IconButton among a toolbar's others; the words and the
+   * count become its name and tooltip, and the brand colour still says filters are on.
+   */
+  iconOnly?: boolean;
 };
 
 /** The toolbar button that opens a filter panel, saying how many filters are on. */
-export function FilterButton({ count = 0, label, ...props }: FilterButtonProps) {
+export function FilterButton({ count = 0, label, iconOnly = false, ...props }: FilterButtonProps) {
   const { messages } = useSkylcn();
+  if (iconOnly) {
+    const name = typeof label === 'string' ? label : messages.filters;
+    return (
+      <IconButton
+        icon={SlidersHorizontal}
+        label={count > 0 ? `${name} (${count})` : name}
+        variant={count > 0 ? 'primary' : 'ghost'}
+        {...props}
+      />
+    );
+  }
   return (
     <Button variant={count > 0 ? 'primary' : 'outline'} {...props}>
       <SlidersHorizontal aria-hidden />

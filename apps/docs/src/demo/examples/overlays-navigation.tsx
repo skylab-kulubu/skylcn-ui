@@ -526,6 +526,7 @@ function PageHeaderFilterExample() {
         <div className="flex items-center gap-2">
           <Popover>
             <PopoverTrigger render={<FilterButton count={active.length} />} />
+            <PopoverTrigger render={<FilterButton iconOnly count={active.length} />} />
             <PopoverContent className="flex w-64 flex-col gap-1">
               <PopoverTitle className="mb-1 text-sm font-semibold text-foreground">
                 Filtreler

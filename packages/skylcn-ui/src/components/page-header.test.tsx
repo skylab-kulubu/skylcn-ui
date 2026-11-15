@@ -128,3 +128,12 @@ describe('Filter parts', () => {
     expect(onClear).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('FilterButton iconOnly', () => {
+  it('shows the icon alone and names itself with the count', () => {
+    render(<FilterButton iconOnly count={2} />);
+    const button = screen.getByRole('button', { name: 'Filtreler (2)' });
+    expect(button.textContent).toBe('');
+    expect(button).toHaveClass('size-8');
+  });
+});
