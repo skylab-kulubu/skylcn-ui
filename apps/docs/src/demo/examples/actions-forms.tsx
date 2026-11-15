@@ -156,6 +156,7 @@ function CopyExamples() {
 function SegmentedExamples() {
   const [sort, setSort] = useState('new');
   const [dir, setDir] = useState('desc');
+  const [range, setRange] = useState('7d');
   return (
     <>
       <Example title="Metinli">
@@ -166,6 +167,23 @@ function SegmentedExamples() {
           options={[
             { value: 'new', label: 'Yeni' },
             { value: 'old', label: 'Eski' },
+            { value: 'all', label: 'Tümü' },
+          ]}
+        />
+      </Example>
+      <Example
+        title="Küçük"
+        description='size="sm": 24px, bir başlığın yanında duran aralık ya da görünüm anahtarı için.'
+      >
+        <span className="text-sm font-medium text-foreground">Cevap trendi</span>
+        <SegmentedControl
+          size="sm"
+          aria-label="Aralık"
+          value={range}
+          onValueChange={setRange}
+          options={[
+            { value: '24h', label: '24 saat' },
+            { value: '7d', label: '7 gün' },
             { value: 'all', label: 'Tümü' },
           ]}
         />
