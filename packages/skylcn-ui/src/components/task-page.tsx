@@ -28,6 +28,11 @@ export type TaskPageProps = {
   eyebrow?: ReactNode;
   /** Above the title; the tone colours it. Replaced by the loader while `loading`. */
   icon?: LucideIcon;
+  /**
+   * A picture above the title, such as an error scene (`<ServerErrorScene />`), in place of
+   * the icon. Left out while `loading`.
+   */
+  top?: ReactNode;
   /** StateCard's tones plus `success`. */
   tone?: keyof typeof TONE_ICON;
   /** Shows the SKY LAB loader and marks the heading busy until the result is in. */
@@ -76,6 +81,7 @@ export function TaskPage({
   description,
   eyebrow,
   icon: Icon,
+  top,
   tone = 'neutral',
   loading = false,
   brand,
@@ -141,6 +147,17 @@ export function TaskPage({
           >
             {loading ? (
               <SkylabLoader size={64} className="mb-5" />
+            ) : top ? (
+              <div
+                data-slot="task-page-top"
+                // On the light card from sm up a scene's shapes fill with the card (dark's card is see-through)
+                className={cn(
+                  'mb-5 w-full max-w-64',
+                  framed && 'sm:light:[--skylcn-scene-backdrop:var(--card)]',
+                )}
+              >
+                {top}
+              </div>
             ) : Icon ? (
               <Icon className={cn('mb-4 size-9', TONE_ICON[tone])} strokeWidth={1.75} />
             ) : null}

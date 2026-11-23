@@ -657,6 +657,22 @@ export const ENTRIES: Entry[] = [
     a11y: ['Yönlendirme sürerken durum ekran okuyucuya bildirilir.'],
   },
   {
+    slug: 'error-scene',
+    name: 'ErrorScene',
+    category: 'data',
+    description:
+      'Tam sayfa hataların hareketli sahneleri; her hata türüne her üründe aynı sahne: 404 GECEKODU, 500 ARTLAB, 403 SkyDays, çevrimdışı YıldızJam, oturum SkyCamp, bakım WEBLAB.',
+    imports: ['ErrorScene', 'errorSceneText', 'NotFoundScene', 'StatusPage', 'TaskPage'],
+    a11y: [
+      'Sahne süstür (aria-hidden); ne olduğunu başlık ve satır söyler.',
+      'Satır içi stil yok; sıkı Content-Security-Policy altında çalışır.',
+      'Rastgelelik yok: sunucu ve tarayıcı aynı kareyi çizer.',
+    ],
+    motion: [
+      'Yalnız CSS animasyonu. Hareketi azaltınca (sistem ya da data-motion="reduced") sahne anlamlı tek karede durur; animated={false} de aynısını yapar.',
+    ],
+  },
+  {
     slug: 'task-page',
     name: 'TaskPage',
     category: 'data',

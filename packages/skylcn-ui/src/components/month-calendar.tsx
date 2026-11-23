@@ -193,8 +193,16 @@ export function MonthCalendar({
 }
 
 export type StatusPageProps = {
-  /** A large figure such as 404; leave out for a redirect or other wait. */
+  /**
+   * A large figure such as 404; leave out for a redirect or other wait. Beside a `scene` it
+   * turns into a small mono line under the picture.
+   */
   code?: ReactNode;
+  /**
+   * A picture above the title, such as `<NotFoundScene />`: the club's scene for the error,
+   * in place of the large code. `errorSceneText(kind)` gives the matching words.
+   */
+  scene?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   /** Shows the SKY LAB loader instead of the code, for redirects. */
@@ -209,6 +217,7 @@ export type StatusPageProps = {
 /** A whole-page state: not found, no access, a server error, or a redirect in progress. */
 export function StatusPage({
   code,
+  scene,
   title,
   description,
   loading = false,
@@ -228,6 +237,18 @@ export function StatusPage({
       <div className="flex enter-rise-lg flex-col items-center gap-5">
         {loading ? (
           <SkylabLoader size={64} />
+        ) : scene ? (
+          <div
+            data-slot="status-page-scene"
+            className="flex w-72 max-w-full flex-col items-center gap-3"
+          >
+            {scene}
+            {code ? (
+              <p className="font-mono text-xs tracking-label text-subtle-foreground tabular-nums">
+                {code}
+              </p>
+            ) : null}
+          </div>
         ) : code ? (
           <p className="bg-gradient-to-b from-foreground to-subtle-foreground bg-clip-text font-mono text-7xl font-bold text-transparent tabular-nums">
             {code}

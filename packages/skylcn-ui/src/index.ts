@@ -256,6 +256,21 @@ export { Skeleton } from './components/skeleton.js';
 export { Sparkline, type SparklineProps } from './components/sparkline.js';
 export { SkylabLoader, type SkylabLoaderProps } from './components/skylab-loader.js';
 export { CoverImage, type CoverImageProps } from './components/cover-image.js';
+export {
+  ErrorScene,
+  errorSceneText,
+  type ErrorSceneKind,
+  type ErrorSceneProps,
+  type ErrorSceneText,
+} from './components/error-scene.js';
+export type { SceneProps } from './components/scene-frame.js';
+// One scene each, so a page that knows its error ships only its own picture
+export { NotFoundScene } from './components/scene-not-found.js';
+export { ServerErrorScene } from './components/scene-server-error.js';
+export { ForbiddenScene } from './components/scene-forbidden.js';
+export { OfflineScene } from './components/scene-offline.js';
+export { SessionExpiredScene } from './components/scene-session-expired.js';
+export { MaintenanceScene } from './components/scene-maintenance.js';
 export { StateCard, type StateCardProps } from './components/state-card.js';
 export { TaskPage, type TaskPageProps } from './components/task-page.js';
 export { Switch, ToggleRow, type SwitchProps, type ToggleRowProps } from './components/switch.js';

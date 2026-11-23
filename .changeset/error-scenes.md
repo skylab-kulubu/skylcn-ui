@@ -1,0 +1,5 @@
+---
+'@skylab-kulubu/skylcn-ui': patch
+---
+
+New ErrorScene draws the club's moving picture for a whole-page error, the same for each kind in every product: 404 GECEKODU asleep at the desk, 500 the ARTLAB robot crying (after Kaan's 2026 ARTLAB figure), 403 the SkyDays key that will not turn, offline the YıldızJam controller unplugged, an expired session SkyCamp's fire gone out and maintenance WEBLAB's window under repair. One line language in theme colours for light and dark, inline SVG with CSS animation, no inline style and nothing random, still under reduced motion or `animated={false}`, hidden from screen readers. Each scene is its own export (NotFoundScene, ServerErrorScene, ForbiddenScene, OfflineScene, SessionExpiredScene, MaintenanceScene) so a page ships only its own; `errorSceneText(kind, locale)` gives the default title, line, code and button. StatusPage takes `scene`, drawn in place of the large code, which turns into a small line under it; TaskPage takes `top`, a picture above the title.
