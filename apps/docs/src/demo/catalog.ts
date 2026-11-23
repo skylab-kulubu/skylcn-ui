@@ -661,7 +661,7 @@ export const ENTRIES: Entry[] = [
     name: 'ErrorScene',
     category: 'data',
     description:
-      'Tam sayfa hataların hareketli sahneleri; her hata türüne her üründe aynı sahne: 404 GECEKODU, 500 ARTLAB, 403 SkyDays, çevrimdışı YıldızJam, oturum SkyCamp, bakım WEBLAB.',
+      'Tam sayfa hataların hareketli sahneleri; her hata türüne her üründe aynı sahne: 404 GECEKODU, 500 ARTLAB, 403 SkyDays, çevrimdışı YıldızJam, oturum GECEKODU, bakım WEBLAB.',
     imports: ['ErrorScene', 'errorSceneText', 'NotFoundScene', 'StatusPage', 'TaskPage'],
     a11y: [
       'Sahne süstür (aria-hidden); ne olduğunu başlık ve satır söyler.',

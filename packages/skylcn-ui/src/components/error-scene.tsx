@@ -24,9 +24,10 @@ export type ErrorSceneProps = SceneProps & { kind: ErrorSceneKind };
 
 /**
  * The club's moving picture for a whole-page error, the same one for each kind in every
- * product: 404 GECEKODU asleep, 500 the ARTLAB robot crying, 403 the SkyDays key that will
- * not turn, offline the YıldızJam controller unplugged, an expired session SkyCamp's fire
- * gone out, maintenance WEBLAB's window under repair.
+ * product, each a moment a member knows: 404 GECEKODU at 03:47 with "404" in the terminal,
+ * 500 the ARTLAB robot watching a training run blow up at step 23, 403 a guessed SkyDays CTF
+ * flag refused, offline YıldızJam's jam paused, an expired session GECEKODU's pranks on an
+ * unlocked laptop, maintenance WEBLAB deploying.
  *
  * Decoration only: hidden from screen readers, so the page's title and line say what
  * happened. Inline SVG with CSS animation, still under reduced motion, nothing random, so
@@ -53,72 +54,83 @@ const TEXT: Record<SkylcnLocale, Record<ErrorSceneKind, ErrorSceneText>> = {
   tr: {
     notFound: {
       code: '404',
-      title: 'Bu sayfa uyuyakalmış',
-      description: 'Adres yanlış ya da sayfa taşınmış.',
+      title: 'Bu sayfa yok',
+      description: "GECEKODU'nda sabaha karşı yazılmış, sonra kaybolmuş; adresi bir kontrol et.",
       action: 'Ana sayfaya dön',
     },
     error: {
       code: '500',
       title: 'Bir şey bozuldu',
-      description: 'Hata bizde; biraz sonra yeniden dene.',
+      description:
+        "Sunucu, ARTLAB'de eğitilen bir model gibi 23. adımda çöktü; birazdan yeniden dene.",
       action: 'Yeniden dene',
     },
     forbidden: {
       code: '403',
       title: 'Bu kapı sana kapalı',
-      description: 'Bu sayfayı görme yetkin yok.',
+      description:
+        "Bu sayfanın bayrağı sende yok ve SKYDAYS'teki gibi tahminle açılmıyor; yetki için ekip liderine yaz.",
       action: 'Ana sayfaya dön',
     },
     offline: {
-      title: 'Bağlantı koptu',
-      description: 'İnternete bağlı değilsin; bağlanınca yeniden dene.',
-      action: 'Yeniden dene',
+      title: 'Oyun duraklatıldı',
+      description:
+        "İnternet bağlantın koptu, YıldızJam'de olsa 48 saatinden yiyordu; bağlanınca kaldığın yerden devam et.",
+      action: 'Devam et',
     },
     sessionExpired: {
-      title: 'Ateş sönmüş',
-      description: 'Oturumun sona erdi; devam etmek için yeniden giriş yap.',
-      action: 'Giriş yap',
+      title: 'Oturumun kapandı',
+      description:
+        "Masadan fazla uzak kaldın, GECEKODU'nda olsa masaüstün çoktan dosyayla dolmuştu; devam etmek için yeniden giriş yap.",
+      action: 'Yeniden giriş yap',
     },
     maintenance: {
       code: '503',
       title: 'Kısa bir bakımdayız',
-      description: 'Birkaç dakika içinde dönüyoruz.',
+      description:
+        "WEBLAB yeni sürümü canlıya alıyor, çubuk daha 3/5'te; birkaç dakika sonra yeniden dene.",
       action: 'Yeniden dene',
     },
   },
   en: {
     notFound: {
       code: '404',
-      title: 'This page fell asleep',
-      description: 'The address is wrong or the page has moved.',
+      title: 'This page is gone',
+      description:
+        'It was written at GECEKODU in the small hours and then vanished; check the address.',
       action: 'Back to home',
     },
     error: {
       code: '500',
       title: 'Something broke',
-      description: 'The fault is ours; try again in a moment.',
+      description:
+        'The server crashed at step 23 like an ARTLAB training run; try again in a moment.',
       action: 'Try again',
     },
     forbidden: {
       code: '403',
       title: 'This door is closed to you',
-      description: 'You do not have access to this page.',
+      description:
+        "You do not have this page's flag, and guessing will not open it any more than at SKYDAYS; ask your team lead for access.",
       action: 'Back to home',
     },
     offline: {
-      title: 'Connection lost',
-      description: 'You are offline; try again once you are back.',
-      action: 'Try again',
+      title: 'Game paused',
+      description:
+        'You are offline, which at YıldızJam would eat into your 48 hours; carry on where you left off once you are back.',
+      action: 'Continue',
     },
     sessionExpired: {
-      title: 'The fire went out',
-      description: 'Your session ended; sign in again to carry on.',
-      action: 'Sign in',
+      title: 'Your session closed',
+      description:
+        'You were away from the desk too long, and at GECEKODU your desktop would be full of files by now; sign in again to carry on.',
+      action: 'Sign in again',
     },
     maintenance: {
       code: '503',
       title: 'Down for a short repair',
-      description: 'We will be back in a few minutes.',
+      description:
+        'WEBLAB is putting a new version live and the bar is only at 3/5; try again in a few minutes.',
       action: 'Try again',
     },
   },

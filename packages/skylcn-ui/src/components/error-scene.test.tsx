@@ -81,6 +81,22 @@ describe('ErrorScene', () => {
       }
     }
     expect(errorSceneText('error').action).toBe('Yeniden dene');
+    // each line names its team in the sentence, in both languages
+    const TEAMS: Record<ErrorSceneKind, RegExp> = {
+      notFound: /GECEKODU/,
+      error: /ARTLAB/,
+      forbidden: /SKYDAYS/,
+      offline: /YıldızJam/,
+      sessionExpired: /GECEKODU/,
+      maintenance: /WEBLAB/,
+    };
+    for (const kind of KINDS) {
+      for (const locale of ['tr', 'en'] as const) {
+        expect(errorSceneText(kind, locale).description).toMatch(TEAMS[kind]);
+        // one sentence, no exclamation
+        expect(errorSceneText(kind, locale).description).not.toMatch(/[!]|\. [A-ZÇĞİÖŞÜ]/);
+      }
+    }
     expect(errorSceneText('notFound').code).toBe('404');
   });
 });

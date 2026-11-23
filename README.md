@@ -77,7 +77,7 @@ The playground also has scenarios, whole pages built from these components, and 
 
 ## Error pages
 
-A whole-page error shows the club's scene for its kind, the same in every product: 404 GECEKODU's coder asleep at the desk, 500 the ARTLAB robot crying, 403 the SkyDays key that will not turn, offline the YıldızJam controller unplugged, an expired session SkyCamp's fire gone out, maintenance WEBLAB's window under repair. `errorSceneText(kind, locale)` gives the matching title, one line, code and button label.
+A whole-page error shows the club's scene for its kind, the same in every product: 404 GECEKODU at 03:47 with "404" in the terminal, 500 the ARTLAB robot watching a training run blow up at step 23, 403 a guessed SkyDays CTF flag refused, offline YıldızJam's jam paused with the plug out, an expired session GECEKODU's pranks on a laptop left unlocked (file bomb, fake format), maintenance WEBLAB deploying. `errorSceneText(kind, locale)` gives the matching title, one line, code and button label.
 
 ```tsx
 import { Button, NotFoundScene, StatusPage, errorSceneText } from '@skylab-kulubu/skylcn-ui';
