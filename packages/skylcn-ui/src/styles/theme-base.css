@@ -732,6 +732,353 @@
   }
 }
 
+/*
+ * ErrorScene: the error pages' pictures. One line language for all six (2-unit round lines,
+ * 1.25 for details) in theme colours, so they follow light and dark with the rest of the page.
+ * A scene over a surface other than the page (a card) gets --skylcn-scene-backdrop from it; that
+ * fill only hides the lines behind a shape. Each part animates on its own class; reduced motion
+ * (system or data-motion="reduced") and data-still hold every part on its still frame, which
+ * is drawn to tell the story alone.
+ */
+@layer components {
+  .skylcn-scene {
+    --skylcn-scene-ink: var(--secondary-foreground);
+    --skylcn-scene-soft: var(--subtle-foreground);
+    --skylcn-scene-faint: var(--faint-foreground);
+    --skylcn-scene-brand: var(--primary);
+    --skylcn-scene-on-brand: var(--primary-foreground);
+    --skylcn-scene-warm: var(--warning);
+    --skylcn-scene-cool: var(--info);
+    --skylcn-scene-alert: var(--destructive);
+    /* a parent on another surface (a light card) sets --skylcn-scene-backdrop */
+    --skylcn-scene-surface: var(--skylcn-scene-backdrop, var(--background));
+    overflow: visible;
+  }
+  .skylcn-scene .skylcn-scene-d1 {
+    animation-delay: -0.9s;
+  }
+  .skylcn-scene .skylcn-scene-d2 {
+    animation-delay: -1.8s;
+  }
+  .skylcn-scene .skylcn-scene-d3 {
+    animation-delay: -2.6s;
+  }
+  /* parts that scale or turn about their own middle */
+  .skylcn-scene
+    :is(.skylcn-scene-snore, .skylcn-scene-spread, .skylcn-scene-turn, .skylcn-scene-zap) {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  /* parts that turn about their group's origin, which the drawing puts at the pivot */
+  .skylcn-scene :is(.skylcn-scene-key, .skylcn-scene-swing, .skylcn-scene-wrench) {
+    transform-box: view-box;
+    transform-origin: 0 0;
+  }
+  .skylcn-scene-progress {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+
+  .skylcn-scene-breathe {
+    animation: skylcn-scene-bob 4s ease-in-out infinite;
+  }
+  .skylcn-scene-snore {
+    animation: skylcn-scene-swell 4s ease-in-out infinite;
+  }
+  .skylcn-scene-drift {
+    animation: skylcn-scene-drift 2.7s ease-out infinite both;
+  }
+  .skylcn-scene-twinkle {
+    animation: skylcn-scene-dim 3s ease-in-out infinite;
+  }
+  .skylcn-scene-glow {
+    animation: skylcn-scene-flicker 3.2s ease-in-out infinite;
+  }
+  .skylcn-scene-puff {
+    animation: skylcn-scene-puff 2.4s ease-out infinite both;
+  }
+  .skylcn-scene-smoke {
+    animation: skylcn-scene-smoke 4.4s ease-out infinite both;
+  }
+  .skylcn-scene-ember {
+    animation: skylcn-scene-dim 2.2s ease-in-out infinite;
+  }
+  .skylcn-scene-sob {
+    animation: skylcn-scene-sob 2.6s ease-in-out infinite;
+  }
+  .skylcn-scene-drip {
+    animation: skylcn-scene-drip 1.7s ease-in infinite both;
+  }
+  .skylcn-scene-spread {
+    animation: skylcn-scene-spread 3.4s ease-in-out infinite;
+  }
+  .skylcn-scene-flash {
+    animation: skylcn-scene-flash 3.1s steps(1) infinite;
+  }
+  .skylcn-scene-key {
+    animation: skylcn-scene-key 4.2s cubic-bezier(0.5, 0, 0.3, 1) infinite;
+  }
+  .skylcn-scene-deny {
+    animation: skylcn-scene-deny 4.2s linear infinite;
+  }
+  .skylcn-scene-pulse {
+    animation: skylcn-scene-dim 4.2s ease-in-out infinite;
+  }
+  .skylcn-scene-swing {
+    animation: skylcn-scene-swing 3s ease-in-out infinite;
+  }
+  .skylcn-scene-blink {
+    animation: skylcn-scene-blink 1.2s steps(1) infinite;
+  }
+  .skylcn-scene-zap {
+    animation: skylcn-scene-zap 3s ease-out infinite;
+  }
+  .skylcn-scene-turn {
+    animation: skylcn-scene-turn 3.6s ease-in-out infinite;
+  }
+  .skylcn-scene-progress {
+    animation: skylcn-scene-progress 3.6s var(--motion-ease-exit) infinite;
+  }
+  .skylcn-scene-wrench {
+    animation: skylcn-scene-wrench 1.8s ease-in-out infinite;
+  }
+
+  /* Still: every part on the frame it is drawn in */
+  @media (prefers-reduced-motion: reduce) {
+    .skylcn-scene * {
+      animation: none;
+    }
+  }
+  [data-motion='reduced'] .skylcn-scene *,
+  .skylcn-scene[data-still] * {
+    animation: none;
+  }
+}
+
+@keyframes skylcn-scene-bob {
+  50% {
+    transform: translateY(-1.6px);
+  }
+}
+
+@keyframes skylcn-scene-swell {
+  50% {
+    transform: scale(1.5);
+  }
+}
+
+@keyframes skylcn-scene-drift {
+  0% {
+    opacity: 0;
+    transform: translate(0, 5px);
+  }
+  25%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(7px, -12px);
+  }
+}
+
+@keyframes skylcn-scene-dim {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes skylcn-scene-flicker {
+  50% {
+    opacity: 0.04;
+  }
+}
+
+@keyframes skylcn-scene-puff {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes skylcn-scene-smoke {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(3px, -14px);
+  }
+}
+
+@keyframes skylcn-scene-sob {
+  0%,
+  58%,
+  70%,
+  82%,
+  100% {
+    transform: translateY(0);
+  }
+  64%,
+  76% {
+    transform: translateY(-1.8px);
+  }
+}
+
+@keyframes skylcn-scene-drip {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  12%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(42px);
+  }
+}
+
+@keyframes skylcn-scene-spread {
+  0%,
+  100% {
+    transform: scaleX(0.85);
+  }
+  50% {
+    transform: scaleX(1.08);
+  }
+}
+
+@keyframes skylcn-scene-flash {
+  0%,
+  62%,
+  100% {
+    opacity: 0;
+  }
+  64% {
+    opacity: 1;
+  }
+  67% {
+    opacity: 0.2;
+  }
+  70% {
+    opacity: 1;
+  }
+}
+
+/* the key slides in, tries to turn three times, gives up and backs out */
+@keyframes skylcn-scene-key {
+  0%,
+  100% {
+    transform: translateX(66px);
+  }
+  24% {
+    transform: translateX(5px);
+  }
+  31% {
+    transform: translateX(5px) rotate(-14deg);
+  }
+  39% {
+    transform: translateX(5px) rotate(12deg);
+  }
+  47% {
+    transform: translateX(5px) rotate(-9deg);
+  }
+  54%,
+  68% {
+    transform: translateX(5px) rotate(0);
+  }
+}
+
+@keyframes skylcn-scene-deny {
+  0%,
+  48%,
+  64%,
+  100% {
+    opacity: 0;
+  }
+  52%,
+  60% {
+    opacity: 1;
+  }
+}
+
+@keyframes skylcn-scene-swing {
+  0%,
+  100% {
+    transform: rotate(-7deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes skylcn-scene-blink {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes skylcn-scene-zap {
+  0%,
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  74%,
+  80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  77% {
+    opacity: 0.3;
+  }
+}
+
+/* a meridian narrowing and widening reads as the globe turning */
+@keyframes skylcn-scene-turn {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.1);
+  }
+}
+
+@keyframes skylcn-scene-progress {
+  0% {
+    transform: scaleX(0.15);
+  }
+  70%,
+  100% {
+    transform: scaleX(1.57);
+  }
+}
+
+@keyframes skylcn-scene-wrench {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(-16deg);
+  }
+}
+
 /* A placeholder block for content that is loading (skeleton rows, avatars) */
 @utility shimmer-block {
   background-color: var(--muted);

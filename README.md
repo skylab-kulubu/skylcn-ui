@@ -70,10 +70,34 @@ Every component has live examples in the docs app's playground (`/playground/com
 - **Forms:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, DateTimePicker, Calendar, Dropzone, OTPField
 - **Overlays:** Dialog, ConfirmDialog, Drawer (right, left, bottom; closes with a swipe), Popover, PreviewCard, Tooltip, Menu, ContextMenu, Toast, CommandPalette
 - **Navigation:** AppShell, SideNav, NavigationMenu, Tabs, TabsNav, Accordion, Stepper, Breadcrumbs, Pagination, PageHeader
-- **Data:** DataList, DataTable, ListPanel, Section, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, CoverImage, Skeleton
+- **Data:** DataList, DataTable, ListPanel, Section, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, ErrorScene, CoverImage, Skeleton
 - **Motion:** Reveal, Collapse, Swap, AnimatedNumber
 
 The playground also has scenarios, whole pages built from these components, and a page builder for composing a page from blocks and copying its code.
+
+## Error pages
+
+A whole-page error shows the club's scene for its kind, the same in every product: 404 GECEKODU's coder asleep at the desk, 500 the ARTLAB robot crying, 403 the SkyDays key that will not turn, offline the YıldızJam controller unplugged, an expired session SkyCamp's fire gone out, maintenance WEBLAB's window under repair. `errorSceneText(kind, locale)` gives the matching title, one line, code and button label.
+
+```tsx
+import { Button, NotFoundScene, StatusPage, errorSceneText } from '@skylab-kulubu/skylcn-ui';
+
+const text = errorSceneText('notFound');
+
+<StatusPage
+  scene={<NotFoundScene />}
+  code={text.code}
+  title={text.title}
+  description={text.description}
+>
+  <Button variant="primary">{text.action}</Button>
+</StatusPage>;
+```
+
+- `StateCard` takes a scene in `top`, `TaskPage` in `top` as well; `ErrorScene kind="…"` picks one at run time but brings all six, so a page that knows its error imports that scene alone.
+- The scenes are inline SVG with CSS animation: no script, no inline style, nothing random, so they run under a strict Content-Security-Policy and the server and browser draw the same frame. Reduced motion, `data-motion="reduced"` or `animated={false}` hold the still frame, which tells the story alone.
+- Decoration only (`aria-hidden`): the title and line say what happened. Colours come from the theme; over a surface other than the page, set `--skylcn-scene-backdrop` to it.
+- Only whole-page and route errors take a scene; errors inside a list or a form keep their Notice or StateCard icon.
 
 ## Registry
 

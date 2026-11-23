@@ -20,6 +20,12 @@ import {
   RelativeTime,
   SortableList,
   StatusPage,
+  ErrorScene,
+  errorSceneText,
+  type ErrorSceneKind,
+  NotFoundScene,
+  ServerErrorScene,
+  TaskPage,
   Stepper,
   Swap,
   Timeline,
@@ -496,6 +502,80 @@ function StatusPageExamples() {
   );
 }
 
+const SCENE_KINDS: ErrorSceneKind[] = [
+  'notFound',
+  'error',
+  'forbidden',
+  'offline',
+  'sessionExpired',
+  'maintenance',
+];
+
+function ErrorSceneExamples() {
+  const notFound = errorSceneText('notFound');
+  const error = errorSceneText('error');
+  return (
+    <>
+      <Example
+        title="Altı sahne"
+        description="Varsayılan metinler errorSceneText(kind) ile gelir; düğme tektir."
+        align="start"
+      >
+        <div className="grid w-full gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {SCENE_KINDS.map((kind) => {
+            const text = errorSceneText(kind);
+            return (
+              <div
+                key={kind}
+                className="flex flex-col items-center gap-2 rounded-xl border border-border p-4 text-center"
+              >
+                <ErrorScene kind={kind} className="max-w-56" />
+                <p className="font-mono text-2xs text-subtle-foreground">
+                  {kind}
+                  {text.code ? ` · ${text.code}` : ''}
+                </p>
+                <p className="text-sm font-semibold text-foreground">{text.title}</p>
+                <p className="text-xs text-muted-foreground">{text.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </Example>
+      <Example title="StatusPage scene" align="start">
+        <div className="w-full overflow-hidden rounded-xl border border-border">
+          <StatusPage
+            as="div"
+            className="min-h-96"
+            scene={<NotFoundScene />}
+            code={notFound.code}
+            title={notFound.title}
+            description={notFound.description}
+          >
+            <Button variant="primary">{notFound.action}</Button>
+          </StatusPage>
+        </div>
+      </Example>
+      <Example title="TaskPage top" align="start">
+        <div className="w-full overflow-hidden rounded-xl border border-border">
+          <TaskPage
+            as="div"
+            className="min-h-0"
+            align="center"
+            top={<ServerErrorScene />}
+            eyebrow={error.code}
+            title={error.title}
+            description={error.description}
+            actions={<Button variant="primary">{error.action}</Button>}
+          />
+        </div>
+      </Example>
+      <Example title="Durağan" description="animated={false}: hareketi azalt tercihindeki kare.">
+        <ErrorScene kind="forbidden" animated={false} className="max-w-56" />
+      </Example>
+    </>
+  );
+}
+
 function DataTableExamples() {
   return (
     <>
@@ -828,6 +908,7 @@ export const DISPLAY_EXTRA_EXAMPLES = {
   'data-table': DataTableExamples,
   'month-calendar': MonthCalendarExamples,
   'status-page': StatusPageExamples,
+  'error-scene': ErrorSceneExamples,
   tree: TreeExamples,
   dropzone: DropzoneExamples,
   stepper: StepperExamples,

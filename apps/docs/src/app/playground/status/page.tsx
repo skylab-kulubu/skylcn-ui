@@ -1,68 +1,66 @@
 'use client';
 
-import { Button, PageHeader, SegmentedControl, StatusPage } from '@skylab-kulubu/skylcn-ui';
+import {
+  Button,
+  ErrorScene,
+  errorSceneText,
+  PageHeader,
+  Select,
+  StatusPage,
+  type ErrorSceneKind,
+} from '@skylab-kulubu/skylcn-ui';
 import { useState } from 'react';
 
-const SCREENS = {
-  '404': {
-    code: '404',
-    title: 'Bu sayfa yok',
-    description: 'Bağlantı eskimiş ya da yanlış yazılmış olabilir.',
-    action: 'Ana sayfaya dön',
-  },
-  '403': {
-    code: '403',
-    title: 'Bu sayfayı görme yetkin yok',
-    description: 'Yönetim ekibinden erişim isteyebilirsin.',
-    action: 'Erişim iste',
-  },
-  '500': {
-    code: '500',
-    title: 'Bir şeyler ters gitti',
-    description: 'Sorunu kaydettik. Birazdan yeniden dene.',
-    action: 'Yeniden dene',
-  },
-  redirect: {
-    title: 'Hesabına yönlendiriliyorsun',
-    description: 'Kulüp hesabınla giriş yapman için güvenli sayfaya geçiyoruz.',
-  },
-} as const;
+const SCREENS = [
+  { value: 'notFound', label: '404 · Bulunamadı' },
+  { value: 'error', label: '500 · Sunucu hatası' },
+  { value: 'forbidden', label: '403 · Yetki yok' },
+  { value: 'offline', label: 'Çevrimdışı' },
+  { value: 'sessionExpired', label: 'Oturum doldu' },
+  { value: 'maintenance', label: 'Bakım' },
+  { value: 'redirect', label: 'Yönlendirme' },
+] as const;
 
-type Kind = keyof typeof SCREENS;
+type Screen = (typeof SCREENS)[number]['value'];
 
 export default function StatusScenario() {
-  const [kind, setKind] = useState<Kind>('404');
-  const screen = SCREENS[kind];
+  const [screen, setScreen] = useState<Screen>('notFound');
+  const text = screen === 'redirect' ? null : errorSceneText(screen as ErrorSceneKind);
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Hata ve yönlendirme"
-        description="Tam sayfa durumlar; burada çerçeve içinde gösteriliyor."
+        description="Tam sayfa durumlar ve sahneleri; burada çerçeve içinde gösteriliyor."
       >
-        <SegmentedControl
+        <Select
           aria-label="Ekran"
-          value={kind}
-          onValueChange={(value) => setKind(value as Kind)}
-          options={[
-            { value: '404', label: '404' },
-            { value: '403', label: '403' },
-            { value: '500', label: '500' },
-            { value: 'redirect', label: 'Yönlendirme' },
-          ]}
+          value={screen}
+          onValueChange={(value) => setScreen(value as Screen)}
+          options={SCREENS}
         />
       </PageHeader>
       <div className="overflow-hidden rounded-xl border border-border">
-        <StatusPage
-          as="div"
-          key={kind}
-          className="min-h-[28rem]"
-          code={'code' in screen ? screen.code : undefined}
-          loading={kind === 'redirect'}
-          title={screen.title}
-          description={screen.description}
-        >
-          {'action' in screen ? <Button variant="primary">{screen.action}</Button> : null}
-        </StatusPage>
+        {text ? (
+          <StatusPage
+            as="div"
+            key={screen}
+            className="min-h-[32rem] py-10"
+            scene={<ErrorScene kind={screen as ErrorSceneKind} />}
+            code={text.code}
+            title={text.title}
+            description={text.description}
+          >
+            <Button variant="primary">{text.action}</Button>
+          </StatusPage>
+        ) : (
+          <StatusPage
+            as="div"
+            className="min-h-[32rem]"
+            loading
+            title="Hesabına yönlendiriliyorsun"
+            description="Kulüp hesabınla giriş yapman için güvenli sayfaya geçiyoruz."
+          />
+        )}
       </div>
     </div>
   );

@@ -15,6 +15,9 @@ export const SCENARIOS = [
   '/playground/builder',
   '/site',
   '/forms',
+  ...['notFound', 'error', 'forbidden', 'offline', 'sessionExpired', 'maintenance'].map(
+    (kind) => `/errors/${kind}`,
+  ),
 ];
 
 export const LIBRARY = ENTRIES.map((entry) => entryHref(entry.slug));
