@@ -29,7 +29,10 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      # The static export the playground site is published from
       - run: pnpm --filter docs build
+        env:
+          DOCS_EXPORT: '1'
 
   e2e:
     runs-on: ubuntu-latest

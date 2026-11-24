@@ -161,6 +161,8 @@ The playground can also be built as static files; `DOCS_BASE_PATH` serves it und
 DOCS_EXPORT=1 DOCS_BASE_PATH=/playground pnpm --filter docs build   # output: apps/docs/out
 ```
 
+Every push to main publishes that export to https://playground.yildizskylab.com (`.github/workflows/playground.yml`, Cloudflare Workers static assets, settings in `deploy/playground`).
+
 Every change comes with a Changesets entry: `pnpm changeset`. Until 1.0 the version follows the 0.x rule:
 
 - **patch** (0.1.0 → 0.1.1): a new component, new optional props or a fix; anything that keeps existing code working.

@@ -1,0 +1,6 @@
+# Copied into the static export before deploy.
+/*
+  X-Robots-Tag: noindex
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable

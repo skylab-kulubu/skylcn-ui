@@ -1,0 +1,114 @@
+name: Playground
+
+# Publishes the docs app to https://playground.yildizskylab.com on every push to
+# main. `build` makes the static export (DOCS_EXPORT=1) with no secrets; `deploy`
+# gets only those files and the pinned wrangler (deploy/playground), so the
+# Cloudflare token never shares a runner with the docs app's dependencies. The
+# site goes out as Workers static assets, then the job waits until it serves
+# this commit.
+#
+# The "playground" environment admits only main and holds the Cloudflare API
+# token (secret CLOUDFLARE_API_TOKEN: Workers Scripts Edit on the account,
+# Workers Routes Edit and Zone Read on yildizskylab.com). Stays off until the
+# repository variable CLOUDFLARE_ACCOUNT_ID is set.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: playground
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main' && vars.CLOUDFLARE_ACCOUNT_ID != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @skylab-kulubu/skylcn-ui build
+      - run: pnpm --filter docs build
+        env:
+          DOCS_EXPORT: '1'
+      # Headers (noindex, long cache for hashed files), the / redirect and the
+      # commit the site serves, checked after the deploy
+      - run: |
+          cp deploy/playground/_headers deploy/playground/_redirects apps/docs/out/
+          printf '%s\n' "$GITHUB_SHA" > apps/docs/out/version.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playground
+          path: apps/docs/out
+          if-no-files-found: error
+          retention-days: 3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: playground
+      url: https://playground.yildizskylab.com
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      # A re-run of an older run must not put an older commit back online
+      - name: Check this commit is still main's head
+        id: head
+        run: |
+          head=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$head" = "$GITHUB_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::main is at $head, not $GITHUB_SHA; skipping the deploy"
+          fi
+      - if: steps.head.outputs.current == 'true'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: playground
+          path: apps/docs/out
+      - if: steps.head.outputs.current == 'true'
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: 24
+      # wrangler pinned with its lockfile; no install scripts
+      - if: steps.head.outputs.current == 'true'
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: deploy/playground
+      - if: steps.head.outputs.current == 'true'
+        run: ./node_modules/.bin/wrangler deploy
+        working-directory: deploy/playground
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+      # A new custom domain can take a few minutes to get its certificate
+      - if: steps.head.outputs.current == 'true'
+        name: Check the site serves this commit
+        run: |
+          for i in $(seq 1 60); do
+            served=$(curl -fsS -m 10 "https://playground.yildizskylab.com/version.txt?v=$GITHUB_SHA" 2>/dev/null || true)
+            if [ "$served" = "$GITHUB_SHA" ]; then
+              curl -fsS -m 10 https://playground.yildizskylab.com/playground/ | grep -q '<title>skylcn-ui</title>'
+              echo "https://playground.yildizskylab.com serves $GITHUB_SHA"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::https://playground.yildizskylab.com does not serve $GITHUB_SHA after 10 minutes"
+          exit 1
