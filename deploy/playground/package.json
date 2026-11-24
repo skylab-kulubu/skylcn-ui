@@ -1,0 +1,8 @@
+{
+  "name": "skylcn-ui-playground-deploy",
+  "private": true,
+  "description": "Pins wrangler for .github/workflows/playground.yml",
+  "devDependencies": {
+    "wrangler": "4.158.0"
+  }
+}
