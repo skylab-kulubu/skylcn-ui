@@ -7,8 +7,8 @@ name: Playground
 #
 # The "playground" environment admits only main and holds the Cloudflare API
 # token (secret CLOUDFLARE_API_TOKEN: Workers Scripts Edit on the account,
-# Workers Routes Edit and Zone Read on yildizskylab.com) and the account ID
-# (variable CLOUDFLARE_ACCOUNT_ID). Pull requests never see the token.
+# Workers Routes Edit and Zone Read on yildizskylab.com); pull requests never
+# see it. Stays off until the repository variable CLOUDFLARE_ACCOUNT_ID is set.
 
 on:
   push:
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && vars.CLOUDFLARE_ACCOUNT_ID != ''
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
