@@ -133,6 +133,26 @@ describe('SideNav', () => {
     expect(link(/Genel bakış/)).toHaveFocus();
   });
 
+  it('leaves arrow keys with a modifier to the browser', async () => {
+    const user = userEvent.setup();
+    render(<SideNav aria-label="Etkinlik" sections={sections} activeHref="/events/e1" />);
+    const nav = desktopNav();
+    const link = (name: RegExp) => within(nav).getByRole('link', { name });
+    await user.tab();
+    expect(link(/Genel bakış/)).toHaveFocus();
+    await user.keyboard('{Meta>}{ArrowDown}{/Meta}');
+    expect(link(/Genel bakış/)).toHaveFocus();
+    await user.keyboard('{Shift>}{End}{/Shift}');
+    expect(link(/Genel bakış/)).toHaveFocus();
+    await user.keyboard('{Alt>}{ArrowDown}{/Alt}');
+    expect(link(/Genel bakış/)).toHaveFocus();
+    await user.keyboard('{Control>}{End}{/Control}');
+    expect(link(/Genel bakış/)).toHaveFocus();
+    // Without a modifier the same keys still move
+    await user.keyboard('{ArrowDown}');
+    expect(link(/Katılımcılar/)).toHaveFocus();
+  });
+
   it('keeps every link in the natural tab order', async () => {
     const user = userEvent.setup();
     render(<SideNav aria-label="Etkinlik" sections={sections} activeHref="/events/e1" />);

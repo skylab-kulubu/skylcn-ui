@@ -63,6 +63,8 @@ export function scrollTopToShow(
 
 /** Moves focus between the menu's links with the arrow keys, Home and End; Tab still leaves. */
 function moveFocus(event: KeyboardEvent<HTMLElement>) {
+  // Cmd+↓, Shift+End and the like keep their own meaning: page ends, text selection
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
   const links = [...event.currentTarget.querySelectorAll<HTMLElement>('a[href]')];
   const at = links.indexOf(document.activeElement as HTMLElement);
   if (at === -1) return;
