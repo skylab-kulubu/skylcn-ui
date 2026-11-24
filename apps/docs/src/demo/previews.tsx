@@ -515,9 +515,12 @@ const MINIS: Record<string, () => ReactNode> = {
     </span>
   ),
   'side-nav': () => (
-    <div className="flex w-32 flex-col gap-0.5 text-2xs">
-      <span className="rounded bg-accent-strong px-1.5 py-1">Gelen kutusu</span>
-      <span className="px-1.5 py-1 text-muted-foreground">Gönderilen</span>
+    <div className="flex w-32 flex-col gap-0.5 rounded-md border border-border bg-sheet p-1 text-2xs">
+      <span className="relative rounded bg-accent-strong px-1.5 py-1 font-medium">
+        <span className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-primary" />
+        Gelen kutusu
+      </span>
+      <span className="px-1.5 py-1 text-secondary-foreground">Gönderilen</span>
     </div>
   ),
   tabs: TabsMini,

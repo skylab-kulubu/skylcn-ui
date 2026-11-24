@@ -1,0 +1,5 @@
+---
+'@skylab-kulubu/skylcn-ui': patch
+---
+
+SideNav reads as a menu of its own: a panel in the sheet tone with a border and rounded corners, section headings in small spaced capitals with a thin rule above each section after the first, and 36px rows whose label is in the secondary text colour. An item takes `icon`, a lucide icon before its label, and its badge sits quiet at the row's end (a count of 0 is now written). Hovering fills a row lightly; the open page has a stronger fill with a 3px primary bar on its left, its label in medium weight and its icon in the primary colour, and the fill and bar glide together to the next open page. The arrow keys, Home and End move between the links, each section's list is named by its heading, and the phone button carries the open page's icon and name and opens the same menu in the bottom drawer. SideNavLayout gives the menu a 15rem column with 1.5rem beside it, instead of 13rem and 2.5rem. Nothing in the API changes; every SideNav takes the new look.

@@ -377,8 +377,12 @@ export const ENTRIES: Entry[] = [
     description:
       'Sayfanın kendi gezinmesi: bu listedeki gibi bileşenler, bir posta kutusunun klasörleri, ayar bölümleri.',
     imports: ['SideNav', 'SideNavLayout'],
-    a11y: ['Geniş ekranda yapışkan sütun, dar ekranda paneli açan bir buton.'],
-    motion: ['Aktif vurgu seçilen öğeye süzülür.'],
+    a11y: [
+      'Geniş ekranda kendi tonu ve kenarlığı olan yapışkan bir panel; dar ekranda açık sayfanın adını taşıyan buton aynı menüyü alttan açar.',
+      'Açık sayfa aria-current="page" taşır; dolgu, soldaki çizgi, kalın yazı ve renkli ikonla, yalnız renkle değil, ayrılır.',
+      'Ok tuşları, Home ve End öğeler arasında gezer; Tab menüden çıkar. Her bölümün listesi başlığıyla adlanır.',
+    ],
+    motion: ['Açık sayfanın dolgusu ve çizgisi birlikte seçilen öğeye süzülür.'],
   },
   {
     slug: 'tabs',

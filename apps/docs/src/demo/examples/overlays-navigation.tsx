@@ -53,19 +53,36 @@ import {
 } from '@skylab-kulubu/skylcn-ui';
 import {
   ArrowDownUp,
+  Award,
+  BadgeCheck,
+  CalendarClock,
   Copy,
   DoorOpen,
   ExternalLink,
+  Eye,
   Filter,
+  Folder,
+  Info,
+  LayoutDashboard,
+  Mail,
+  MapPin,
   MoreHorizontal,
   PencilLine,
   Plus,
   Send,
   Share2,
+  Ticket,
   Trash2,
+  Trophy,
   Users,
 } from 'lucide-react';
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type ReactNode,
+} from 'react';
 import { useDemoLocale } from '../../app/providers';
 import { Example } from '../doc';
 
@@ -269,52 +286,100 @@ function NavigationMenuExamples() {
   );
 }
 
+/** Keeps a demo menu's links on the page: a press opens the item in place instead of a route. */
+function useDemoNav(first: string) {
+  const [active, setActive] = useState(first);
+  const capture = (event: ReactMouseEvent) => {
+    const link = (event.target as HTMLElement).closest('a');
+    if (link) {
+      event.preventDefault();
+      setActive(link.getAttribute('href') ?? first);
+    }
+  };
+  return [active, capture] as const;
+}
+
+const EVENT_MENU = [
+  { items: [{ href: '#genel', label: 'Genel bakış', icon: LayoutDashboard }] },
+  {
+    label: 'Katılım',
+    items: [
+      { href: '#katilimcilar', label: 'Katılımcılar', icon: Users, badge: 42 },
+      { href: '#program', label: 'Program', icon: CalendarClock, badge: 5 },
+      { href: '#kapi', label: 'Kapı', icon: DoorOpen },
+      { href: '#yarisma', label: 'Yarışma', icon: Trophy, badge: 2 },
+    ],
+  },
+  {
+    label: 'Sonrası',
+    items: [
+      { href: '#sertifikalar', label: 'Sertifikalar', icon: Award },
+      { href: '#verilen', label: 'Verilen sertifikalar', icon: BadgeCheck, badge: 21 },
+      { href: '#dosyalar', label: 'Dosyalar', icon: Folder, badge: 3 },
+    ],
+  },
+  { label: 'İletişim', items: [{ href: '#postalar', label: 'Postalar', icon: Mail }] },
+  {
+    label: 'Ayarlar',
+    items: [
+      { href: '#temel', label: 'Temel bilgiler', icon: Info },
+      { href: '#zaman', label: 'Zaman ve yer', icon: MapPin },
+      { href: '#bilet', label: 'Bilet ve kapı', icon: Ticket },
+      { href: '#gorunurluk', label: 'Görünürlük', icon: Eye },
+    ],
+  },
+];
+
 function SideNavExamples() {
-  const [active, setActive] = useState('#inbox');
+  const [event, onEvent] = useDemoNav('#sertifikalar');
+  const [folder, onFolder] = useDemoNav('#inbox');
   return (
-    <Example
-      title="Posta kutusu klasörleri"
-      description="Sol sütundaki bileşen listesi de bir SideNav."
-      align="start"
-    >
-      <div
-        className="max-w-56"
-        onClickCapture={(event) => {
-          const link = (event.target as HTMLElement).closest('a');
-          if (link) {
-            event.preventDefault();
-            setActive(link.getAttribute('href') ?? '#inbox');
-          }
-        }}
+    <>
+      <Example
+        title="Nesne sayfası menüsü"
+        description="Bölüm başlıkları, ikonlar ve sayılar; açık sayfa dolgu ve soldaki çizgiyle. Ok tuşları öğeler arasında gezer."
+        align="start"
       >
-        <SideNav
-          aria-label="Klasörler"
-          activeHref={active}
-          className="static max-h-none"
-          sections={[
-            {
-              items: [
-                {
-                  href: '#inbox',
-                  label: 'Gelen kutusu',
-                  badge: <span className="text-3xs text-subtle-foreground tabular-nums">12</span>,
-                },
-                { href: '#starred', label: 'Yıldızlı' },
-                { href: '#sent', label: 'Gönderilen' },
-              ],
-            },
-            {
-              label: 'Listeler',
-              items: [
-                { href: '#members', label: 'Tüm üyeler' },
-                { href: '#weblab', label: 'WebLab' },
-                { href: '#alumni', label: 'Mezunlar' },
-              ],
-            },
-          ]}
-        />
-      </div>
-    </Example>
+        <div className="max-w-60" onClickCapture={onEvent}>
+          <SideNav
+            aria-label="Etkinlik"
+            activeHref={event}
+            className="static max-h-none"
+            sections={EVENT_MENU}
+          />
+        </div>
+      </Example>
+      <Example
+        title="Posta kutusu klasörleri"
+        description="İkonsuz da olur. Sol sütundaki bileşen listesi de bir SideNav."
+        align="start"
+      >
+        <div className="max-w-60" onClickCapture={onFolder}>
+          <SideNav
+            aria-label="Klasörler"
+            activeHref={folder}
+            className="static max-h-none"
+            sections={[
+              {
+                items: [
+                  { href: '#inbox', label: 'Gelen kutusu', badge: 12 },
+                  { href: '#starred', label: 'Yıldızlı' },
+                  { href: '#sent', label: 'Gönderilen' },
+                ],
+              },
+              {
+                label: 'Listeler',
+                items: [
+                  { href: '#members', label: 'Tüm üyeler' },
+                  { href: '#weblab', label: 'WebLab' },
+                  { href: '#alumni', label: 'Mezunlar' },
+                ],
+              },
+            ]}
+          />
+        </div>
+      </Example>
+    </>
   );
 }
 
