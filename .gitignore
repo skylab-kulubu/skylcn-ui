@@ -12,3 +12,4 @@ next-env.d.ts
 .env*
 .DS_Store
 packages/skylcn-ui/README.md
+.wrangler
