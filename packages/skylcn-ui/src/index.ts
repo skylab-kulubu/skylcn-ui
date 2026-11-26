@@ -257,20 +257,34 @@ export { Sparkline, type SparklineProps } from './components/sparkline.js';
 export { SkylabLoader, type SkylabLoaderProps } from './components/skylab-loader.js';
 export { CoverImage, type CoverImageProps } from './components/cover-image.js';
 export {
+  ERROR_SCENE_KINDS,
+  ERROR_SCENE_VARIANTS,
   ErrorScene,
   errorSceneText,
+  pickErrorSceneVariant,
   type ErrorSceneKind,
   type ErrorSceneProps,
   type ErrorSceneText,
+  type ErrorSceneVariant,
+  type ErrorSceneVariantOf,
 } from './components/error-scene.js';
+export {
+  ErrorScenePage,
+  useErrorSceneVariant,
+  type ErrorScenePageProps,
+} from './components/error-scene-page.js';
 export type { SceneProps } from './components/scene-frame.js';
-// One scene each, so a page that knows its error ships only its own picture
+// One scene each, so a page that knows its error ships only its own pictures
 export { NotFoundScene } from './components/scene-not-found.js';
 export { ServerErrorScene } from './components/scene-server-error.js';
 export { ForbiddenScene } from './components/scene-forbidden.js';
 export { OfflineScene } from './components/scene-offline.js';
 export { SessionExpiredScene } from './components/scene-session-expired.js';
-export { MaintenanceScene } from './components/scene-maintenance.js';
+export { UnavailableScene } from './components/scene-unavailable.js';
+export { LinkExpiredScene } from './components/scene-link-expired.js';
+export { TooManyRequestsScene } from './components/scene-too-many-requests.js';
+export { CookiesBlockedScene } from './components/scene-cookies-blocked.js';
+export { FormClosedScene } from './components/scene-form-closed.js';
 export { StateCard, type StateCardProps } from './components/state-card.js';
 export { TaskPage, type TaskPageProps } from './components/task-page.js';
 export { Switch, ToggleRow, type SwitchProps, type ToggleRowProps } from './components/switch.js';

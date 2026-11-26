@@ -70,32 +70,41 @@ Every component has live examples in the docs app's playground (`/playground/com
 - **Forms:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, DateTimePicker, Calendar, Dropzone, OTPField
 - **Overlays:** Dialog, ConfirmDialog, Drawer (right, left, bottom; closes with a swipe), Popover, PreviewCard, Tooltip, Menu, ContextMenu, Toast, CommandPalette
 - **Navigation:** AppShell, SideNav, NavigationMenu, Tabs, TabsNav, Accordion, Stepper, Breadcrumbs, Pagination, PageHeader
-- **Data:** DataList, DataTable, ListPanel, Section, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, ErrorScene, CoverImage, Skeleton
+- **Data:** DataList, DataTable, ListPanel, Section, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, ErrorScene, ErrorScenePage, CoverImage, Skeleton
 - **Motion:** Reveal, Collapse, Swap, AnimatedNumber
 
 The playground also has scenarios, whole pages built from these components, and a page builder for composing a page from blocks and copying its code.
 
 ## Error pages
 
-A whole-page error shows the club's scene for its kind, the same in every product: 404 GECEKODU's coder asleep at the desk, 500 the ARTLAB robot crying, 403 the SkyDays key that will not turn, offline the YıldızJam controller unplugged, an expired session SkyCamp's fire gone out, maintenance WEBLAB's window under repair. `errorSceneText(kind, locale)` gives the matching title, one line, code and button label.
+A whole-page error shows one of the club's scenes for its kind, the same set in every product, each a moment a member knows from GECEKODU, SKYDAYS, ARTLAB, YıldızJam, WEBLAB, ALGOLAB or YıldızPlace. There are ten kinds: `notFound` (404), `error` (500), `forbidden` (403), `offline`, `sessionExpired`, `unavailable` (502, 503, 504 and timeouts), `linkExpired` (410), `tooManyRequests` (429), `cookiesBlocked` and `formClosed`. Each has two or three drawings, and each drawing has its own words: `errorSceneText(kind, locale, variant)` gives the title, one sentence, small code and button label.
+
+`ErrorScenePage` is the whole page, with a random drawing on each visit:
 
 ```tsx
-import { Button, NotFoundScene, StatusPage, errorSceneText } from '@skylab-kulubu/skylcn-ui';
+// app/not-found.tsx
+import { ErrorScenePage } from '@skylab-kulubu/skylcn-ui';
 
-const text = errorSceneText('notFound');
-
-<StatusPage
-  scene={<NotFoundScene />}
-  code={text.code}
-  title={text.title}
-  description={text.description}
->
-  <Button variant="primary">{text.action}</Button>
-</StatusPage>;
+export default function NotFound() {
+  return <ErrorScenePage kind="notFound" href="/" />;
+}
 ```
 
-- `StateCard` takes a scene in `top`, `TaskPage` in `top` as well; `ErrorScene kind="…"` picks one at run time but brings all six, so a page that knows its error imports that scene alone.
-- The scenes are inline SVG with CSS animation: no script, no inline style, nothing random, so they run under a strict Content-Security-Policy and the server and browser draw the same frame. Reduced motion, `data-motion="reduced"` or `animated={false}` hold the still frame, which tells the story alone.
+```tsx
+// app/error.tsx
+'use client';
+
+import { ErrorScenePage } from '@skylab-kulubu/skylcn-ui';
+
+export default function Error({ reset }: { reset: () => void }) {
+  return <ErrorScenePage kind="error" onAction={reset} />;
+}
+```
+
+- The drawing is picked in the browser, so a static or cached page varies too. A server-rendered page stays out of sight for the moment it takes to hydrate (`@media (scripting: enabled)`), so one drawing never swaps for another in view; without script the first drawing shows. A server that renders per request can pick instead and skip that moment: `variant={pickErrorSceneVariant('notFound')}`, or with a seed (`pickErrorSceneVariant(kind, requestId)`) for the same drawing on the same seed.
+- `href` makes the button a link (through the provider's link component), `onAction` a button; `children` add buttons after it. `title`, `description` and `code` override the words (`code={null}` leaves the line out); `locale` defaults to the provider's.
+- Built by hand: `<ErrorScene kind="notFound" variant="B" />` draws one drawing; `NotFoundScene`, `ServerErrorScene`, `ForbiddenScene`, `OfflineScene`, `SessionExpiredScene`, `UnavailableScene`, `LinkExpiredScene`, `TooManyRequestsScene`, `CookiesBlockedScene` and `FormClosedScene` bring only their own kind. `StatusPage` takes one in `scene`, `TaskPage` and `StateCard` in `top`.
+- The scenes are inline SVG with CSS animation: no script, no inline style and nothing random inside, so they run under a strict Content-Security-Policy and the server and browser draw the same frame for the same drawing. Reduced motion, `data-motion="reduced"` or `animated={false}` hold the still frame, which tells the story alone.
 - Decoration only (`aria-hidden`): the title and line say what happened. Colours come from the theme; over a surface other than the page, set `--skylcn-scene-backdrop` to it.
 - Only whole-page and route errors take a scene; errors inside a list or a form keep their Notice or StateCard icon.
 

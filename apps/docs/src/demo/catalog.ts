@@ -665,12 +665,20 @@ export const ENTRIES: Entry[] = [
     name: 'ErrorScene',
     category: 'data',
     description:
-      'Tam sayfa hataların hareketli sahneleri; her hata türüne her üründe aynı sahne: 404 GECEKODU, 500 ARTLAB, 403 SkyDays, çevrimdışı YıldızJam, oturum SkyCamp, bakım WEBLAB.',
-    imports: ['ErrorScene', 'errorSceneText', 'NotFoundScene', 'StatusPage', 'TaskPage'],
+      'Tam sayfa hataların hareketli sahneleri: on tür (404, 500, 403, çevrimdışı, oturum, ulaşılamıyor, 410, 429, çerez, form kapandı), her birinin iki ya da üç çizimi ve kendi metni. ErrorScenePage her gelişte birini rastgele seçer.',
+    imports: [
+      'ErrorScenePage',
+      'ErrorScene',
+      'errorSceneText',
+      'pickErrorSceneVariant',
+      'NotFoundScene',
+      'StatusPage',
+      'TaskPage',
+    ],
     a11y: [
       'Sahne süstür (aria-hidden); ne olduğunu başlık ve satır söyler.',
       'Satır içi stil yok; sıkı Content-Security-Policy altında çalışır.',
-      'Rastgelelik yok: sunucu ve tarayıcı aynı kareyi çizer.',
+      'Çizimin içinde rastgelelik yok: aynı çizimi sunucu ve tarayıcı aynı çizer. ErrorScenePage çizimi tarayıcıda seçer; sunucuda çizilen sayfa hidrasyon anı boyunca gizli kalır, betik yoksa ilk çizim görünür.',
     ],
     motion: [
       'Yalnız CSS animasyonu. Hareketi azaltınca (sistem ya da data-motion="reduced") sahne anlamlı tek karede durur; animated={false} de aynısını yapar.',
