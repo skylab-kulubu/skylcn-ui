@@ -2,7 +2,8 @@ import { act, render, screen } from '@testing-library/react';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import theme from '../styles/theme-base.css?raw';
+import theme from '../styles/error-scene.css?raw';
+import themeBase from '../styles/theme-base.css?raw';
 import { axeViolations } from '../test/axe.js';
 import { ErrorScenePage } from './error-scene-page.js';
 import {
@@ -113,6 +114,12 @@ describe('ErrorScene', () => {
     const ids = [...container.querySelectorAll('clipPath')].map((clip) => clip.id);
     expect(ids).toHaveLength(2);
     expect(new Set(ids).size).toBe(2);
+  });
+
+  it('comes with the theme and stands alone with fallback colours', () => {
+    expect(themeBase).toContain("@import './error-scene.css';");
+    expect(theme).toContain('--skylcn-scene-ink: var(--secondary-foreground, #e5e5e5);');
+    expect(theme).not.toMatch(/@apply|@theme|@utility|@custom-variant/);
   });
 
   it('stops every part under reduced motion, the in-product setting and data-still', () => {
