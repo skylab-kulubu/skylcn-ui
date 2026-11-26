@@ -95,18 +95,35 @@ export default function NotFound() {
 'use client';
 
 import { OfflineScenePage, ServerErrorScenePage } from '@skylab-kulubu/skylcn-ui';
+import { useSyncExternalStore } from 'react';
+
+function onConnectionChange(change: () => void) {
+  window.addEventListener('online', change);
+  window.addEventListener('offline', change);
+  return () => {
+    window.removeEventListener('online', change);
+    window.removeEventListener('offline', change);
+  };
+}
 
 export default function Error({ reset }: { reset: () => void }) {
-  if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    return <OfflineScenePage onAction={reset} />;
-  }
-  return <ServerErrorScenePage onAction={reset} />;
+  // Read in the browser only: the server and the first browser render both say online
+  const offline = useSyncExternalStore(
+    onConnectionChange,
+    () => !navigator.onLine,
+    () => false,
+  );
+  return offline ? (
+    <OfflineScenePage onAction={reset} />
+  ) : (
+    <ServerErrorScenePage onAction={reset} />
+  );
 }
 ```
 
 The kinds' pages: `NotFoundScenePage`, `ServerErrorScenePage`, `ForbiddenScenePage`, `OfflineScenePage`, `SessionExpiredScenePage`, `UnavailableScenePage`, `LinkExpiredScenePage`, `TooManyRequestsScenePage`, `CookiesBlockedScenePage` and `FormClosedScenePage`; they take the same props as `ErrorScenePage` but `kind`.
 
-- The drawing is picked in the browser, so a static or cached page varies too. A server-rendered page stays out of sight for the moment it takes to hydrate, so one drawing never swaps for another in view. Without script the first drawing shows at once, and a page that has not hydrated after 1.5 seconds (its script failed to load, hydration failed) shows it then.
+- The drawing is picked in the browser, so a static or cached page varies too. A server-rendered page stays out of sight while it hydrates, so a page that hydrates within 1.5 seconds shows its pick straight away. Past 1.5 seconds the first drawing shows, and if the page still hydrates after that, its pick takes the first drawing's place. Without script, or when the script never loads or hydration fails, the first drawing stays.
 - A page that never hydrates (static HTML, `renderToStaticMarkup`, a page without its bundle) passes `variant`. So can a server that renders per request, to skip the hidden moment: `variant={pickErrorSceneVariant('notFound')}`, or with a seed (`pickErrorSceneVariant(kind, requestId)`) for the same drawing on the same seed.
 - `status` chooses where a kind's drawings answer different causes: `unavailable` draws B ("Süre sınırı aşıldı", 504) for `status={504}` or a timeout and A for 502 and 503. Without a status it draws A; the time limit is never picked at random.
 - `href` makes the button a link (through the provider's link component), `onAction` a button (from a client page); `children` add buttons after it. `title`, `description` and `code` override the words (`code={null}` leaves the line out); `locale` defaults to the provider's.

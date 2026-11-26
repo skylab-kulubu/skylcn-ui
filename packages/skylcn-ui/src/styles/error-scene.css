@@ -230,11 +230,12 @@
 
   /*
    * ErrorScenePage picks its drawing in the browser: a server-rendered page stays out of sight
-   * for the moment it takes to hydrate, so one drawing never swaps for another in view. The
-   * hiding is the reveal animation's delay, so a page whose script never runs or fails to
-   * hydrate still shows its first drawing after 1.5 seconds, and one that turns animations off
-   * altogether shows it at once; without script it shows straight away. It sits outside
-   * .skylcn-scene, so the reduced-motion rules above leave it alone.
+   * while it hydrates, so one that hydrates within 1.5 seconds shows its pick straight away.
+   * The hiding is the reveal animation's delay: past 1.5 seconds the first drawing shows (and
+   * the pick replaces it if hydration comes later), a page whose script never runs or fails to
+   * hydrate keeps it, and one that turns animations off altogether shows it at once; without
+   * script it shows straight away. It sits outside .skylcn-scene, so the reduced-motion rules
+   * above leave it alone.
    */
   @media (scripting: enabled) {
     .skylcn-error-pending {

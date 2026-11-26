@@ -78,9 +78,10 @@ export function ErrorScene({ kind, ...props }: ErrorSceneProps) {
  * kind's own page instead (`ServerErrorScenePage`, `OfflineScenePage`…), since this one
  * brings every kind's drawings into its bundle.
  *
- * Picked in the browser, a server-rendered page stays hidden for the moment it takes to
- * hydrate, so nobody sees one drawing swap for another; without script, or when it has not
- * hydrated after 1.5 seconds, it shows the first drawing.
+ * Picked in the browser, a server-rendered page stays hidden while it hydrates, so a page that
+ * hydrates within 1.5 seconds shows its pick straight away. Past 1.5 seconds it shows the
+ * first drawing, which the pick replaces if the page hydrates later; without script, or when
+ * hydration never comes, the first drawing stays.
  */
 export function ErrorScenePage({ kind, ...props }: ErrorScenePageProps & { kind: ErrorSceneKind }) {
   return <ScenePage kind={kind} Scene={SCENES[kind]} {...props} />;
