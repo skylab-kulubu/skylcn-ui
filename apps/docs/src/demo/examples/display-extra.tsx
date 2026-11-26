@@ -22,7 +22,8 @@ import {
   StatusPage,
   ErrorScene,
   errorSceneText,
-  type ErrorSceneKind,
+  ERROR_SCENE_KINDS,
+  ERROR_SCENE_VARIANTS,
   NotFoundScene,
   ServerErrorScene,
   TaskPage,
@@ -502,27 +503,18 @@ function StatusPageExamples() {
   );
 }
 
-const SCENE_KINDS: ErrorSceneKind[] = [
-  'notFound',
-  'error',
-  'forbidden',
-  'offline',
-  'sessionExpired',
-  'maintenance',
-];
-
 function ErrorSceneExamples() {
   const notFound = errorSceneText('notFound');
   const error = errorSceneText('error');
   return (
     <>
       <Example
-        title="Altı sahne"
-        description="Varsayılan metinler errorSceneText(kind) ile gelir; düğme tektir."
+        title="On tür, her birinin ilk çizimi"
+        description="Her türün iki ya da üç çizimi var; metinler errorSceneText(kind, locale, variant) ile gelir, düğme tektir. Hepsi /errors sayfasında."
         align="start"
       >
         <div className="grid w-full gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {SCENE_KINDS.map((kind) => {
+          {ERROR_SCENE_KINDS.map((kind) => {
             const text = errorSceneText(kind);
             return (
               <div
@@ -531,8 +523,7 @@ function ErrorSceneExamples() {
               >
                 <ErrorScene kind={kind} className="max-w-56" />
                 <p className="font-mono text-2xs text-subtle-foreground">
-                  {kind}
-                  {text.code ? ` · ${text.code}` : ''}
+                  {kind} · {ERROR_SCENE_VARIANTS[kind].join(' ')} · {text.code}
                 </p>
                 <p className="text-sm font-semibold text-foreground">{text.title}</p>
                 <p className="text-xs text-muted-foreground">{text.description}</p>

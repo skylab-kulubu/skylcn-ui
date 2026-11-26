@@ -70,32 +70,69 @@ Every component has live examples in the docs app's playground (`/playground/com
 - **Forms:** Field, Input, Textarea, Select, Combobox, MultiSelect, Checkbox, RadioGroup, Switch, ToggleRow, NumberField, Slider, DatePicker, DateRangePicker, DateTimePicker, Calendar, Dropzone, OTPField
 - **Overlays:** Dialog, ConfirmDialog, Drawer (right, left, bottom; closes with a swipe), Popover, PreviewCard, Tooltip, Menu, ContextMenu, Toast, CommandPalette
 - **Navigation:** AppShell, SideNav, NavigationMenu, Tabs, TabsNav, Accordion, Stepper, Breadcrumbs, Pagination, PageHeader
-- **Data:** DataList, DataTable, ListPanel, Section, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, ErrorScene, CoverImage, Skeleton
+- **Data:** DataList, DataTable, ListPanel, Section, Card, StatCard, Badge, StatusDot, Avatar, AvatarGroup, DescriptionList, Timeline, Tree, MonthCalendar, BarList, ProportionBar, TrendBadge, Sparkline, Notice, Banner, BulkBar, Progress, Meter, Kbd, StateCard, StatusPage, TaskPage, ErrorScene, ErrorScenePage, CoverImage, Skeleton
 - **Motion:** Reveal, Collapse, Swap, AnimatedNumber
 
 The playground also has scenarios, whole pages built from these components, and a page builder for composing a page from blocks and copying its code.
 
 ## Error pages
 
-A whole-page error shows the club's scene for its kind, the same in every product: 404 GECEKODU's coder asleep at the desk, 500 the ARTLAB robot crying, 403 the SkyDays key that will not turn, offline the YıldızJam controller unplugged, an expired session SkyCamp's fire gone out, maintenance WEBLAB's window under repair. `errorSceneText(kind, locale)` gives the matching title, one line, code and button label.
+A whole-page error shows one of the club's scenes for its kind, the same set in every product, each a moment a member knows from GECEKODU, SKYDAYS, ARTLAB, YıldızJam, WEBLAB, ALGOLAB or YıldızPlace. There are ten kinds: `notFound` (404), `error` (500), `forbidden` (403), `offline`, `sessionExpired`, `unavailable` (502, 503, 504 and timeouts), `linkExpired` (410), `tooManyRequests` (429), `cookiesBlocked` and `formClosed`. Each has two or three drawings, and each drawing has its own words: `errorSceneText(kind, locale, variant)` gives the title, one sentence, small code and button label.
+
+`ErrorScenePage` is the whole page, with a random drawing on each visit. A server page uses it as it is: the browser gets that kind's drawings as markup and no scene code. A client page (`error.tsx`, `global-error.tsx`) imports its kind's own page instead, which keeps the other kinds out of its bundle (one kind's drawings are 1.5 to 3.3 KB gzipped, all ten 15.5 KB):
 
 ```tsx
-import { Button, NotFoundScene, StatusPage, errorSceneText } from '@skylab-kulubu/skylcn-ui';
+// app/not-found.tsx (a server component)
+import { ErrorScenePage } from '@skylab-kulubu/skylcn-ui';
 
-const text = errorSceneText('notFound');
-
-<StatusPage
-  scene={<NotFoundScene />}
-  code={text.code}
-  title={text.title}
-  description={text.description}
->
-  <Button variant="primary">{text.action}</Button>
-</StatusPage>;
+export default function NotFound() {
+  return <ErrorScenePage kind="notFound" href="/" />;
+}
 ```
 
-- `StateCard` takes a scene in `top`, `TaskPage` in `top` as well; `ErrorScene kind="…"` picks one at run time but brings all six, so a page that knows its error imports that scene alone.
-- The scenes are inline SVG with CSS animation: no script, no inline style, nothing random, so they run under a strict Content-Security-Policy and the server and browser draw the same frame. Reduced motion, `data-motion="reduced"` or `animated={false}` hold the still frame, which tells the story alone.
+```tsx
+// app/error.tsx
+'use client';
+
+import { OfflineScenePage, ServerErrorScenePage } from '@skylab-kulubu/skylcn-ui';
+import { useSyncExternalStore } from 'react';
+
+function onConnectionChange(change: () => void) {
+  window.addEventListener('online', change);
+  window.addEventListener('offline', change);
+  return () => {
+    window.removeEventListener('online', change);
+    window.removeEventListener('offline', change);
+  };
+}
+
+export default function Error({ reset }: { reset: () => void }) {
+  // Read in the browser only: the server and the first browser render both say online
+  const offline = useSyncExternalStore(
+    onConnectionChange,
+    () => !navigator.onLine,
+    () => false,
+  );
+  return offline ? (
+    <OfflineScenePage onAction={reset} />
+  ) : (
+    <ServerErrorScenePage onAction={reset} />
+  );
+}
+```
+
+The kinds' pages: `NotFoundScenePage`, `ServerErrorScenePage`, `ForbiddenScenePage`, `OfflineScenePage`, `SessionExpiredScenePage`, `UnavailableScenePage`, `LinkExpiredScenePage`, `TooManyRequestsScenePage`, `CookiesBlockedScenePage` and `FormClosedScenePage`; they take the same props as `ErrorScenePage` but `kind`.
+
+- The drawing is picked in the browser, so a static or cached page varies too. A server-rendered page stays out of sight while it hydrates, so a page that hydrates within 1.5 seconds shows its pick straight away. Past 1.5 seconds the first drawing shows, and if the page still hydrates after that, its pick takes the first drawing's place. Without script, or when the script never loads or hydration fails, the first drawing stays.
+- A page that never hydrates (static HTML, `renderToStaticMarkup`, a page without its bundle) passes `variant`. So can a server that renders per request, to skip the hidden moment: `variant={pickErrorSceneVariant('notFound')}`, or with a seed (`pickErrorSceneVariant(kind, requestId)`) for the same drawing on the same seed.
+- `status` chooses where a kind's drawings answer different causes: `unavailable` draws B ("Süre sınırı aşıldı", 504) for `status={504}` or a timeout and A for 502 and 503. Without a status it draws A; the time limit is never picked at random.
+- `href` makes the button a link (through the provider's link component), `onAction` a button (from a client page); `children` add buttons after it. `title`, `description` and `code` override the words (`code={null}` leaves the line out); `locale` defaults to the provider's.
+- The title is the page's `h1`, with `as="div"` too: inside an app's frame, the frame around it should not have an `h1` of its own.
+- Built by hand: `<ErrorScene kind="notFound" variant="B" />` draws one drawing; `NotFoundScene`, `ServerErrorScene`, `ForbiddenScene`, `OfflineScene`, `SessionExpiredScene`, `UnavailableScene`, `LinkExpiredScene`, `TooManyRequestsScene`, `CookiesBlockedScene` and `FormClosedScene` bring only their own kind. `StatusPage` takes one in `scene`, `TaskPage` and `StateCard` in `top`.
+- Two stylesheets have the scenes' name. `@skylab-kulubu/skylcn-ui/error-scene.css` is the scenes' rules alone, for an app without Tailwind or without skylcn-ui's theme (the Keycloak login theme, an event site): plain CSS with the dark theme's colours where the page has no skylcn-ui tokens. `theme-base.css` already imports it. `@skylab-kulubu/skylcn-ui/sources/error-scene.css`, like every `sources/*.css`, only points Tailwind at the component's files; an app that imports the theme with per-component sources adds `sources/error-scene.css` for `ErrorScenePage` or the kind's own source (`sources/scene-not-found.css`).
+- Without the theme, `ErrorScene`, `errorSceneText` and `useErrorSceneVariant` go in the app's own layout: put `skylcn-error-pending` on the block while the hook returns `undefined`.
+- A page that renders no React takes `@skylab-kulubu/skylcn-ui/error-scenes/`: one SVG per drawing (`<kind>-<variant>.svg`, with fallback colours), `<kind>.json` with a kind's variants, the ones picked at random, its words and its drawings' markup, `index.json` with every kind's variants and words, and a copy of `error-scene.css`.
+- The scenes are inline SVG with CSS animation: no script, no inline style and nothing random inside, so they run under a strict Content-Security-Policy and the server and browser draw the same frame for the same drawing. Reduced motion, `data-motion="reduced"` or `animated={false}` hold the still frame, which tells the story alone.
 - Decoration only (`aria-hidden`): the title and line say what happened. Colours come from the theme; over a surface other than the page, set `--skylcn-scene-backdrop` to it.
 - Only whole-page and route errors take a scene; errors inside a list or a form keep their Notice or StateCard icon.
 

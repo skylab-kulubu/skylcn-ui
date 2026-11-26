@@ -2,7 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { writeErrorScenes } from './error-scenes.mjs';
 import { sourcesStylesheet, themeSources } from './theme-sources.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,6 +30,18 @@ for (const file of readdirSync(join(root, 'src/styles'))) {
 mkdirSync(join(next, 'styles/sources'), { recursive: true });
 for (const { name, files } of themeSources(next)) {
   writeFileSync(join(next, 'styles/sources', `${name}.css`), sourcesStylesheet(name, files));
+}
+
+// The error scenes as markup alone, for a page that renders no React (see error-scenes.mjs)
+{
+  const require = createRequire(import.meta.url);
+  writeErrorScenes({
+    scenes: await import(pathToFileURL(join(next, 'components/error-scene.js')).href),
+    createElement: require('react').createElement,
+    renderToStaticMarkup: require('react-dom/server').renderToStaticMarkup,
+    css: join(next, 'styles/error-scene.css'),
+    out: join(next, 'error-scenes'),
+  });
 }
 
 rmSync(old, { recursive: true, force: true });

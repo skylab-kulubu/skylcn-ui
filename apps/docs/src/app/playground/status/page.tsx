@@ -1,9 +1,7 @@
 'use client';
 
 import {
-  Button,
-  ErrorScene,
-  errorSceneText,
+  ErrorScenePage,
   PageHeader,
   Select,
   StatusPage,
@@ -17,7 +15,11 @@ const SCREENS = [
   { value: 'forbidden', label: '403 · Yetki yok' },
   { value: 'offline', label: 'Çevrimdışı' },
   { value: 'sessionExpired', label: 'Oturum doldu' },
-  { value: 'maintenance', label: 'Bakım' },
+  { value: 'unavailable', label: 'Ulaşılamıyor' },
+  { value: 'linkExpired', label: '410 · Bağlantı doldu' },
+  { value: 'tooManyRequests', label: '429 · Çok deneme' },
+  { value: 'cookiesBlocked', label: 'Çerezler kapalı' },
+  { value: 'formClosed', label: 'Form kapandı' },
   { value: 'redirect', label: 'Yönlendirme' },
 ] as const;
 
@@ -25,12 +27,11 @@ type Screen = (typeof SCREENS)[number]['value'];
 
 export default function StatusScenario() {
   const [screen, setScreen] = useState<Screen>('notFound');
-  const text = screen === 'redirect' ? null : errorSceneText(screen as ErrorSceneKind);
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
         title="Hata ve yönlendirme"
-        description="Tam sayfa durumlar ve sahneleri; burada çerçeve içinde gösteriliyor."
+        description="Tam sayfa durumlar ve sahneleri; burada çerçeve içinde gösteriliyor. Her seçişte türün çizimlerinden biri rastgele gelir."
       >
         <Select
           aria-label="Ekran"
@@ -40,18 +41,14 @@ export default function StatusScenario() {
         />
       </PageHeader>
       <div className="overflow-hidden rounded-xl border border-border">
-        {text ? (
-          <StatusPage
+        {screen !== 'redirect' ? (
+          <ErrorScenePage
             as="div"
             key={screen}
             className="min-h-[32rem] py-10"
-            scene={<ErrorScene kind={screen as ErrorSceneKind} />}
-            code={text.code}
-            title={text.title}
-            description={text.description}
-          >
-            <Button variant="primary">{text.action}</Button>
-          </StatusPage>
+            kind={screen as ErrorSceneKind}
+            onAction={() => undefined}
+          />
         ) : (
           <StatusPage
             as="div"
