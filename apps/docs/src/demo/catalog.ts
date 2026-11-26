@@ -668,6 +668,7 @@ export const ENTRIES: Entry[] = [
       'Tam sayfa hataların hareketli sahneleri: on tür (404, 500, 403, çevrimdışı, oturum, ulaşılamıyor, 410, 429, çerez, form kapandı), her birinin iki ya da üç çizimi ve kendi metni. ErrorScenePage her gelişte birini rastgele seçer.',
     imports: [
       'ErrorScenePage',
+      'ServerErrorScenePage',
       'ErrorScene',
       'errorSceneText',
       'pickErrorSceneVariant',

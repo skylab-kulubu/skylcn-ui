@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps, Pixels, type SceneTone } from './scene-frame.js';
 
 // YıldızPlace's star, cell by cell
@@ -395,4 +396,12 @@ export function TooManyRequestsScene(props: SceneProps<'tooManyRequests'>) {
       {...props}
     />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function TooManyRequestsScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="tooManyRequests" Scene={TooManyRequestsScene} {...props} />;
 }

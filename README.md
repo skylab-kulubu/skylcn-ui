@@ -79,10 +79,10 @@ The playground also has scenarios, whole pages built from these components, and 
 
 A whole-page error shows one of the club's scenes for its kind, the same set in every product, each a moment a member knows from GECEKODU, SKYDAYS, ARTLAB, YıldızJam, WEBLAB, ALGOLAB or YıldızPlace. There are ten kinds: `notFound` (404), `error` (500), `forbidden` (403), `offline`, `sessionExpired`, `unavailable` (502, 503, 504 and timeouts), `linkExpired` (410), `tooManyRequests` (429), `cookiesBlocked` and `formClosed`. Each has two or three drawings, and each drawing has its own words: `errorSceneText(kind, locale, variant)` gives the title, one sentence, small code and button label.
 
-`ErrorScenePage` is the whole page, with a random drawing on each visit:
+`ErrorScenePage` is the whole page, with a random drawing on each visit. A server page uses it as it is: the browser gets that kind's drawings as markup and no scene code. A client page (`error.tsx`, `global-error.tsx`) imports its kind's own page instead, which keeps the other kinds out of its bundle (one kind's drawings are 1.5 to 3.3 KB gzipped, all ten 15.5 KB):
 
 ```tsx
-// app/not-found.tsx
+// app/not-found.tsx (a server component)
 import { ErrorScenePage } from '@skylab-kulubu/skylcn-ui';
 
 export default function NotFound() {
@@ -94,17 +94,27 @@ export default function NotFound() {
 // app/error.tsx
 'use client';
 
-import { ErrorScenePage } from '@skylab-kulubu/skylcn-ui';
+import { OfflineScenePage, ServerErrorScenePage } from '@skylab-kulubu/skylcn-ui';
 
 export default function Error({ reset }: { reset: () => void }) {
-  return <ErrorScenePage kind="error" onAction={reset} />;
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    return <OfflineScenePage onAction={reset} />;
+  }
+  return <ServerErrorScenePage onAction={reset} />;
 }
 ```
 
-- The drawing is picked in the browser, so a static or cached page varies too. A server-rendered page stays out of sight for the moment it takes to hydrate (`@media (scripting: enabled)`), so one drawing never swaps for another in view; without script the first drawing shows. A server that renders per request can pick instead and skip that moment: `variant={pickErrorSceneVariant('notFound')}`, or with a seed (`pickErrorSceneVariant(kind, requestId)`) for the same drawing on the same seed.
-- `href` makes the button a link (through the provider's link component), `onAction` a button; `children` add buttons after it. `title`, `description` and `code` override the words (`code={null}` leaves the line out); `locale` defaults to the provider's.
+The kinds' pages: `NotFoundScenePage`, `ServerErrorScenePage`, `ForbiddenScenePage`, `OfflineScenePage`, `SessionExpiredScenePage`, `UnavailableScenePage`, `LinkExpiredScenePage`, `TooManyRequestsScenePage`, `CookiesBlockedScenePage` and `FormClosedScenePage`; they take the same props as `ErrorScenePage` but `kind`.
+
+- The drawing is picked in the browser, so a static or cached page varies too. A server-rendered page stays out of sight for the moment it takes to hydrate, so one drawing never swaps for another in view. Without script the first drawing shows at once, and a page that has not hydrated after 1.5 seconds (its script failed to load, hydration failed) shows it then.
+- A page that never hydrates (static HTML, `renderToStaticMarkup`, a page without its bundle) passes `variant`. So can a server that renders per request, to skip the hidden moment: `variant={pickErrorSceneVariant('notFound')}`, or with a seed (`pickErrorSceneVariant(kind, requestId)`) for the same drawing on the same seed.
+- `status` chooses where a kind's drawings answer different causes: `unavailable` draws B ("Süre sınırı aşıldı", 504) for `status={504}` or a timeout and A for 502 and 503. Without a status it draws A; the time limit is never picked at random.
+- `href` makes the button a link (through the provider's link component), `onAction` a button (from a client page); `children` add buttons after it. `title`, `description` and `code` override the words (`code={null}` leaves the line out); `locale` defaults to the provider's.
+- The title is the page's `h1`, with `as="div"` too: inside an app's frame, the frame around it should not have an `h1` of its own.
 - Built by hand: `<ErrorScene kind="notFound" variant="B" />` draws one drawing; `NotFoundScene`, `ServerErrorScene`, `ForbiddenScene`, `OfflineScene`, `SessionExpiredScene`, `UnavailableScene`, `LinkExpiredScene`, `TooManyRequestsScene`, `CookiesBlockedScene` and `FormClosedScene` bring only their own kind. `StatusPage` takes one in `scene`, `TaskPage` and `StateCard` in `top`.
-- Without Tailwind or skylcn-ui's theme (the Keycloak login theme, an event site), `import '@skylab-kulubu/skylcn-ui/error-scene.css'` brings the scenes' rules alone, with the dark theme's colours where the page has no skylcn-ui tokens; `ErrorScene`, `errorSceneText` and `useErrorSceneVariant` then go in the app's own layout (put `skylcn-error-pending` on the block while the hook returns `undefined`). A page that renders no React inlines a drawing from `@skylab-kulubu/skylcn-ui/error-scenes/<kind>-<variant>.svg`; `error-scenes/index.json` lists every kind's variants and words.
+- Two stylesheets have the scenes' name. `@skylab-kulubu/skylcn-ui/error-scene.css` is the scenes' rules alone, for an app without Tailwind or without skylcn-ui's theme (the Keycloak login theme, an event site): plain CSS with the dark theme's colours where the page has no skylcn-ui tokens. `theme-base.css` already imports it. `@skylab-kulubu/skylcn-ui/sources/error-scene.css`, like every `sources/*.css`, only points Tailwind at the component's files; an app that imports the theme with per-component sources adds `sources/error-scene.css` for `ErrorScenePage` or the kind's own source (`sources/scene-not-found.css`).
+- Without the theme, `ErrorScene`, `errorSceneText` and `useErrorSceneVariant` go in the app's own layout: put `skylcn-error-pending` on the block while the hook returns `undefined`.
+- A page that renders no React takes `@skylab-kulubu/skylcn-ui/error-scenes/`: one SVG per drawing (`<kind>-<variant>.svg`, with fallback colours), `<kind>.json` with a kind's variants, the ones picked at random, its words and its drawings' markup, `index.json` with every kind's variants and words, and a copy of `error-scene.css`.
 - The scenes are inline SVG with CSS animation: no script, no inline style and nothing random inside, so they run under a strict Content-Security-Policy and the server and browser draw the same frame for the same drawing. Reduced motion, `data-motion="reduced"` or `animated={false}` hold the still frame, which tells the story alone.
 - Decoration only (`aria-hidden`): the title and line say what happened. Colours come from the theme; over a surface other than the page, set `--skylcn-scene-backdrop` to it.
 - Only whole-page and route errors take a scene; errors inside a list or a form keep their Notice or StateCard icon.

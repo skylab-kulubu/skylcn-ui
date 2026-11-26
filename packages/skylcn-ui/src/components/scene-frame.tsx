@@ -42,6 +42,50 @@ export type SceneProps<K extends ErrorSceneKind = ErrorSceneKind> = {
   className?: string;
 };
 
+/**
+ * The drawings a visit may land on at random. A drawing tied to one cause is shown only for
+ * it: unavailable's B ("Süre sınırı aşıldı") answers a 504 or a timeout alone.
+ */
+export const ERROR_SCENE_RANDOM: { [K in ErrorSceneKind]: readonly ErrorSceneVariantOf<K>[] } = {
+  ...ERROR_SCENE_VARIANTS,
+  unavailable: ['A'],
+};
+
+/**
+ * The drawing an HTTP status asks for, if it asks for one: for `unavailable`, 504 (a
+ * timeout) draws B and any other status (502, 503) A.
+ */
+export function statusSceneVariant(
+  kind: ErrorSceneKind,
+  status: number | undefined,
+): ErrorSceneVariant | undefined {
+  if (kind === 'unavailable' && status !== undefined) return status === 504 ? 'B' : 'A';
+  return undefined;
+}
+
+/**
+ * One of the kind's random drawings. Pass a `seed` (a request id, the path) to get the same
+ * one for the same seed, for instance on the server and again in the browser.
+ */
+export function pickErrorSceneVariant(
+  kind: ErrorSceneKind,
+  seed?: string | number,
+): ErrorSceneVariant {
+  const variants = ERROR_SCENE_RANDOM[kind];
+  const unit = seed === undefined ? Math.random() : hashToUnit(String(seed));
+  return variants[Math.min(variants.length - 1, Math.floor(unit * variants.length))];
+}
+
+// FNV-1a, scaled into [0, 1)
+function hashToUnit(text: string) {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < text.length; index++) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0) / 0x100000000;
+}
+
 /** The variant to draw: the one asked for when the kind has it, else the first. */
 export function sceneVariant<K extends ErrorSceneKind>(
   kind: K,

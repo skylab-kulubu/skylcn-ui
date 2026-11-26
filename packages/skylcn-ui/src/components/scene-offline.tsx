@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: YıldızJam's pause menu (1UP, DURAKLATILDI, DEVAM ET) above the pixel controller, its plug swinging loose from the strip. */
@@ -258,4 +259,12 @@ export function OfflineScene(props: SceneProps<'offline'>) {
   return (
     <SceneFrame kind="offline" drawings={{ A: YildizJamPaused, B: YourInternet }} {...props} />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function OfflineScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="offline" Scene={OfflineScene} {...props} />;
 }

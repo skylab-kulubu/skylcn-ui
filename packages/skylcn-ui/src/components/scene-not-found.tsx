@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: GECEKODU at 03:47 on a Friday night: `cd sayfa` answers 404 and the page drifts off the desk. */
@@ -470,4 +471,12 @@ export function NotFoundScene(props: SceneProps<'notFound'>) {
       {...props}
     />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function NotFoundScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="notFound" Scene={NotFoundScene} {...props} />;
 }

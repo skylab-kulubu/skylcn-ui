@@ -14,16 +14,21 @@ import { OfflineScene } from './scene-offline.js';
 import { ServerErrorScene } from './scene-server-error.js';
 import { SessionExpiredScene } from './scene-session-expired.js';
 import { TooManyRequestsScene } from './scene-too-many-requests.js';
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { UnavailableScene } from './scene-unavailable.js';
 
 // No 'use client': a server page (not-found.tsx) can draw a scene.
 
 export {
+  ERROR_SCENE_RANDOM,
   ERROR_SCENE_VARIANTS,
+  pickErrorSceneVariant,
+  statusSceneVariant,
   type ErrorSceneKind,
   type ErrorSceneVariant,
   type ErrorSceneVariantOf,
 } from './scene-frame.js';
+export type { ErrorScenePageProps } from './scene-page.js';
 export { errorSceneText, type ErrorSceneText } from './error-scene-text.js';
 
 const SCENES: Record<ErrorSceneKind, ComponentType<SceneProps>> = {
@@ -66,24 +71,17 @@ export function ErrorScene({ kind, ...props }: ErrorSceneProps) {
 }
 
 /**
- * One of the kind's variants, at random. Pass a `seed` (a request id, the path) to get the
- * same one for the same seed, for instance on the server and again in the browser.
+ * A whole-page error as every product shows it: the kind's scene, its small code, title, one
+ * sentence and one button, on StatusPage, with a random drawing on each visit (see
+ * `ErrorScenePageProps`). Rendered by a server page (not-found.tsx) it sends the browser only
+ * its kind's drawings, as markup. A client page (error.tsx, global-error.tsx) imports the
+ * kind's own page instead (`ServerErrorScenePage`, `OfflineScenePage`…), since this one
+ * brings every kind's drawings into its bundle.
+ *
+ * Picked in the browser, a server-rendered page stays hidden for the moment it takes to
+ * hydrate, so nobody sees one drawing swap for another; without script, or when it has not
+ * hydrated after 1.5 seconds, it shows the first drawing.
  */
-export function pickErrorSceneVariant(
-  kind: ErrorSceneKind,
-  seed?: string | number,
-): ErrorSceneVariant {
-  const variants = ERROR_SCENE_VARIANTS[kind];
-  const unit = seed === undefined ? Math.random() : hashToUnit(String(seed));
-  return variants[Math.min(variants.length - 1, Math.floor(unit * variants.length))];
-}
-
-// FNV-1a, scaled into [0, 1)
-function hashToUnit(text: string) {
-  let hash = 0x811c9dc5;
-  for (let index = 0; index < text.length; index++) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return (hash >>> 0) / 0x100000000;
+export function ErrorScenePage({ kind, ...props }: ErrorScenePageProps & { kind: ErrorSceneKind }) {
+  return <ScenePage kind={kind} Scene={SCENES[kind]} {...props} />;
 }

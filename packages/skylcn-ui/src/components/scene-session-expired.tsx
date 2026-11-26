@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: GECEKODU's Awareness Project: the laptop left open at the next desk has its screen turned upside down and a "kilitle :)" note; yours only shows the session closed. */
@@ -416,4 +417,12 @@ export function SessionExpiredScene(props: SceneProps<'sessionExpired'>) {
       {...props}
     />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function SessionExpiredScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="sessionExpired" Scene={SessionExpiredScene} {...props} />;
 }

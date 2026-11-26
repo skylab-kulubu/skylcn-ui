@@ -258,33 +258,42 @@ export { SkylabLoader, type SkylabLoaderProps } from './components/skylab-loader
 export { CoverImage, type CoverImageProps } from './components/cover-image.js';
 export {
   ERROR_SCENE_KINDS,
+  ERROR_SCENE_RANDOM,
   ERROR_SCENE_VARIANTS,
   ErrorScene,
+  ErrorScenePage,
   errorSceneText,
   pickErrorSceneVariant,
+  statusSceneVariant,
   type ErrorSceneKind,
+  type ErrorScenePageProps,
   type ErrorSceneProps,
   type ErrorSceneText,
   type ErrorSceneVariant,
   type ErrorSceneVariantOf,
 } from './components/error-scene.js';
-export {
-  ErrorScenePage,
-  useErrorSceneVariant,
-  type ErrorScenePageProps,
-} from './components/error-scene-page.js';
+export { useErrorSceneVariant } from './components/error-scene-choice.js';
 export type { SceneProps } from './components/scene-frame.js';
-// One scene each, so a page that knows its error ships only its own pictures
-export { NotFoundScene } from './components/scene-not-found.js';
-export { ServerErrorScene } from './components/scene-server-error.js';
-export { ForbiddenScene } from './components/scene-forbidden.js';
-export { OfflineScene } from './components/scene-offline.js';
-export { SessionExpiredScene } from './components/scene-session-expired.js';
-export { UnavailableScene } from './components/scene-unavailable.js';
-export { LinkExpiredScene } from './components/scene-link-expired.js';
-export { TooManyRequestsScene } from './components/scene-too-many-requests.js';
-export { CookiesBlockedScene } from './components/scene-cookies-blocked.js';
-export { FormClosedScene } from './components/scene-form-closed.js';
+// One kind each, scene and whole page, so a page that knows its error ships only its own drawings
+export { NotFoundScene, NotFoundScenePage } from './components/scene-not-found.js';
+export { ServerErrorScene, ServerErrorScenePage } from './components/scene-server-error.js';
+export { ForbiddenScene, ForbiddenScenePage } from './components/scene-forbidden.js';
+export { OfflineScene, OfflineScenePage } from './components/scene-offline.js';
+export {
+  SessionExpiredScene,
+  SessionExpiredScenePage,
+} from './components/scene-session-expired.js';
+export { UnavailableScene, UnavailableScenePage } from './components/scene-unavailable.js';
+export { LinkExpiredScene, LinkExpiredScenePage } from './components/scene-link-expired.js';
+export {
+  TooManyRequestsScene,
+  TooManyRequestsScenePage,
+} from './components/scene-too-many-requests.js';
+export {
+  CookiesBlockedScene,
+  CookiesBlockedScenePage,
+} from './components/scene-cookies-blocked.js';
+export { FormClosedScene, FormClosedScenePage } from './components/scene-form-closed.js';
 export { StateCard, type StateCardProps } from './components/state-card.js';
 export { TaskPage, type TaskPageProps } from './components/task-page.js';
 export { Switch, ToggleRow, type SwitchProps, type ToggleRowProps } from './components/switch.js';

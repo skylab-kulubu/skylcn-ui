@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: Under GECEKODU's banner the clock passes midnight: the server wears a swinging "MOLADA" sign beside a steaming takeaway and a bag with its receipt. */
@@ -310,4 +311,12 @@ function SmokingServer() {
  */
 export function ServerErrorScene(props: SceneProps<'error'>) {
   return <SceneFrame kind="error" drawings={{ A: GecekoduBreak, B: SmokingServer }} {...props} />;
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function ServerErrorScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="error" Scene={ServerErrorScene} {...props} />;
 }

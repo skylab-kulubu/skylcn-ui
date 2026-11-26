@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: An application form stamped KAPANDI, its answer box shut, and a letter on its way to the team that shared it. */
@@ -257,4 +258,12 @@ function LastMinute() {
  */
 export function FormClosedScene(props: SceneProps<'formClosed'>) {
   return <SceneFrame kind="formClosed" drawings={{ A: ClosedForm, B: LastMinute }} {...props} />;
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function FormClosedScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="formClosed" Scene={FormClosedScene} {...props} />;
 }

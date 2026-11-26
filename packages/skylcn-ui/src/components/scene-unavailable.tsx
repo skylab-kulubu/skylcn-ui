@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: A server rack with one slot empty and a "çaya gittim" note; a dotted path leads to the GECEKODU tea urn. */
@@ -369,4 +370,12 @@ export function UnavailableScene(props: SceneProps<'unavailable'>) {
   return (
     <SceneFrame kind="unavailable" drawings={{ A: GoneForTea, B: AlgolabTimeLimit }} {...props} />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function UnavailableScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="unavailable" Scene={UnavailableScene} {...props} />;
 }

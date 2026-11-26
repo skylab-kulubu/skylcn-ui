@@ -123,7 +123,7 @@ const TR: Texts = {
       action: 'Yeniden dene',
     },
     B: {
-      code: '503',
+      code: '504',
       title: 'Süre sınırı aşıldı',
       description: 'Sunucumuz cevabı süresinde yetiştiremedi; birkaç dakika sonra yeniden dene.',
       action: 'Yeniden dene',
@@ -298,7 +298,7 @@ const EN: Texts = {
       action: 'Try again',
     },
     B: {
-      code: '503',
+      code: '504',
       title: 'Time limit exceeded',
       description: 'Our server could not answer in time; try again in a few minutes.',
       action: 'Try again',

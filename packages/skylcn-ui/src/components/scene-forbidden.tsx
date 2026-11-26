@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: The SKYDAYS CTF screen refuses three guessed flags and says this is not a CTF challenge; the door stays locked and the key hangs on the team lead's tag. */
@@ -383,4 +384,12 @@ export function ForbiddenScene(props: SceneProps<'forbidden'>) {
       {...props}
     />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function ForbiddenScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="forbidden" Scene={ForbiddenScene} {...props} />;
 }

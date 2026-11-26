@@ -3,6 +3,7 @@ import { cpSync, mkdirSync, readdirSync, renameSync, rmSync, writeFileSync } fro
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { writeErrorScenes } from './error-scenes.mjs';
 import { sourcesStylesheet, themeSources } from './theme-sources.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -31,32 +32,16 @@ for (const { name, files } of themeSources(next)) {
   writeFileSync(join(next, 'styles/sources', `${name}.css`), sourcesStylesheet(name, files));
 }
 
-// The error scenes as markup alone, for a page that renders no React (a Keycloak FreeMarker
-// page, a site on another React, a server's own 404): one SVG per drawing, drawn by the
-// built components, and their words. They take their look from error-scene.css.
+// The error scenes as markup alone, for a page that renders no React (see error-scenes.mjs)
 {
   const require = createRequire(import.meta.url);
-  const { createElement } = require('react');
-  const { renderToStaticMarkup } = require('react-dom/server');
-  const scenes = await import(pathToFileURL(join(next, 'components/error-scene.js')).href);
-  const out = join(next, 'error-scenes');
-  mkdirSync(out, { recursive: true });
-  const index = {};
-  for (const kind of scenes.ERROR_SCENE_KINDS) {
-    const variants = scenes.ERROR_SCENE_VARIANTS[kind];
-    index[kind] = { variants, text: { tr: {}, en: {} } };
-    for (const variant of variants) {
-      const svg = renderToStaticMarkup(createElement(scenes.ErrorScene, { kind, variant }));
-      writeFileSync(
-        join(out, `${kind}-${variant}.svg`),
-        svg.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ') + '\n',
-      );
-      for (const locale of ['tr', 'en']) {
-        index[kind].text[locale][variant] = scenes.errorSceneText(kind, locale, variant);
-      }
-    }
-  }
-  writeFileSync(join(out, 'index.json'), JSON.stringify(index, null, 2) + '\n');
+  writeErrorScenes({
+    scenes: await import(pathToFileURL(join(next, 'components/error-scene.js')).href),
+    createElement: require('react').createElement,
+    renderToStaticMarkup: require('react-dom/server').renderToStaticMarkup,
+    css: join(next, 'styles/error-scene.css'),
+    out: join(next, 'error-scenes'),
+  });
 }
 
 rmSync(old, { recursive: true, force: true });

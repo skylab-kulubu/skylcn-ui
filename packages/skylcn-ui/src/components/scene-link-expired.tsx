@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: A single-use link stamped SÜRESİ DOLDU, and a turn arrow to a new one. */
@@ -183,4 +184,12 @@ export function LinkExpiredScene(props: SceneProps<'linkExpired'>) {
   return (
     <SceneFrame kind="linkExpired" drawings={{ A: SingleUseLink, B: StaleEnvelope }} {...props} />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function LinkExpiredScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="linkExpired" Scene={LinkExpiredScene} {...props} />;
 }

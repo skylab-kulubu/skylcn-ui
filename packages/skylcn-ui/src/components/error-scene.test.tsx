@@ -5,19 +5,23 @@ import { describe, expect, it, vi } from 'vitest';
 import theme from '../styles/error-scene.css?raw';
 import themeBase from '../styles/theme-base.css?raw';
 import { axeViolations } from '../test/axe.js';
-import { ErrorScenePage } from './error-scene-page.js';
 import {
   ERROR_SCENE_KINDS,
+  ERROR_SCENE_RANDOM,
   ERROR_SCENE_VARIANTS,
   ErrorScene,
+  ErrorScenePage,
   errorSceneText,
   pickErrorSceneVariant,
+  statusSceneVariant,
   type ErrorSceneVariant,
 } from './error-scene.js';
+import * as kinds from '../index.js';
 import { StatusPage } from './month-calendar.js';
 import { NotFoundScene } from './scene-not-found.js';
 import { ServerErrorScene } from './scene-server-error.js';
 import { SessionExpiredScene } from './scene-session-expired.js';
+import { UnavailableScenePage } from './scene-unavailable.js';
 import { TaskPage } from './task-page.js';
 
 const EVERY = ERROR_SCENE_KINDS.flatMap((kind) =>
@@ -122,6 +126,20 @@ describe('ErrorScene', () => {
     expect(theme).not.toMatch(/@apply|@theme|@utility|@custom-variant/);
   });
 
+  it('reveals a page that never hydrates, untouched by reduced motion', () => {
+    expect(theme).toMatch(
+      /@media \(scripting: enabled\) \{\s*\.skylcn-error-pending \{\s*animation: skylcn-error-reveal 0s 1\.5s both;\s*\}/,
+    );
+    expect(theme).toMatch(
+      /@keyframes skylcn-error-reveal \{\s*from \{\s*visibility: hidden;\s*\}\s*to \{\s*visibility: visible;/,
+    );
+    // nothing hides it outside the animation, and the still rules reach only into a scene
+    expect(theme).not.toMatch(/\.skylcn-error-pending[^{]*\{[^}]*visibility/);
+    for (const [, selector] of theme.matchAll(/([^{}]*)\{\s*animation: none;/g)) {
+      expect(selector).toMatch(/\.skylcn-scene(\[data-still\])? \*\s*$/);
+    }
+  });
+
   it('stops every part under reduced motion, the in-product setting and data-still', () => {
     const reduce = theme.slice(theme.indexOf('Still: every part on the frame'));
     expect(reduce).toMatch(
@@ -168,12 +186,25 @@ describe('errorSceneText', () => {
 });
 
 describe('pickErrorSceneVariant', () => {
-  it('reaches every variant of every kind', () => {
+  it('reaches every random variant of every kind, and only those', () => {
     for (const kind of ERROR_SCENE_KINDS) {
       const seen = new Set<ErrorSceneVariant>();
       for (let seed = 0; seed < 200; seed++) seen.add(pickErrorSceneVariant(kind, seed));
-      expect([...seen].sort()).toEqual([...ERROR_SCENE_VARIANTS[kind]]);
+      expect([...seen].sort()).toEqual([...ERROR_SCENE_RANDOM[kind]]);
     }
+    // the time limit's drawing answers a timeout alone
+    expect(ERROR_SCENE_RANDOM.unavailable).toEqual(['A']);
+    expect(ERROR_SCENE_RANDOM.notFound).toEqual(ERROR_SCENE_VARIANTS.notFound);
+  });
+
+  it('lets a status choose where the drawings of a kind answer different causes', () => {
+    expect(statusSceneVariant('unavailable', 504)).toBe('B');
+    expect(statusSceneVariant('unavailable', 503)).toBe('A');
+    expect(statusSceneVariant('unavailable', 502)).toBe('A');
+    expect(statusSceneVariant('unavailable', undefined)).toBeUndefined();
+    expect(statusSceneVariant('notFound', 404)).toBeUndefined();
+    expect(errorSceneText('unavailable', 'tr', 'B').code).toBe('504');
+    expect(errorSceneText('unavailable', 'tr', 'A').code).toBe('503');
   });
 
   it('gives the same seed the same variant', () => {
@@ -193,6 +224,49 @@ describe('pickErrorSceneVariant', () => {
 });
 
 describe('ErrorScenePage', () => {
+  it('has a page of its own for every kind, which draws that kind alone', () => {
+    const NAMES = {
+      notFound: 'NotFoundScenePage',
+      error: 'ServerErrorScenePage',
+      forbidden: 'ForbiddenScenePage',
+      offline: 'OfflineScenePage',
+      sessionExpired: 'SessionExpiredScenePage',
+      unavailable: 'UnavailableScenePage',
+      linkExpired: 'LinkExpiredScenePage',
+      tooManyRequests: 'TooManyRequestsScenePage',
+      cookiesBlocked: 'CookiesBlockedScenePage',
+      formClosed: 'FormClosedScenePage',
+    } as const;
+    for (const kind of ERROR_SCENE_KINDS) {
+      const Page = kinds[NAMES[kind]];
+      const { container, unmount } = render(<Page variant="A" />);
+      expect(scene(container)).toHaveAttribute('data-kind', kind);
+      unmount();
+    }
+  });
+
+  it('sends a server page only the drawings of its own kind', () => {
+    const html = renderToString(<ErrorScenePage kind="notFound" href="/" />);
+    // the first drawing is in the HTML; the others travel with the page's props, not here
+    expect(html.match(/data-slot="error-scene"/g)).toHaveLength(1);
+    expect(html).toContain('data-kind="notFound"');
+    expect(html).not.toMatch(/data-kind="(?!notFound)/);
+  });
+
+  it('draws the time limit for a 504 and the server gone for tea for a 503', () => {
+    const { container, unmount } = render(<UnavailableScenePage status={504} />);
+    expect(scene(container)).toHaveAttribute('data-variant', 'B');
+    expect(screen.getByText('504')).toBeInTheDocument();
+    unmount();
+    const random = vi.spyOn(Math, 'random').mockReturnValue(0.99);
+    const { container: other } = render(<UnavailableScenePage status={503} />);
+    const { container: plain } = render(<UnavailableScenePage />);
+    random.mockRestore();
+    expect(scene(other)).toHaveAttribute('data-variant', 'A');
+    // without a status, never the timeout
+    expect(scene(plain)).toHaveAttribute('data-variant', 'A');
+  });
+
   it('shows the fixed variant with its words and a link button, and stays accessible', async () => {
     const { container } = render(<ErrorScenePage kind="notFound" variant="B" href="/" />);
     expect(scene(container)).toHaveAttribute('data-variant', 'B');

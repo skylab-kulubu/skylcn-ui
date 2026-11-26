@@ -1,3 +1,4 @@
+import { ScenePage, type ErrorScenePageProps } from './scene-page.js';
 import { SceneFrame, type SceneProps } from './scene-frame.js';
 
 /** A: A sign-in window with cookies switched off, and in the middle of the GECEKODU table an empty plate. */
@@ -327,4 +328,12 @@ export function CookiesBlockedScene(props: SceneProps<'cookiesBlocked'>) {
   return (
     <SceneFrame kind="cookiesBlocked" drawings={{ A: EmptyPlate, B: PrivacySetting }} {...props} />
   );
+}
+
+/**
+ * This kind's whole error page (ErrorScenePage) with its scene alone: what a client page
+ * (error.tsx) imports to keep the other kinds' drawings out of its bundle.
+ */
+export function CookiesBlockedScenePage(props: ErrorScenePageProps) {
+  return <ScenePage kind="cookiesBlocked" Scene={CookiesBlockedScene} {...props} />;
 }
